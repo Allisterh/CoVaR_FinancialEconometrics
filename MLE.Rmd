@@ -1,0 +1,39 @@
+$$
+
+$$
+
+$f_x(x_t,\lambda)=\lambda e^{-\lambda x_t}$
+
+1) $LLK(\lambda,x)=\sum_{t=1}^T[\log \lambda - \lambda x_t ] = T\lambda-\lambda \sum_{t=1}^Tx_t$
+
+```{r}
+
+
+dLambda <- 5
+vX <- rexp(10000, dLambda)
+
+nLLK <- function(dLambda, vX) {
+  dnLLK <- -sum(dexp(vX, dLambda, log = TRUE))
+  return(dnLLK)
+}
+
+vLambda <- seq(1, 10, by = 0.1)
+
+vnLLK <- sapply(vLambda, nLLK, vX = vX)
+
+plot(vLambda, vnLLK, type = "l")
+abline(v = 1 / mean(vY), col = "red")
+
+mean(1 / mean(vX))
+
+optimizer <- optim(2, nLLK,
+  method = "L-BFGS-B",
+  lower = 1e-6,
+  upper = 10,
+  vX = vX
+)
+
+options(digits = 10)
+optimizer$par
+1 / mean(vX)
+```
