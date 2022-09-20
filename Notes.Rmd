@@ -1,0 +1,4357 @@
+---
+title: "Quantitative Programming in Economics: Notes"
+author: "Tobias Brammer"
+date: "May 25, 2022"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+---
+
+# **L2: Getting Started with R**
+
+When you run R, it nominates one of the directories on your hard drive as a working directory, which is where it looks for user-written programs and data files
+
+You can determine the current working directory using the command getwd.
+
+```{r}
+getwd()
+```
+
+You can do this using the command setwd("sDir"), where dir is the directory address.
+
+```{r}
+sDir <- "/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/6. semester/Programming" # this path needs to exist
+setwd(sDir)
+```
+
+If the path does not exist R can create the directory ("folder") for you via the dir.create built-in function and then change to the new directory
+
+```{r}
+# Assign a new path to create the new directory
+sPath <- getwd()
+sDir <- file.path(sPath,"new_dir2")
+dir.create(sDir) # Creates the new directory
+```
+
+When the working directory is set we can call other scripts from the currently specified "WD" without specifying the path via the source() function, i.e.
+
+``` r
+source("foo.r") # tell R to Source/Run the .R file/script
+```
+
+Calling e.g. scripts from another directory is also possible, but requires a specific path i.e. "C:/wd/foo.r"
+
+Furthermore this feature is incredibly useful when writing longer scripts containing several user written functions
+
+This is demonstrated in "Example 1.R"
+
+In addition source will check your program for completeness before executing it, that is it will stop processing the call if an error is reported!
+
+## Defining variables
+
+To assign a value to a variable we use (almost equivalently) the assignment commands = and \<-. For example:
+
+```{r}
+iX <- 100
+```
+
+and
+
+```{r}
+iX = 100
+```
+
+are equivalent. Notice that
+
+```{r}
+iX <- iX + 1
+```
+
+is allowed.
+
+### Missing data
+
+In real experiments it is often the case, for one reason or another, that certain observations are missing\
+Depending on the statistical analysis involved, missing data can be ignored or invented (a process called imputation)
+
+R represents missing observations through the data value NA. They can be mixed in with all other kinds of data:
+
+```{r}
+vA <- c(11, NA, 13)
+```
+
+The logical argument na.rm is often specified to deal with NAs.
+
+```{r}
+mean(vA, na.rm = TRUE) # NAs can be removed
+```
+
+Sometimes you want to search for NAs in your dataset to prevent misleading results at the end of your analysis. The function is.na searches for NAs inside vectors and returns a logical output of the same size of the input provided:
+
+```{r}
+vA <- c(11, NA, 13)
+is.na(vA) # identify missing elements
+```
+
+When length(vA) is very large we might want to write:
+
+```{r}
+any(is.na(vA)) # are any missing?
+```
+
+In order to remove NAs we can use:
+
+```{r}
+na.omit(vA)
+```
+
+## 
+
+## Arithmetic
+
+R uses the usual symbols for addition +, subtraction -, multiplication \*, division /, and exponentiation ˆ.
+
+Parentheses ( ) can be used to specify the order of operations
+
+```{r}
+(1 + 1/100)^100
+```
+
+Notice that by default R prints 7 significant digits. You can change the display to 4 digits using
+
+```{r}
+options(digits = 4)
+```
+
+### Functions
+
+R has a number of built-in functions, for example sin(x), cos(x), tan(x), (all in radians), exp(x), log(x), and sqrt(x). Some special constants such as pi (π) are also predefined.
+
+```{r}
+exp(1)
+pi
+sin(pi/6)
+```
+
+Consider the seq function. This function allows you to create se- quence of numbers:
+
+```{r}
+seq(from = 1, to = 9, by = 2)
+```
+
+For a sequence with by equal 1 R has a shorthand notation, so we may use to:from;
+
+```{r}
+1:4
+```
+
+Every function has a default order for the arguments. For seq this is: from, to, by.\
+If you provide arguments in this order, then they do not need to be named:
+
+```{r}
+seq(1, 9, 2)
+```
+
+But you can choose to give the arguments out of order provided you give them names in the format argument name = expression.
+
+```{r}
+seq(by = 2, to = 9, from = 1)
+```
+
+### Logical expression
+
+A logical expression is formed using the comparison operators:
+
+-   \< lower than
+
+-   \> greater than
+
+-   ≤ lower than or equal to
+
+-   ≥ greater than or equal to
+
+-   == equal to
+
+-   != not equal to
+
+-   & and
+
+-   \| or
+
+-   ! not
+
+These operators return a logical output:
+
+```{r}
+vX = c(1, 2, 3, 4)
+vX == 2
+vX != 2
+vX > 2
+vX[vX > 2 & vX < 10]
+```
+
+The subset function can be used for a similar scope:
+
+```{r}
+subset(vX, subset = vX > 2)
+```
+
+Take two logical objects:
+
+```{r}
+vX = 4
+vY = vX > 2
+vY
+
+vZ = vX < 3
+vZ
+```
+
+The & operator returns TRUE if both vY and vZ are TRUE, FALSE otherwise:
+
+```{r}
+vY & vZ
+```
+
+The \| operator returns TRUE if y or z are TRUE, FALSE otherwise:
+
+```{r}
+vY | vZ
+```
+
+The logical operators && and \|\| are sequentially evaluated versions of & and \|, respectively To evaluate vX & vY, R first evaluates vX and vY, then returns TRUE if vX and vY are both TRUE, FALSE otherwise. To evaluate vX && vY, R first evaluates vX. If vX is FALSE then R returns FALSE without evaluating vY. If vX is TRUE then R evaluates vY and returns TRUE if vY is TRUE, FALSE otherwise Sequential evaluation of vX and vY is useful when vY is not always well defined, or when vY takes a long time to compute.
+
+As an example of the first instance, suppose we wish to know if dX \* sin(1/dX) = 0
+
+```{r}
+dX <- 0
+dX * sin(1/dX) == 0
+
+(dX == 0) | (sin(1/dX) == 0)
+
+(dX == 0) || (sin(1/dX) == 0)
+```
+
+Note that && and \|\| only work on scalars, whereas & and \| work on vectors on an element-by-element basis.
+
+## 
+
+## Vectors
+
+Vectors can be created by any function that returns vectors as output. For instance seq and rep. The rep(vX, n) function exactly replicates the vector vX, n times:
+
+```{r}
+vX = c(1, 3, 4)
+rep(vX, 3)
+```
+
+The function c also accepts vectors as inputs:
+
+```{r}
+vX <- seq(1, 20, by = 2)
+vY <- rep(3, 4)
+vZ <- c(vY, vX)
+```
+
+All algebraic operations are defined for vectors and act on each element separately, that is, element-wise:
+
+```{r}
+vX <- c(1, 2, 3)
+vY <- c(4, 5, 6)
+vX * vY
+vX + vY
+vY ^ vX
+```
+
+When you apply an algebraic expression to two vectors of unequal length, R automatically repeats the shorter vector until it has something the same length as the longer vector.
+
+```{r}
+c(1, 2, 3, 4) + c(1, 2)
+(1:10) ^ c(1, 2)
+```
+
+This happens even when the shorter vector is of length 1, allowing the shorthand notation:
+
+```{r}
+2 + c(1, 2, 3)
+2 * c(1, 2, 3)
+```
+
+For example using the modulus operator: a mod b (%%):
+
+```{r}
+20 %% 3
+```
+
+### Matrices
+
+Building matrices
+
+```{r}
+mA <- matrix(1:6, nrow = 2, ncol = 3, byrow = TRUE)
+```
+
+To retrieve the dimension of a matrix use dim:
+
+```{r}
+dim(mA)
+```
+
+Useful functions for matrices:
+
+-   diag, extract the diagonal elements and return a vector or create a diagonal matrix, see help(diag)!
+
+-   rbind, join matrices with rows of the same length (stacking vertically)
+
+-   cbind, join matrices with columns of the same length (stacking horizontally)
+
+-   solve, invert a matrix
+
+-   eigen, extract eigenvalues and associated eigenvectors of a matrix
+
+-   t, transpose of matrix
+
+Define
+
+```{r}
+mA <- matrix(c(3, 5, 2, 3), nrow = 2, ncol = 2)
+mB <- matrix(c(9, 4, 1, 2), nrow = 2, ncol = 2)
+```
+
+Element--wise multiplication, A ◦ B (Hadamard product):
+
+```{r}
+mA * mB
+```
+
+Matrix multiplication, AB:
+
+```{r}
+mA %*% mB
+```
+
+Kronecker product, A ⊗ B
+
+```{r}
+kronecker(mA, mB)
+```
+
+## Factors and Lists
+
+R has a special data structure for Categorical variables that take ordinal or cardinal values.
+
+Ordinal (rankable): Low, medium and high\
+Cardinal (Unrankable values): Colour, marital status, names, etc..
+
+In R we (may) deal with categorical variables in factor variables; Each category is called a level. Packages or statistical models may facilitate easy use of the factor class e.g. in lm to create several dummies from the categorical variable.
+
+```{r}
+phys.act <- c("L", "H", "H", "L", "M", "M")
+phys.act <- factor(phys.act, levels = c("L", "M", "H"), ordered = TRUE)
+is.ordered(phys.act)
+```
+
+-   We have seen that all the elements of a vector have to be of the same type: numeric, character, or logical. The type of the vector is called: mode
+
+-   A list is an indexed set of objects (and so has a length) whose elements can be of different types, including other lists! The mode of a list is list
+
+-   A list is just a generic container for other objects and the power and utility of lists comes from this generality
+
+-   In R lists are often used for collecting and storing complicated function output. For example, the fist element of a list can be a vector, the second can be another list and the third can be a matrix
+
+A list is created using the list(...) command, with comma-separated arguments:
+
+```{r}
+my.list <- list("one", TRUE, 3, c("f", "o", "u", "r"))
+```
+
+Double square brackets are used to extract a single element:
+
+```{r}
+my.list[[1]]
+mode(my.list[[1]])
+```
+
+Single square brackets are used to select a sublist:
+
+```{r}
+my.list[1]
+mode(my.list[1])
+```
+
+When displaying a list, R uses double square brackets [[1]], [[2]], etc., to indicate list elements, then single square brackets [1], [2], etc., to indicate vector elements within the list.
+
+The elements of a list can be named when the list is created, using arguments of the form name1 = x1, name2 = x2, etc.:
+
+```{r}
+my.list <- list(first = "one", second = TRUE, third = 3, fourth = c("f","o","u","r"))
+names(my.list)
+my.list$second # Note the use of the $ operator to access named lists.
+```
+
+Alternatively, a list elements can be named later by assigning a value to the names attribute:
+
+```{r}
+my.list <- list( "one", TRUE, 3, c("f", "o", "u", "r"))
+names(my.list) <- c("first", "second", "third", "fourth")
+```
+
+To flatten a list x, that is convert it to a vector, we use unlist(x)
+
+```{r}
+x <- list(1, c(2, 3), c(4, 5, 6))
+unlist(x)
+```
+
+-   If the list object itself comprises lists, then these lists are also flattened, unless the argument recursive = FALSE is set in unlist.
+
+## Dataframes
+
+-   We have already seen how to work in R with numbers, strings, and logical values
+
+-   We have also worked with homogeneous collections of such objects, grouped into numeric, character, or logical vectors
+
+-   The defining characteristic of the vector data structure in R is that all components must be of the same mode
+
+-   Obviously to work with datasets from real experiments we need a way to group data of differing modes!
+
+-   Suppose to have the following dataset representing a forestry experiment in which we randomly selected a number of plots and then from each plot selected a number of trees.
+
+| Plot | Tree | Species | Diameter (cm) | Height (m) |
+|------|------|---------|---------------|------------|
+| 2    | 1    | DF      | 39            | 20,5       |
+| 2    | 2    | WL      | 48            | 33,0       |
+| 3    | 2    | GF      | 52            | 30,0       |
+| 3    | 5    | WC      | 36            | 20,7       |
+| 3    | 8    | WC      | 38            | 22,5       |
+| ...  | ...  | ...     | ...           | ...        |
+
+For each tree we measured its height and diameter (which are numeric), and also the species of tree (which is a character string).\
+As experimental data collated in a table look like an array, you may be tempted to represent it in R as a matrix But in R matrices cannot contain heterogeneous data (data of different modes, like numeric and character) Lists and dataframes are able to store much more complicated data structures than matrices
+
+**A dataframe is a list of vectors restricted to be of equal length.**
+
+Each vector (column of the dataframe) can be of any of the basic modes of object.
+
+To create a dataframe we write:
+
+```{r}
+mData <- data.frame(Plot = c(1, 2, 2, 5, 8, 8),
+                   Tree = c(2, 2, 3, 3, 3, 2),
+                   Species = c("DF", "WL", "GF", "WC", "WC", "GF"),
+                   Diameter = c(39, 48, 52, 35, 37, 30),
+                   Height = c(20.5, 33.0, 30.0, 20.7, 22.5, 20.1))
+```
+
+Each column, or variable, in a dataframe has a unique name. We can extract that variable by means of the dataframe name, the column name, the a dollar sign, or as we do for a matrix:
+
+```{r}
+mData$Diameter
+mData[["Diameter"]]
+mData[[4]]
+mData[, 4]
+mData[, "Diameter"]
+```
+
+To assign a new variable to a dataframe we write:
+
+```{r}
+mData$newdata <- c(1, 2, 3, 4, 5, 6)
+```
+
+If the new variable is the same across all the observations we can write:
+
+```{r}
+mData$newdata2 <- TRUE
+```
+
+This also works as long as the number of rows of the dataframe is a multiple of the length of the new variable (if it is not a multiple we get an error):
+
+```{r}
+mData$newdata3 <- c("one", "two")
+mData
+```
+
+# L3: Basic Programming
+
+This lecture introduces a set of basic programming constructs, which are the building blocks of most programs.
+
+Some of these tools are used by practically all programming languages, for example, conditional execution by if statements, and looped execution by for and while statements
+
+Notice that code that seems to be efficient in another language may not be efficient in R. For example, R is known to be quite slow in computing for and while loops. On the other hand, R is fast in doing vector--based operations
+
+A program or script is just a list of commands, which are executed one after the other\
+A program is usually composed by three parts: - input - computations - output
+
+Usually, we write the list of commands in separate files, called scripts, which we can save in our Hard Drive,
+
+Suppose we have a program saved as *prog.r* in the working directory. In order to execute the program we use the command
+
+``` r
+source("prog.r")
+```
+
+## The *if* statement
+
+It is often useful to choose the execution of some or other part of a program to depend on a condition. The if function has the form
+
+``` {.r .R}
+if (logical_expression) {
+  expression_1 #code to run if logical_expression is TRUE
+  ...
+}
+```
+
+A natural extension of the if command includes an *else* part
+
+``` {.r .R}
+if (logical_expression) {
+  expression_1
+  ...
+} else {
+  expression_2
+  ...
+}
+```
+
+When an *if* expression is evaluated, if *logical_expression* is TRUE then the first group of expressions is executed and the second group of expressions is not executed. Conversely if *logical_expression* is FALSE then only the second group of expressions is executed. Example:
+
+```{r}
+dX <- rnorm(1) # random number from the standard normal distribution
+if (dX > 0) {
+  print("x is positive")
+  } else {
+  print("x is non-positive")}
+
+```
+
+#### Exercise (If value of x)
+
+-   Generate a random number from a standard Gaussian distribution
+
+-   If the number is negative, then compute the square of it and print the value of *x* along with the output.
+
+    -   E.g. "the value of x is \_ and its square is \_"
+
+-   Otherwise compute the cube and print the value of *x* along with the output.
+
+```{r}
+dX <- rnorm(1) # random number from the standard normal/Gaussian distribution
+if (dX < 0) {
+  cat("The value of x is",dX,"and its square is",dX^2)
+  } else {
+  cat("The value of x is",dX,"and its cube is",dX^3)
+  }
+```
+
+### Nested if
+
+Nested if statements are constructed using the else if command:
+
+``` {.r .R}
+if (logical_expression_1) {
+expression_1 #code to run if logical_expression_1 is TRUE
+...
+} else if (logical_expression_2) {
+expression_2 #code to run if logical_expression_1 is FALSE and logical_expression_2 is TRUE
+...
+else if (logical_expression_3) {
+expression_3 #code to run if logical_expression_1 is FALSE, logical_expression_2 is FALSE and logical_expression_3 is TRUE
+...
+} else {
+expression_4 #code to run if all logicals are FALSE
+...
+}
+```
+
+Example:
+
+```{r}
+dX <- runif(1) # random number from the uniform distribution
+if (dX < 0.5) {
+  print("x is less than 0.5")
+} else if (dX < 0.75) {
+  print("x is less than 0.75")
+} else {
+  print("x is greater than or equal to 0.75")
+}
+```
+
+#### Exercise (Nested if value of x)
+
+Extend the code in the previous exercise to include a nested else if such that it includes and action for the event of a non-negative x,
+
+```{r}
+dX <- rnorm(1)
+if (dX<0) {
+  cat("the value of x is",dX,"and its square is",dX^2)
+} else if (dX >=0) {
+  cat("x is non-negative, with the value of",dX,"and its square is",dX^2)
+}
+```
+
+## The *for* loop
+
+The for command has the following form, where *x* is a simple variable and *vector* is a vector.
+
+``` {.r .R}
+for (x in vector) {
+  expression_1
+  ...
+}
+```
+
+when executed, the for command executes the group of expressions within the braces {} once for each element of *vector*.
+
+```{r}
+for (iX in 1:5){
+  print(iX)
+}
+```
+
+Note that the vector can also be a *list*. Example:
+
+```{r}
+vX <- seq(1,9,by = 2)
+vX
+dSum_x <- 0
+for (iX in vX){
+  dSum_x <- dSum_x + iX
+  cat("The current loop element is",iX,"\n")
+  cat("The cumulative total is",dSum_x,"\n")
+}
+sum(vX) # sum of the elements of x (same as the last iteration of for-loop)
+cumsum(vX) # vector with cumulative sum of elements of x
+```
+
+#### Exercise (Combined for loop and if condition)
+
+-   Within the for loop, that runs from 1 to 100, generate a standard normal random variable
+
+-   For each draw check whether it is positive or negative
+
+-   Calculate the fraction of the positive and negative realizations
+
+-   Store the simulated variables in a vector
+
+```{r}
+fracX <- 0
+vX <- c()
+Ubound <- 100
+for (i in 1:Ubound){
+  dX <- rnorm(1)
+  vX[i] <- dX
+if (dX < 0){
+  # cat("x is negative with",dX,"\n")
+  fracX = (fracX + 1)
+} else if (dX >= 0){
+  # cat("x is non-negative with",dX,"\n")
+}}
+cat("the percentage of negative values is",fracX/Ubound*100,"%")
+```
+
+## The *while* loop
+
+Often we do not know beforehand how many times we need to go around a loop. That is, each time we go around the loop, we check some condition to see if we are done yet.
+
+In this situation we use a while loop, which has the form:
+
+``` {.r .R}
+while(logical_expression) {
+expression_1 # This should have an impact on logical_expression
+...
+}
+```
+
+-   When a while command is executed, logical expression is evaluated first. If it is TRUE then the group of expressions in braces {} is executed
+
+-   Until logical expression becomes FALSE, the while command executes the group of expressions in braces {}
+
+**Warning: while loop can run forever!** Example:
+
+```{r}
+iN <- 1
+while(iN <= 6){
+  print(iN^2)
+  iN <- iN +1
+}
+```
+
+#### Exercise (Gaussian distribution convergence)
+
+-   Generate a random number from a Gaussian distribution with mean 100 and variance 100.
+
+-   Start a while loop that at each iteration divides the result obtained at the previous iteration by two.
+
+-   Set the stopping criterion when the result at the previous iteration is lower than 1.
+
+-   Print the number of iterations when the while loop has terminated.
+
+```{r}
+i <- 0
+rX <- rnorm(1,100,100)
+while(rX>1){
+rX = rX/2
+i = i +1
+}
+rX
+i
+```
+
+### Nested environment: Example
+
+```{r}
+Want.2.bake.cake <- FALSE
+bowl <- matrix(0,1,1)
+while(Want.2.bake.cake == FALSE) {
+  Want.2.bake.cake <- (runif(1) < 0.5)
+    if(Want.2.bake.cake == TRUE) {
+      print("You start baking, find the appropriate bowl")
+      Sys.sleep(2)
+      print("looking for bowl...")
+    
+    while((prod(dim(bowl)) != 100 | nrow(bowl) != ncol(bowl))) {
+      bowl <- matrix(0,sample(1:100,1),sample(1:100,1))
+      
+      if(!(prod(dim(bowl)) != 100 | nrow(bowl) != ncol(bowl))){
+        Sys.sleep(2)
+        print("Wrong bowl... look for another one..")
+        print("looking for another...")
+      }
+    }
+  }
+}
+```
+
+## Vector-based programming
+
+It is often necessary to perform an operation upon each of the elements of a vector. R is set up so that such programming tasks can be accomplished using vector operations rather than looping.
+
+Using vector operations is more efficient computationally, as well as more concise literally. For example, consider the while loop example of computing the square of the first 6 numbers from before, now computed using vector based programming:
+
+```{r}
+vX <- (1:6)^2
+vX
+```
+
+If we want to find the sum of the first $n=100$ squares, we might use a for loop:
+
+```{r}
+iN <- 100
+dS <- 0
+for (i in 1:iN) {
+  dS <- dS + i^2
+}
+dS
+```
+
+Or use vector-based programming:
+
+```{r}
+iN <- 100
+sum((1:iN)^2)
+```
+
+### Computational time: Loop vs vector-operation
+
+```{r}
+iN <- 1e8
+system.time({
+  dS <- 0
+  for (i in 1:iN) {
+    dS <- dS + i^2
+  }
+  dS
+})
+
+system.time({sum((1:iN)^2)})
+```
+
+## Load data in R
+
+R implements functionalities to read from text files like: .txt and .csv. In order to read excel files external libraries are required such as: **excel, gdata, rodbc, XLConnect, xls, xlsReadWrite, xlsx**. R provides a number of ways to read data from a file: scan, read.table, read.csv. In this course we will mostly use read.table.
+
+### The read.table function
+
+```{r}
+help(read.table)
+```
+
+-   **file:** the name of the file which the data are to be read from. Each row of the table appears as one line of the file. If it does not contain an absolute path, the file name is relative to the current working directory, getwd().
+
+-   **header:** a logical value indicating whether the file contains the names of the variables as its first line.
+
+-   **sep:** the field separator character. Values on each line of the file are separated by this character. If sep = "" (the default) the separator is 'white space'.
+
+-   **dec:** the character used in the file for decimal points.
+
+-   **row.names:** a vector of row names. This can be a vector giving the actual row names, or a single number giving the column of the table which contains the row names, or character string giving the name of the table column containing the row name.
+
+-   **col.names:** a vector of optional names for the variables. The default is to use "V" followed by the column number.
+
+-   **na.strings:** a character vector of strings which are to be interpreted as NA values.
+
+**skip:** the number of lines of the data file to skip before beginning to read data.
+
+## MAERSK
+
+### Load historical prices
+
+Load the MAERSK historical prices contained in the MAERSK-B.CO.csv file located in your working directory getwd().
+
+```{r}
+mData <- read.table(file = "MAERSK-B.CO.csv",sep = ",",dec = ".",header = TRUE,row.names = 1,na.strings = "null")
+head(mData)
+dim(mData)
+```
+
+First search for NAs:
+
+```{r}
+any(is.na(mData[,"Adj.Close"]))
+```
+
+How many?
+
+```{r}
+length(which(is.na(mData[,"Adj.Close"])))
+```
+
+Compute financial log-returns omitting NAs:
+
+```{r}
+vY <- diff(log(na.omit(mData[,"Adj.Close"])))
+```
+
+Compute descriptive statistics:
+
+```{r}
+c("mean" = mean(vY),"sd" = sd(vY),"median" = median(vY))
+```
+
+### Output to a file
+
+R provides a number of commands for writing output to a file.
+
+We will generally use write.table for writing numeric values and cat for writing text, or a combination of numeric and character values.
+
+The command write.table has the form:
+
+``` r
+write.table(x, file = "", quote = TRUE, sep = " ",
+            na = "NA", dec = ".", row.names = TRUE, col.names = TRUE, ...)
+```
+
+**x:** the object to be written, preferably a matrix or data.frame.
+
+**file:** character string naming a file.
+
+**quote:** a logical value (TRUE or FALSE). If TRUE, any character columns will be surrounded by double quotes ("").
+
+**sep** and **dec** work as in read.table.
+
+**na:** the string to use for missing values in the data.
+
+**row.names:** either a logical value indicating whether the row names of x are to be written along with x, or a character vector of row names to be written.
+
+**col.names:** either a logical value indicating whether the column names of x are to be written along with x, or a character vector of column names to be written.
+
+```{r}
+write.table(vY,file = "MAERSK_returns.txt",row.names = FALSE, col.names = FALSE, dec = ".")
+```
+
+## Plotting
+
+R provides a huge number of plotting routines. The generic function for plotting of R objects is plot.
+
+External packages can also be used for plotting (e.g. **ggplot2**, see <http://ggplot2.org/> if you're interested), however, we will focus on the built-in function plot in this course.
+
+R generally has good graphical capabilities. Get an initial overview of these capabilities by typing demo(graphics) in your R console.
+
+*plot* can be used to represent a pair of data points x and y, e.g.:
+
+```{r}
+vX <- seq(-10,10,0.1)
+vY <- sin(vX)
+plot(vX,vY,type = "l")
+```
+
+Or a single vector of points
+
+```{r}
+vZ <- runif(10)
+plot(vZ)
+```
+
+### Basic arguments
+
+The plot command offers a wide variety of options for customizing the graphic. Some of these are:
+
+-   **type** determines the type of the plot, e.g. type = "p" for points (the default), type = "l" for lines, type = "o" for both lines and points, type = "s" for a step function, type = "n" for no plotting etc. etc...
+
+-   **xlim = c(a,b)** and **ylim = c(a,b)** will set the lower and upper limits of the x- and y-axis to be a and b, respectively.
+
+-   **main = "Plot title goes here"** provides the plot title.
+
+-   **xlab = "X axis label goes here"** provides the label for the x-axis.
+
+-   **ylab = "Y axis label goes here"** provides the label for the y-axis.
+
+-   **col = "black"** colour for lines and points. Type colours() for a list of colours known to R (there are a lot!).
+
+-   **lty** determines the line type, e.g., 0=blank, 1=solid (default), 2=dashed, 3=dotted etc...
+
+-   **lwd** determines the line width.
+
+-   **pch = k** determines the shape of points with k taking a value from 1 to 25.
+
+-   To add points (x[1], y[1]), (x[2], y[2]), ... to the current plot, use **points(x, y)**.
+
+-   To add lines instead use **lines(x, y)**.
+
+-   To add text use **text(x, y, "text")**.
+
+-   Vertical or horizontal lines can be drawn using **abline(v = xpos)** and **abline(h = ypos)**
+
+-   The functions **points**, **lines**, **abline** also accept the **col**, **lty**, **lwd** arguments.
+
+-   The command **par** is used to set many different parameters that control how graphics are produced (see help(par)). E.g. the command **par(mfrow = c(nr, nc))** creates a grid of plots with nr rows and nc columns, which is filled row by row. **par(mfcol = c(nr, nc)))** is similar but fills the plots column by column.
+
+Example
+
+```{r}
+
+par(mfrow=c(1,2))
+x <- seq(0, 5, by = 0.01)
+y.upper <- 2*sqrt(x)
+y.lower <- -2*sqrt(x)
+y.max <- max(y.upper)
+y.min <- min(y.lower)
+plot(c(-2,5), c(y.min,y.max), type="n", xlab = "x", ylab = "y",
+ main = "Parabola Graph")
+lines(x, y.upper, lwd = 2, col = "deepskyblue")
+lines(x, y.lower, lwd = 2, col = "deepskyblue")
+abline(v=-1, lty = 4)
+points(1,0, col = "tomato", pch = 5)
+text(1,0,"focus (1,0)", pos=4)
+x = rnorm(10000)
+hist(x, col = "lavender", main = "Normal Histogram")
+
+```
+
+#### Exercise (Generate data and plot)
+
+-   Generate 1000 standard uniforms and sort (in ascending order) your pseudo data. (Hint: ?runif and ?sort)
+
+-   Plot the random uniforms using the plot-function (Add any arguments you find necessary i.e. legend or axis text).
+
+-   Then save the plot as a .pdf in your working directory (Check your WD with getwd()) using the following wrapper,
+
+``` r
+pdf("./myplot.pdf")
+# Your plot function with input
+dev.off()
+```
+
+```{r}
+dX <- sort(runif(1000),decreasing = FALSE)
+pdf("./myplot.pdf")
+plot(dX,type = "l")
+dev.off()
+
+```
+
+# L4: Programming with Functions
+
+In this lecture we cover the creation of functions, the rules that they must follow, and how they relate to and communicate with the environments from which they are called.
+
+User-defined functions are now one of the main building blocks for developing sophisticated software. R packages are nothing more than a collection of user--defined functions.
+
+Recall that all R packages available on CRAN are freely downloadable, i.e., you can use/extend/include their code for your analysis.
+
+## User-defined functions
+
+A function is a piece of the code that takes input (in the form of variables), performs a specified action using the input, and produces the output (variables, a table of numbers, or a graph, etc.)
+
+A function has the general form:
+
+```{r}
+name <- function(argument_1, argument_2,...) {
+  expression_1
+  expression_2
+  ...
+return(output)
+}
+```
+
+-   **argument_1**, **argument_2**, etc., are the names of variables (the input).
+
+-   **expression_1**, **expression_2**, and output are all regular R expressions.
+
+-   **name** is the name of the function.
+
+### Running a function
+
+To call a function we type for example
+
+``` r
+name(x1,x2)
+```
+
+The value of this expression is the value of the expression output.
+
+To calculate the value of output the function first copies the value of **x1** to **argument_1**, the value of **x2** to **argument_2**, and so on. The arguments have then been passed to the function and act as variables within the function.
+
+Next the function evaluates the grouped expressions contained in the braces {}, and the value of the expression output is returned as the value of the function. Example:
+
+```{r}
+power_fct <- function(vX,power) {
+return(vX^power)
+}
+power_fct(2,3)
+```
+
+or
+
+```{r}
+swap <- function(vZ) {
+  dTemp <- vZ[2]
+  vZ[2] <- vZ[1]
+  vZ[1] <- dTemp
+  return(vZ)
+}
+
+vX <- c(0,1)
+swap(vX)
+```
+
+Note that some functions have no arguments, e.g. getwd().
+
+If there is no return(output) statements then the value returned by the function is the value of the last expression in the braces.
+
+#### Exercise (Function that returns the sum of first N natural numbers)
+
+```{r}
+sumN <- function(N) {
+sum(1:N)
+}
+sumN(3)
+```
+
+#### Exercise (Function that removes missing values from a vector)
+
+```{r}
+clearMissing <- function(vX) {
+vX[!is.na(vX)]
+}
+a=c(1,2,NA,4,5,NA,4,5,6,NA)
+clearMissing(a)
+```
+
+#### Example (Roots of a quadratic function)
+
+```{r}
+rootfinder <- function(dA,dB,dC) {
+vOut = numeric(2)
+vOut[1] = (-dB + sqrt(dB^2 - 4 * dA * dC))/(2 * dA)
+vOut[2] = (-dB - sqrt(dB^2 - 4 * dA * dC))/(2 * dA)
+return(vOut)
+}
+```
+
+There are problems related to the efficiency of the code:
+
+-   We are computing algebraic operations too many times.
+
+-   We are not exploiting vector-operations
+
+Problems related to the usage: We are assuming that a, b and c always imply the coded solution.
+
+-   What if a = b = c = 0?
+
+-   What if a = b = 0?
+
+-   What if a = 0?
+
+-   What if b2 − 4ac = 0?
+
+-   What if b2 − 4ac \< 0?
+
+We need to modify the code.
+
+Reformulate the analytical solution as:
+
+$$
+\left(x_{1}, x_{2}\right)= \begin{cases}\Re, & \text { if } a=b=c=0 \\ \emptyset, & \text { if } a=b=0 \wedge c \neq 0 \\ -c / b & \text { if } a=0 \wedge b \neq 0 \wedge c \neq 0 \\ \frac{-b \pm \sqrt{|\Delta|} \sqrt{\operatorname{sgn}(\Delta)}}{2 a}, & \text { otherwise. }\end{cases}
+$$
+
+where $\Delta = b^2-4ac$.
+
+```{r}
+rootfinder <- function(dA, dB, dC) {
+  if (dA == 0 && dB == 0 && dC == 0) {
+    vRoots <- Inf
+  } else if (dA == 0 && dB == 0) {
+    vRoots <- NULL
+  } else if (dA == 0) {
+    vRoots <- -dC/dB
+  } else {
+    # calculate the discriminant
+    dDelta <- dB^2 - 4 * dA * dC
+    if (dDelta > 0) {
+      vRoots <- (-dB + c(1, -1) * sqrt(dDelta))/(2*dA)
+    } else if (dDelta == 0) {
+      vRoots <- rep(-dB / (2 * dA), 2)
+    } else {
+      di <- complex(1, 0, 1)
+      vRoots <- (-dB + c(1,-1) * sqrt(-dDelta) * di)/(2 * dA)
+    }
+}
+  return(vRoots)
+}
+
+# Testing the function
+rootfinder(dA = 1, dB = 0, dC = -1)
+rootfinder(dA = 1, dB = -2, dC = 1)
+rootfinder(dA = 1, dB = 1, dC = 1)
+```
+
+Suppose we have saved the function rootfinder in the script rootfinder.R which is located in the script folder inside our working directory.
+
+```{r}
+source("./Scripts/rootfinder.r")
+rootfinder(dA = 1, dB = 1, dC = 0)
+```
+
+Advantages of coding with functions
+
+-   Once a function is loaded, it can be used again and again without having to reload it.
+
+-   User-defined functions can be used in the same way as predefined functions are used in R. In particular, they can be used within other functions.
+
+-   The use of functions allows you to break down a programming task into smaller logical units.
+
+-   Large programs are typically made up of a number of smaller functions, each of which does a simple well--defined task.
+
+### Arguments of a function
+
+The arguments of a function can be mandatory or optional depending on the function specification.
+
+The arguments of an existing function can be obtained by calling the formals function:
+
+```{r}
+formals(rootfinder)
+```
+
+In order to simplify calling functions, some arguments may be assigned default values.
+
+Default values are used in case the argument is not provided in the call to the function:
+
+```{r}
+test3 <- function(x=1) {
+  return(x)
+}
+test3(2)
+test3()
+```
+
+Calling formals on a function with default arguments, the value of the default arguments will be stated as well:
+
+```{r}
+formals(matrix)
+```
+
+If an argument is omitted in a function call R automatically assigns arguments to variables from the left and uses the default values for the unassigned arguments:
+
+```{r}
+test4 <- function(x=1,y=1,z=1) {
+  return(x*100+y*10+z)
+}
+test4(2,2)
+test4(y=2,z=2)
+```
+
+In general, naming the arguments in the function call is good practice, because it increases the readability and eliminates one potential source of errors.
+
+Sometimes you will want to define arguments so that they can take only a small number of different values, and the function will stop informatively if an inappropriate value is passed.
+
+When writing the function, we include a vector of the permissible values for any such argument, and then check them using the match.arg function. For example:
+
+```{r}
+MyFunc <- function(vX,method = c("add","multiply")) {
+method <- match.arg(method)
+if (method=="add") {
+  return(sum(vX))
+}
+else {
+return(prod(vX))
+ }
+}
+
+MyFunc(c(1,2,3,4),method="multiply")
+MyFunc(c(1,2,3,4),method="add")
+```
+
+The R function ar, for example, which fits an autoregressive time series model to data, takes (among others) the argument specifying the method by which the model is estimated.
+
+```{r}
+method = c("yule-walker","burg","ols","mle","yw")
+```
+
+#### Ellipsis
+
+R provides a very useful means of passing arguments, unaltered, from the function that is being called to the functions that are called within it.
+
+These arguments do not need to be named explicitly in the outer function, hence providing great flexibility.
+
+To use this facility you need to include ... in your argument list.
+
+These three dots (an ellipsis) act as a placeholder for any extra arguments given to the function.
+
+Consider for example the function 'square of the mean'
+
+```{r}
+SquareMean <- function(vX,...) {
+  dSM <- mean(vX,...)^2
+  return(dSM)
+}
+SquareMean(c(1,3,5,NA))
+SquareMean(c(1,3,5,NA),na.rm=TRUE)
+```
+
+The use of ellipsis dramatically increases the flexibility of the R programming language.
+
+## Vector-based programming using functions
+
+Many R functions are vectorized, meaning that given vector input the functions acts on each element separately, and a vector output is returned, e.g.
+
+```{r}
+vX = c(1,NA,3,8)
+is.na(vX)
+```
+
+This is a very powerful aspect of R that allows for compact, efficient, and readable code. Moreover, for many R functions, applying the function to a vector is much faster than if we were to write a loop to apply it to each element one at a time.
+
+To further facilitate vector-based programming, R provides a family of powerful and flexible functions that make it easier for user-defined functions to handle vector inputs. These belong to the apply family of functions.
+
+Here we cover: apply, sapply, lapply, and mapply.
+
+Other functions belonging to this family are: tapply, vapply, and eapply, which require a bit of advanced R programming knowledge.
+
+### sapply
+
+The effect of *sapply(vX,FUN)* is to apply the function *FUN* to every element of vector *vX*. That is, *sapply* returns a vector whose *i-*th element is the value of the expression *FUN(vX[i])*.
+
+Consider the function, *f*, 'sum of all integers lower than X':
+
+```{r}
+f <- function(dX) {
+  if (dX < 0) {
+    stop("dX needs to be positive")
+  }
+  dSum = 0.0
+  iC = 0
+  while (iC <= dX) {
+    dSum = dSum + iC
+    iC = iC +1
+  }
+  return(dSum)
+}
+
+# Suppose we want to apply the function f to the following vector of observations
+vX = c(1,3,9.478,6,75,0.48)
+# We can of course write a for-loop:
+vSum = numeric(length(vX))
+for (i in 1:length(vSum)) {
+  vSum[i] = f(vX[i])
+}
+vSum
+# Or we can use the sapply function: 
+vSum = sapply(vX,f)
+vSum
+```
+
+Note that R performs a loop over the elements of *vX*, so execution of this code is not faster than execution of an equivalent loop - it is just faster to type. Example:
+
+```{r}
+g <- function(dX,iN) {
+  if (dX < 0) {
+    stop("dX needs to be positive")
+  }
+  dSum = 0.0
+  iC = 0
+  while (iC <= dX) {
+    dSum = dSum + iC^iN
+    iC = iC +1
+  }
+  return(dSum)
+}
+sapply(vX,g,iN = 2)
+```
+
+#### lapply
+
+*lapply* does the same of *sapply* but always returns a list.
+
+### mapply
+
+In order to vectorize over more than one argument (over both *vX* and *...*) we need to use *mapply.*
+
+*mapply* is a multivariate version of *sapply* and can be used to call a function *FUN* over vectorized arguments one index at a time. In other words, the function is first called over elements at index 1 of all vectors (or lists), it is then called over all elements at index 2 and so on.
+
+Consider the function *rep* which takes arguments: *x* and *times*.
+
+```{r}
+mapply(rep, times = c(4, 3), x = c(2, 4)) 
+
+# Or using mapply on our power_fct(vX, power):
+function(vX, power) {
+  return(vX ^ power)
+}
+
+mapply(power_fct, vX = 1:4, power = c(2, 2, 3, 3))
+```
+
+### apply
+
+If you wish to apply a function that takes a vector argument to each of the rows (or columns) of a matrix (or array), then use the function apply. It's formula is:
+
+``` r
+apply(X, MARGIN, FUN, ...)
+```
+
+where:
+
+-   X is an array
+
+-   MARGIN is the index/indices of the array to which apply FUN
+
+-   FUN is the function to apply
+
+-   . . . are extra arguments for FUN
+
+Note that MARGIN can be a vector of indices. If X is a matrix (an array of 2 dimensions), then MARGINS = 1 indicates rows, while MARGINS = 2 indicates columns. Example:
+
+```{r}
+mX = matrix(1:16, 4, 4)
+mX
+apply(mX, 2, cumsum) # cumulative sum over columns
+```
+
+#### Exercise (using *apply* and *sapply*)
+
+Define the 3 x 4 matrix
+
+$$
+m A=\left(\begin{array}{cccc}1 & 10 & 7 & 4 \\ 8 & 5 & 2 & 11 \\ 6 & 3 & 9 & 12\end{array}\right)
+$$
+
+```{r}
+mA <- matrix(c(1, 10, 7, 4, 
+               8, 5, 2, 11, 
+               6, 3, 9, 12), nrow=3, ncol=4, byrow = TRUE)
+mA
+#----------------------------------------------------------------------------------------#
+
+# 1: Use the apply function to compute the row sums and the column sums of the matrix.
+apply(mA, 2, sum) # columns
+apply(mA, 1, sum) # rows
+
+#----------------------------------------------------------------------------------------#
+
+# 2: Use the apply function to sort the columns of mA in a decreasing order and the rows of mA in an increasing order.
+apply(mA, 2, sort, decreasing = TRUE) # sort columns decreasingly
+
+# To sort the rows increasingly we would have to transpose the matrix following the sort by rows of mA.
+t(apply(mA, 1, sort))                 # sort rows increasingly
+
+# Reason: dim of the output of apply is set to the dim of the specified margin, 
+#         i.e. for nrow=3, the dim (column #) is set to 3
+
+#----------------------------------------------------------------------------------------#
+
+# 3: Use the sapply function to find sine of all elements of the first row of mA and cosine of all elements of the second column of mA. Is this the easiest way to find the sine and cosine of a row/column of mA?
+
+# sine of all entries of row 1
+sapply(mA[1,], sin)
+
+# cosine of all entries of column 2
+sapply(mA[,2], cos)
+
+# Alternatively
+sin(mA[1,])
+cos(mA[,2])
+
+```
+
+## Recursive programming
+
+Recursive programming is a powerful programming technique, made possible by functions. A recursive program is simply one that calls itself. This is useful because many algorithms are recursive in nature.
+
+Consider for example the evaluation of *n!*, i.e., the factorial of the nonnegative integer *n*.
+
+We know that *n! = n(n − 1)!*, such that we can write a function like:
+
+```{r}
+myfactorial <- function(iN) {
+  if ((iN == 0) | (iN == 1)) {
+    return(1)
+  } else {
+    return(iN * myfactorial(iN - 1)) # Since we know that n! = n(n −1)!
+  }
+}
+myfactorial(5)
+```
+
+### Multiple Outputs
+
+-   A function can generate multiple output values.
+
+-   Example: parameter estimates, their standard errors, and the optimized log-likelihood value.
+
+-   A strategy in R is to create a list with all your outputs and return it as a single output of a function.
+
+For example:
+
+``` r
+lOut = list(Par = vParam,
+            SE  = vStdErr,
+            LLK = dLogLik)
+return(lOut)
+```
+
+#### Exercise (Recursive fibonacci)
+
+-   Define a function, f , that calculates the output of the following recursive algorithm, where n ≥ 0 is an integer.
+
+    -   1\. if n\<2 return n,
+
+    -   2\. if n≥2 return f(n)=f(n−1)+f(n−2).
+
+-   Run the function
+
+-   Now pass the function in *sapply* along with the additional vector of integers, e.g., (1:20), do you recognize the pattern?
+
+-   Bonus: Comment the code
+
+```{r}
+fibo <- function(n) {
+## fibo(n): Recursively calculates a fibonacci number
+## Inputs:  n: An integer value of the fibonacci number you want in the fibonacci sequence
+## Outputs: The fibonacci number f(n-1) + f(n-2)
+  if (n < 2) {
+    n                      # if n less than 2 then function returns n 
+  } else { 
+    fibo(n-1) + fibo(n-2)  # Otherwise the function returns the recursion f(n-1) +f(n-2).
+ }
+}
+fibo(2) # print Fibonacci value at n = 2. 
+sapply(0:8, fibo) # pass function for recursion of fibo(1),... , fibo(20) to sapply.
+
+```
+
+#### Exercise (Recursive palindrome)
+
+```{r}
+is.Palindrome <- function(sString) {
+  if(nchar(sString) <= 1) return(TRUE)
+  
+  else return(
+    substr(sString[1], start = 1, stop = 1) == substr(sString[1], start = nchar(sString),
+    stop = nchar(sString))
+    & is.Palindrome(substr(sString, start = 2, stop = nchar(sString)-1))) 
+}
+
+is.Palindrome("hello") # Clearly not a palindrome
+
+is.Palindrome("abcdefedcba") # Clearly a palindrome
+
+is.Palindrome("abcdefedcbA") # Note: R is case sensitive! 
+
+# Try to add an conditional that checks for different casing and change the letters into similar casing.
+
+# Step-by-step to see what is going on inside the function.
+is.Palindrome1 <- function(sString, indent) {
+  print(paste0(indent, "Palindrome is called with ", sString))
+  if(nchar(sString) <= 1) {
+    print(paste0(indent, "About to return TRUE from the base case"))
+    return(TRUE)
+  }  else {
+    s.tmp <- substr(sString[1], start = 1, stop = 1) == substr(sString[1], start = nchar(sString), stop = nchar(sString)) & is.Palindrome1(substr(sString, start = 2, stop = nchar(sString)-1), paste0(indent, indent))
+    print(paste0(indent, "About to return: " ,s.tmp))
+    return(s.tmp) 
+  }
+}
+
+is.Palindrome1("hello", "   ") # Clearly not a palindrome
+
+is.Palindrome1("abcdcba", "   ") # Clearly a palindrome
+
+```
+
+# L5: Program Efficiency and Parallel Computing
+
+When using a computer to perform intensive numerical calculations, there are two important issues we should bear in mind: code efficiency and execution time.
+
+## Code execution time
+
+Ultimately we measure how efficient a program is by how long it takes to run, which will depend on the language it is written in and the computer it is run on.
+
+R provides the function system.time to measure how many CPU (Computer Processing Unit) seconds are spent evaluating an expression:
+
+```{r}
+system.time ({ 
+  mA = matrix(rnorm(1000^2), 1000, 1000)
+  solve(mA)
+})
+```
+
+We know that in R creating or changing the size of a vector (also called redimensioning an array) is relatively slow. Consequently, operations like:
+
+```{r}
+system.time({
+  vX = 0 
+for (i in 1:1e5) {
+  vX = c(vX, i)
+}
+})
+```
+
+should be avoided in favor of following:
+
+```{r}
+system.time({
+  vX = numeric(1e5 + 1)
+  for (i in 1:1e5) {
+    vX[i+1] = i
+  }
+}) 
+```
+
+which is a lot quicker.
+
+## Loops versus vectors
+
+In R, vectorised operations are faster than equivalent loops.
+
+The difference is because R is a very high-level language.
+
+In R, it is relatively easy to create and manipulate variables. The price we pay for this flexibility is speed.
+
+When you evaluate an expression in R, it is 'translated' into a faster lower-level language before being evaluated, then the result is translated back into R.
+
+The translation that takes much of the time, and vectorisation saves on the amount of translation required.
+
+Take the following code to square each element of vX:
+
+``` r
+for (i in 1:length(vX)) vX[i] <- vX[i]ˆ2
+```
+
+Each time we evaluate the expression
+
+``` r
+vX[i] <- vX[i]ˆ2
+```
+
+we have to translate the expression into our lower-level language, execute it, and then translate the result back.
+
+In contrast, to evaluate the expression
+
+``` r
+vX <- vXˆ2
+```
+
+we translate vX all at once and then square it, before translating the answer back: all the work takes place in our faster lower-level language.
+
+Many of R's functions are vectorised, which means that if the first argument is a vector, then the output will be a vector of the same length, computed by applying the function element-wise to the input vector.
+
+### If you have to use a loop in R
+
+Sometimes loops can be intuitive and more easily visualized than vectorized code or matrix operations.
+
+For instance many algorithms stated in academic papers are listed in terms of for-loop syntax
+
+If vectorization simply takes too long time or simply is impossible then by all means use a loop, but...
+
+-   Pre-allocate vector/matrix prior to the loop
+
+-   Make it lean.
+
+-   Iterate as few times as possible
+
+Basically, everything that is not needed in the loop should not be in it!
+
+But, do avoid loops in R if possible! The penalty of loops in R is simply much larger than lower level languages i.e. C++.
+
+R is not a fast language and this is not an accident. R was purposely designed to make data analysis and statistics easier for you to do. It was not designed to make life easier for your computer. While R is slow compared to other programming languages, for most purposes, it's fast enough.
+
+That is, there is no free lunch. The flexibility of R comes at the cost of pure power/speed.
+
+Beyond performance limitations due to design and implementation, it has to be said that a lot of R code is slow simply because it's poorly written. Few R users have any formal training in programming or software development. Fewer still write R code for a living.
+
+This means that it's relatively easy to make most R code much faster!
+
+### The flexibility vs speed trade-off
+
+The mean() function example,
+
+```{r}
+library("microbenchmark")
+# The mean() function example,
+vY <- runif(1E5)
+microbenchmark(sum(vY) / length(vY), mean(vY), unit = "milliseconds")
+all.equal(sum(vY) / length(vY), mean(vY))
+```
+
+... also you would probably not have too hard of a time programming a tailored simple linear regression function that beats the *lm()* built-in R function. But *lm()* offers a lot of flexibility..
+
+### Arithmetic is not always the fastest
+
+```{r}
+library("microbenchmark")
+
+vY <- runif(1E5)
+mX <- replicate(10, runif(1E5))
+microbenchmark(vY^(1/2), sqrt(vY), unit = "milliseconds")
+all.equal(vY^(1/2), sqrt(vY))
+
+microbenchmark(t(mX) %*% vY, crossprod(mX,vY), unit = "milliseconds")
+all.equal(t(mX) %*% vY, crossprod(mX, vY))
+
+```
+
+#### Summing the columns of a matrix
+
+Consider the problem of evaluating the sum of the columns of a 10000 × 10000 matrix mA. To solve our problem we have several options:
+
+```{r}
+mA <- matrix(rnorm(1e8), nrow = 10000)
+# 1. A double loop of summations
+t1 <- system.time({
+  vColSum = rep(NA, ncol(mA))
+  for (i in 1:ncol(mA)) {
+    s <- 0
+    for (j in 1:nrow(mA)) {
+      s <- s + mA[j,i]
+    }
+    vColSum[i] <- s
+  }
+})
+
+# 2.The use of apply
+t2 <- system.time(
+  vColSum <- apply(mA, 2, sum)
+)
+
+# 3. A single loop of sums
+t3 <- system.time({
+  vColSum = numeric(ncol(mA))
+  for (i in 1:ncol(mA)) {
+    vColSum[i] <- sum(mA[,i])
+  }
+})
+
+# 4. Exploit the mathematical formulation: u′A, where u is a vector of ones with length equal to the number of columns of A:
+t4 <- system.time({
+  vU = rep(1, length(mA[, i]))
+  vColSum = vU %*% mA
+})
+
+# 5. Using the dedicated function
+t5 <- system.time(
+  vColSum <- colSums(mA)
+)
+
+mComp <- matrix(c(t1[3], t1[3]/t1[3],
+                  t2[3], t2[3]/t1[3],
+                  t3[3], t3[3]/t1[3],
+                  t4[3], t4[3]/t1[3],
+                  t5[3] ,t5[3]/t1[3]), nrow = 5, ncol = 2, byrow = TRUE)
+mComp
+```
+
+### Vectorized if/else statement
+
+-   The if else statement in R is one of the few things that does not take vector inputs.
+
+-   One possibility is to use loops around the if-statements. Another is to use the *ifelse()* function that takes vector/matrix inputs.
+
+-   For a single vector it is should be faster than a for loop approach.
+
+Example of a simple for loop is statement function
+
+```{r}
+vY <- rnorm(100, 1, 1)
+fun <- function(vY) {
+  iN <- length(vY)                # Number of elements
+  vD <- numeric(iN)               # Pre-allocate vector
+  
+  for (i in 1:iN) {
+    if (vY[i] < 0.5) vD[i] <- -1
+    else vD[i] <- 1
+  }
+  vD
+}
+
+# vs. the vectorized function ifelse()
+ifelse(vY < 0.5, -1, 1)
+
+# Which function is the fastest?
+library("microbenchmark")
+vY <- runif(1E5)
+microbenchmark(fun(vY), ifelse(vY < 0.5, -1, 1), unit = "milliseconds")
+all.equal(fun(vY), ifelse(vY < 0.5, -1, 1))
+```
+
+For a matrix input *ifelse()* is definitely faster (and simpler!) than double (nested) for loops with if/else statements
+
+The key advantage to *ifelse()* is not necessarily the speed. But, *ifelse()* is much simpler i.e. easier to read, easier to write and easier to debug... (in most cases)
+
+So if instead, we consider the use of if/else statements on a large matrix, the *ifelse()* function is much faster.
+
+```{r}
+mY <- matrix(rnorm(100, 1, 1))
+
+fun3 <- function(mY) {
+  iN <- nrow(mY)                         # Number of rows of mY
+  iK <- ncol(mY)                         # Number of columns of mY
+  mD <- matrix(0, iN, iK)                # Pre-allocate to avoid growing objects
+  
+  for (i in 1:iN) {                      # Outer loop
+    for (j in 1:iK) {                    # Nested loop
+      if (mY[i, j] < 0.5) mD[i, j] <- -1 # If true
+      else mD[i, j] <- 1                 # Otherwise
+    }
+  }
+  mD
+}
+microbenchmark(ifelse(mY < 0.5, -1, 1), fun3(mY), unit = "microseconds")
+```
+
+### Subsetting/subscripting
+
+Subsetting is usually overlooked when attempting to vectorize code in R, but is usually quite effective and nearly always faster than alternatives. I.e. as alternatives to if else statements.
+
+You have already used it (or at least seen it in action) plenty of times, for extracting or removing rows/columns on different data structures.
+
+In practice subscripting is an invaluable tool for data management i.e. cleaning or sample selection of data.
+
+```{r}
+mY <- matrix(rnorm(100, 1, 1), 200, 200)
+
+## Evaluate a (N x K) matrix in terms of booleans to assign 1 or -1 if above or below the value 0.5
+#  input : (N x K) matrix to be evaluted
+#  output: (N x K) matrix filled with -1 and 1 values according to the condition.
+#  purpose: purely educational; as an example of how subscripting rules..
+
+fun2 <- function(mY) {
+  mBool <- (mY < 0.5) # Matrix of booleans
+  mY[mBool] <- -1     # If true
+  mY[!mBool] <- 1     # If false is true
+  mY                  # output
+}
+
+microbenchmark(ifelse(mY < 0.5, -1, 1), fun2(mY), fun3(mY), unit = "milliseconds")
+
+all.equal(fun2(mY), fun3(mY), ifelse(mY < 0.5, -1, 1))
+
+# Compare on vector input against fun
+microbenchmark(fun(vY), ifelse(vY < 0.5, -1, 1), fun2(vY), unit = "milliseconds")
+all.equal(fun(vY), ifelse(vY < 0.5, -1, 1), fun2(vY))
+
+## Compare on matrix input against fun3
+
+# This takes a little while to run!
+microbenchmark(ifelse(mY < 0.5, -1, 1), fun2(mY), fun3(mY), unit = "milliseconds")
+all.equal(fun2(mY), fun3(mY), ifelse(mY < 0.5, -1, 1))
+```
+
+### Exercises in vectorization
+
+#### Reformulate exercise 5 from Exercise set 2 (the if else statement one) in terms of the ifelse() function.
+
+Hint: some functions take functions as input
+
+```{r}
+dX <- rnorm(1)
+if (dX <= 0) {
+    dY <- -dX^3
+    } else if (dX>0 & dX<=1) {
+    dY <- dX^2
+    } else dY <- sqrt(dX)
+dY
+
+# Becomes with the ifelse() function
+dY2 <- ifelse(dX <= 0, -dX^3, ifelse(dX <= 1, dX^2, dX^0.5)) 
+dY2
+all.equal(dY, dY2) # Are they equal? YES!
+```
+
+#### Suppose you use a vector of draws from a standard normal dist. as input instead.
+
+Can you beat the ifelse() you just made somehow? Write a function that is faster than the code you wrote in the above question. Compare using the microbenchmark package.
+
+```{r}
+library("microbenchmark")
+subscript.ifelse <- function(mY) {
+mCond1 <- (mY <= 0)            # Condition 1 as a vector/matrix of booleans
+mCond2 <- (mY > 0 & mY <= 1)   # Condition 2 as a vector/matrix of booleans
+mCond3 <- !(mCond1 | mCond2)   # Condition 3 as a vector/matrix of booleans
+  
+mY[mCond1] <- -mY[mCond1]^3    # if condition 1 is true
+mY[mCond2] <- mY[mCond2]^2     # if condition 2 is true
+mY[mCond3] <- sqrt(mY[mCond3]) # If neither cond. 1 or 2 then this is true
+}
+
+# ifelse counterpart
+# ifelse(vY <= 0, -vY^3, ifelse(vY > 1, sqrt(pmax(vY, 0)), vY^2))
+
+vY <- rnorm(1e5) # Draw a vector of random standard normals
+
+microbenchmark(ifelse(vY <= 0, -vY^3, ifelse(vY > 1, sqrt(pmax(vY, 0)), vY^2)), 
+               subscript.ifelse(vY))
+
+all.equal(ifelse(vY <= 0, -vY^3, ifelse(vY > 1, sqrt(pmax(vY, 0)), vY^2)), subscript.ifelse(vY))
+
+## The error message in vY is created from evaluations to each element, even those that are false. The code is not wrong, the error message is simply misplaced.
+any(is.nan(ifelse(vY <= 0, -vY^3, ifelse(vY > 1, sqrt(pmax(vY, 0)), vY^2))))
+
+
+```
+
+#### Create a vectorized function that output a (N x K) matrix containing random draws of standard normals.
+
+Can you also make it able to output i.e. an 100x100x100 array.
+
+```{r}
+rnorm.matrix <- function(iRows, iCols = NULL, iPage = NULL) {
+  if (is.null(iPage) & is.null(iCols)) as.matrix(rnorm(iRows))
+  else if (is.null(iPage)) matrix(rnorm(iRows*iCols), iRows, iCols)
+  else array(rnorm(iRows*iCols*iPage), c(iRows, iCols, iPage))
+}
+
+vNorm <- rnorm.matrix(iRows = 100)
+mNorm <- rnorm.matrix(iRows = 100, iCols = 100)
+aNorm <- rnorm.matrix(iRows = 100, iCols = 100, iPage = 100)
+
+dim(vNorm) # Dimension of Nx1 matrix 
+dim(mNorm) # Dimension of NxK matrix 
+dim(aNorm) # Dimension of NxKxP matrix 
+```
+
+#### Find a way to vectorize calculations of rowMeans of a 100 by 100 matrix of 10000 random draws from a uniform distribution.
+
+```{r}
+mU <- matrix(runif(10000), nrow = 100, ncol = 100) # Matrix of standard uniform draws
+vMeans <- rowMeans(mU)
+
+# Test if row means are equal
+mean(mU[1,])   == vMeans[1]
+mean(mU[100,]) == vMeans[100]
+
+## Is the apply family vectorized functions? 
+# No, they are for-loops in hiding. But they definitely serve a purpose. Each is tailored to specific purposes that they do well. Furthermore they also serve the purpose of forcing the "programmer" to make the loop lean/simple - somewhat indirectly.
+```
+
+## Parallel processing
+
+Optimising code to make it run faster is an iterative process:
+
+1.  Find the biggest bottleneck (the slowest part of your code).
+
+2.  Try to eliminate it (you may not succeed but that's ok).
+
+3.  Repeat until your code is "fast enough."
+
+This sounds easy, but it's not.
+
+Parallel processing should first be considered when you cannot achieve efficiency gains by any other means... Or if you are really pressured on time.
+
+Consider the problem of summing a vector of length n, which requires (n −1) separate additions.
+
+If each addition takes 1 second and we do them one after another, then the whole calculation takes n − 1 seconds.
+
+Now suppose we split the vector into two and give each half to a different calculator.
+
+Each calculator spends n/2 − 1 seconds adding up their half, which happens concurrently, then we spend 1 second adding together the two bits, for a total of n/2 seconds.
+
+Note however that communications between the processors requires time: i.e., the total time is usually n/2 + ε.
+
+Clearly parallelisation requires multiple CPU's, or cores (or computers).
+
+The R community has developed tools that support the splitting of computations among different machines on a network, and among different cores on a single machine.
+
+The base package **parallel** provides tools that will work across most of the platforms that are supported by R.
+
+We first load the package and determine how many cores can be detected on the machine:
+
+```{r}
+library(parallel)
+detectCores()
+```
+
+### Creating a cluster
+
+We initialize a cluster using the makeCluster function:
+
+```{r}
+cluster = makeCluster(2)
+```
+
+A cluster with 2 workers has been created and its details are collected in the object cluster.
+
+If you now open the Task Manager you will find 2 new R instances.
+
+Having made the cluster, we can then test the cluster by using a simple example that calls a function using each worker within the cluster.
+
+```{r}
+clusterCall(cluster, function(x) print("Pick me!"))
+```
+
+### Running Jobs in parallel
+
+Provided that our job can run in parallel (there is nothing recursive that cannot be allocated to different workers), we can exploit the parallelized version of the apply family of functions. For instance:
+
+-   *apply* -> *parApply*
+
+-   *lapply* -> *parLapply*
+
+-   *sapply* -> *parSapply*
+
+The use of these function is exactly analogous to the ones belonging to the apply family. The only difference is that they accept an extra argument *cl* which accepts a cluster object. For instance:
+
+```{r}
+waste.of.time <- function(x) for (i in 1:10000) i
+system.time(lapply(1:10000, waste.of.time))
+system.time(parLapply(cl = cluster, 1:10000, waste.of.time)) # parallel
+```
+
+#### Export objects to workers
+
+Workers are created without any object inside:
+
+```{r}
+dA = 5
+cluster = makeCluster(3)
+ls()
+clusterEvalQ(cluster, {ls()})
+```
+
+If we want that the object dA is available inside the cluster, we need to export it with the clusterExport function:
+
+```{r}
+clusterExport(cluster, c("dA"))
+clusterEvalQ(cluster, {ls()})
+```
+
+Once the object dA is exported to the cluster we can use its value inside parallel computations.
+
+Once the cluster is no more necessary we kill it with:
+
+```{r}
+stopCluster(cluster)
+```
+
+If we omitted this command, then the cluster would be disbanded only when the R session that created it is terminated. This means that until you close R your computer's resources will be occupied by unnecessary processes.
+
+### Exercises on the parallel universe
+
+-   Install and load the package "parallel" into your R session.
+
+-   Detect how many cores R can detect on your system.
+
+-   If more than 1, then form a cluster using all but one of the cores detected above.
+
+-   Use the function(s) waste.of.time() and/or fibo() (fibo() can be found in the script from the last exercise from last lecture)
+
+-   Pass your function to the sapply() function and pass inputs 1 to 30 by sapply to your function.
+
+-   Instead, pass the function to the parSapply() function. (Remember to export the function to the clusters)
+
+-   Is parSapply() faster than regular sapply? (Don't do too many repetitions of sapply()/parSapply(); only at most 1:30 with fibo().)
+
+-   Terminate the assigned cluster!
+
+```{r}
+library(parallel)
+library(future)
+# Detect how many cores R can detect on your system.
+dC <- detectCores()
+
+## If more than 1, then form a cluster using all butone of the cores detected above.
+cl <- makeCluster(dC-1)          # Now the detected cores are assigned as a cluster
+                                   # Note: We only use "total cluster - 1"  to allow for room for other things on your computer to flow
+mX <- matrix(1:10, 10, 10)
+
+parApply(cl, mX, 2, sum)
+
+clusterCall(cl, function(x) print("Pick me!"))
+
+# Create or reuse fibo/waste.of.time user-written functions and define them.
+fibo <- function(iN) {
+  if      (iN <= 1) return(iN)
+  else return(fibo(iN - 1) + fibo(iN - 2)) 
+}
+
+waste.of.time <- function(x) for (i in 1:1e5) i
+
+# Pass your function to the sapply() function and pass inputs 1 to 30 by sapply to your function.
+
+sapply(1:15, fibo)          # Call sapply with function fibo()
+
+sapply(1:15, waste.of.time) # Call sapply with function waste.of.time()
+
+# Instead, pass the function(s) to the parSapply() function. 
+clusterExport(cl = cl, list("fibo", "waste.of.time")) # (Remember to export the function(s) to the clusters)
+
+parSapply(cl,   # Assign cluster
+          1:30, # Assign numbers to iterate over
+          fibo) # Assign function: fibo (fibonacci)
+
+parSapply(cl, 1:30, waste.of.time)
+
+## Which is fastest? Comparison of waste.of.time to parallel computation
+library("microbenchmark")
+microbenchmark(sapply(1:30, waste.of.time), 
+               parSapply(cl, 1:30, waste.of.time), unit = "seconds")
+
+## Comparison of fibo to parallel computation
+microbenchmark(sapply(1:30, fibo), 
+               parSapply(cl, 1:30, fibo),
+               times = 5L, unit = "seconds")
+
+## Why may fibo not run faster in parallel? way quicker with 1:15
+# As soon as a vector (or list) is too large to store in RAM all at once, the speed at
+# which you can use it will drop dramatically.
+
+## Do you think we can beat parallelization with more efficient code?
+library("Rcpp") # Load Rcpp package to allow for compilation and execution of c++ code.
+
+## Recursive fibonacci function written in c++
+cppFunction(
+  'int fibocpp(int iN) {
+      if(iN<=1) return iN;
+      else return fibocpp(iN-1) + fibocpp(iN-2);
+   }'
+)
+
+clusterEvalQ(cl, library("Rcpp"))
+clusterExport(cl = cl, list("fibocpp"))
+
+microbenchmark(parSapply(cl, 1:30, fibo),
+               sapply(1:30, fibocpp),
+               times = 10L, unit = "seconds")
+
+## c++ (the lower level language) is way faster in this example!
+
+# Terminate the assigned cluster
+stopCluster(cl)
+
+```
+
+## Memory issues
+
+Computer memory comes in a variety of forms. For most purposes it is sufficient to think in terms of RAM (random access memory), which is fast, and the hard disk, which is slow.
+
+Variables require memory. R stores variables in virtual memory, which is a seamless combination of RAM and hard disk space, managed by the underlying operating system.
+
+The operating system will use R in preference to disk space, but if your variables require more memory than the amount of RAM physically installed, then it will have to use disk space as well, and your program will slow down as a result.
+
+As soon as a vector (or list) is too large to store in RAM all at once, the speed at which you can use it will drop dramatically.
+
+If the vector is sufficiently large, then it may not be possible to store it at all, in which case you are said to have run out of memory.
+
+Also note that R has an absolute limit on the length of a vector of $2^{31}-1=2,147,483,647$.
+
+In the case your code runs out of memory you will need to break your vectors down into smaller subvectors and deal with each in turn.
+
+Alternatively, you can use the rm function to delete objects from memory and free space:
+
+```{r}
+dA = 5
+ls()
+rm("dA") # delete dA
+
+rm(list = ls()) # to remove all objects 
+```
+
+# L6: Introduction to Simulation
+
+Simulation is essential for quantitative analysis.
+
+It is widely applied in estimation, hypothesis testing, equation solving, numerical computing...
+
+In this class we give introduction to one subject: simulating random variables with desired distribution, either trivial or nontrivial.
+
+On computer we work with pseudo-random numbers, which from the outset appear "random" but are de facto completely deterministic. But being deterministic, pseudo random numbers render the experimentation repeatable, which is often desired in our work.
+
+The default pseudo-random number generator used by R is called Mersenne-Twister, which shares similarities with the congruential generators. Use *RNGkind()* to check your pseudo-random number generator.
+
+## Congruential Generator
+
+Congruential generators are typically used to draw random variables from the standard uniform distribution. It works as follows:
+
+-   Given an initial number $X_0\in\{0,1,...,m-1\}$ and two large numbers $A$ and $B$, define a sequence of numbers $X_n$, $n=0,1,...$ by $X_{n+1}=(AX_n+B)\text{ mod } m$
+
+We then get a sequence of numbers $U_n\in[0,1)$, $n=1,...$, by putting $U_n=\frac{X_n}{m}$.
+
+As long as $A$ and $B$ are well chosen, the sequence $U_0,U_1,...$ appear almost indistinguishable from an i.i.d. sequence of random variables uniformly distributed on $[0,1)$.
+
+For example, if $m=10,A=103,B=17$ and $X_0=2$ we have
+
+$$
+X_1=223\text{ mod } 10=3 \\
+X_2=326\text{ mod } 10=6 \\
+X_3=635\text{ mod } 10=5 \\
+$$
+
+and so $U_1=0.3$, $U_2=0.6$, $U_3=0.5$, ... .
+
+The sequence produced by a congruential generator will eventually cycle since there are at most *m* possible values, and the maximum cycle length is *m*.
+
+Because at its heart the computer is binary arithmetic, if we set $m=2^k$ for some positive integer *k*, then implementing the operation *x mod m* will be very quick. One suggested congruential generator uses $m = 2^{32}, A = 1664525\text{ and }B = 1013904223$.
+
+### Seeding
+
+The number $X_0$ is called seed. Once the seed is known (as well as m, A and B), then the whole sequence can be reproduced. This property facilitates repeat of experimentation.
+
+The command *set.seed(seed)* is used to specify the seed.
+
+The current state of the random number generator (abbr. RNG) is kept in the vector *.Random.seed*. You can save the value of *.Random.seed* so as to return to that point in the sequence of pseudo-random numbers.
+
+If the random number generator is not initialized before generating pseudo-random numbers, R initializes it using a value taken from the system clock.
+
+```{r}
+set.seed (10086) # or another number
+```
+
+```{r}
+# Save current state by
+RNG.state <- .Random.seed
+# Set seed to previous seed
+.Random.seed <- RNG.state
+```
+
+## Discrete Random Variables
+
+The following function realizes the algorithm. Note that we have vectorized the function. We also take advantage of the ellipsis ... since at times additional arguments need be passed to the cumulative distribution function.
+
+```{r}
+Discrete.Simulate <- function (F, size , iSupportLB, ...) {
+# F - Cumulative distribution function
+# size - number of i.i.d. random variables to be simulated
+  m <- iSupportLB
+  U <- runif (size, 0, 1)
+  X <- rep(NA , size )
+  X[F (iSupportLB ,...) >= U] <- iSupportLB
+  
+  while ( any (F(m ,...) < U)) {
+    m <- m + 1
+  X[(F(m ,...) >= U) & (F(m -1 ,...) < U)] <- m
+  }
+return (X)
+}
+```
+
+### Examples (Simulate Discrete Random Variables)
+
+#### Discrete Random Sample
+
+For example, suppose that we would like to simulate 1000 i.i.d. discrete random variables whose probability density function is
+
+$$
+p(x)= \begin{cases}0.2, & \text { if } x=1 \\ 0.3, & \text { if } x=2 \\ 0.5, & \text { if } x=3\end{cases}
+$$
+
+The corresponding cumulative distribution function is
+
+$$
+F(x)=\left\{\begin{array}{l}0.2, \text { if } 1 \leq x<2 \\0.5, \text { if } 2 \leq x<3 \\1, \text { if } x \geq 3\end{array}\right.
+$$
+
+The following program makes use of Discrete.Simulate we just wrote to accomplish the task, and in addition produces the histogram: cumulative distribution function.
+
+```{r}
+F <- function (x) {
+return (0.2 *((x >=1) && (x <2)) + 0.5*((x >=2) && (x <3)) + (x >=3))
+}
+
+# draw 1000 i.i.d. random variables whose CDF is F
+set.seed (10086)
+size <- 1000     
+iSupportLB = 0
+X <- Discrete.Simulate (F, size, iSupportLB)
+
+# histogram
+h <- hist(X, breaks = seq(0.55, 3.55, 0.1))
+h$density <- h$counts / 1000
+plot (h, freq = FALSE , col = " cornflowerblue ",
+          main = "",
+          xlab = "n", ylab = " Percentage ")
+```
+
+```{r}
+F <- function (x) {
+ return ( min ( floor (x), 10) / 10)
+   }
+
+# draw 1000 i.i.d. random variables whose CDF is F
+set.seed (10086)
+size <- 1000
+iSupportLB = 0
+X <- Discrete.Simulate (F, size, iSupportLB)
+
+# histogram
+h <- hist (X, breaks = seq (0.55, 10.55, 0.2))
+h$density <- h$ counts / 1000
+plot (h, freq = FALSE , col = " cornflowerblue ",
+        main = "",
+        xlab = "n", ylab = " Percentage ")
+axis (1, at = 1:10)
+
+# BUILT-IN FUNCTION SAMPLE
+# This task can also be accomplished by virtue of the built-in function sample:
+X <- sample (1:10 , 1000 , replace = TRUE , prob = rep (0.1 ,10))
+```
+
+#### Binomial distribution
+
+The last example is to simulate random variable following binomial distribution.
+
+A binomial random variable X ∼ Binomial(n, p), has the following density and CDFs
+
+$$
+p(k)=\mathbb{P}(X=k)=\left(\begin{array}{l}n \\k\end{array}\right) p^{k}(1-p)^{n-k}, \text { for } 0 \leq k \leq n
+$$
+
+The cumulative distribution function is thus
+
+$$
+F(x)=\sum_{k=0}^{[x]}\left(\begin{array}{l}n \\k\end{array}\right) p^{k}(1-p)^{n-k}
+$$
+
+```{r}
+# Cumulative distribution function of BINOMIAL DISRIBUTION
+F <- function (x, n, p) {
+  Index <- 0:floor(x)
+  Density <- choose(n, Index) * p^(Index) * (1-p)^(n - Index)
+  return(sum(Density))
+}
+
+# draw 1000 i.i.d. binomial random variables
+set.seed(10086)
+X <- Discrete.Simulate (F, iSupportLB = 0, 1000, 10, 0.5)
+
+# Alternatively, you can make use of the built-in function rbinom:
+Y <- rbinom (1000 , 10, 0.5) # built-in function rbinom:
+
+# histogram
+hDS <- hist (X, breaks = 100)
+h$density <- hDS$ counts / 1000
+
+hRB <- hist (Y, breaks = 100)
+h$density <- hRB$ counts / 1000
+
+par(mfrow = c(1,2))
+plot (hDS, freq = FALSE , col = " cornflowerblue ",
+      main = "Discrete Simulate",
+      xlab = "n", ylab = " Percentage ")
+axis (1, at = 1:10)
+plot (hRB, freq = FALSE , col = " cornflowerblue ",
+      main = "Binom",
+      xlab = "n", ylab = " Percentage ")
+axis (1, at = 1:10)
+
+```
+
+```{r}
+# Geometric
+set.seed(999)
+F <- function (x, n, p) {
+  CDF <- 1 - (1 - p)^x
+  return(CDF)
+}
+
+X <- Discrete.Simulate (F, iSupportLB = 1, size = 10000, p = 0.3) # remember to change iSupportLB
+
+par(mfrow = c(1,1))
+Xplot=X[-10 <= X & X <=10]                              #Scale the axis
+dRange = seq(min(Xplot)-1,max(Xplot)+1,0.1)             #Grid to plot
+h = hist(Xplot,breaks = dRange,freq = FALSE)             #Define histogram
+h$density = h$counts / 10000
+plot(h, xlab = "x", ylab = "Density", freq = FALSE,col = "gray", main = "Distribution")
+```
+
+## Inversion
+
+For simulation, the most important tool is **Distribution Transform**
+
+-   Let *F* be a cumulative distribution function on $\mathbb{R}$. If *U* is a random variable uniformly distributed over (0, 1), then cumulative distribution function of the random variable $X=F−1(U)$ is exactly *F*.
+
+-   This theorem enables us to simulate non-trivially distributed random variable by virtue of a uniformly distributed random variable, as long as you can compute $F^{-1}$. We call it the **inversion method**.
+
+Recall that if $X \sim \operatorname{Exp}(\lambda)$, its cumulative distribution function is given by
+
+$$
+F(x)=\left\{\begin{array}{l}0, \text { for } x<0 \\1-e^{-\lambda x}, \text { for } x \geq 0\end{array}\right.
+$$
+
+One can show that the inverse $F^{-1}$ is given by
+
+$$
+F^{-1}(y)=-\lambda^{-1} \log (1-y), 0 \leq y \leq 1
+$$
+
+When $y=1, F^{-1}(y)=\infty$.
+
+By means of $-\lambda^{-1} \log (1-U)$ we can simulate the desired exponential distribution with intensity $\lambda$. Observe that $1-U$ also has uniform distribution over (0,1). Hence, it is equivalent to use $-\lambda^{-1} \log (U)$, which is more often used in practice.
+
+Here is an example of drawing 1000 i.i.d. random variables with distribution *exp(0.7)*.
+
+```{r}
+Exponential.Simulate <- function (lambda, size ) {
+# lambda - intensity of the exponential distribution
+# size - number of i.i.d. random variables to be drawn
+  U <- runif ( size )
+  return (-1/ lambda * log (U))
+}
+# A test of the function
+# Here is an example of drawing 1000 i.i.d. random variables with distribution exp(0.7).
+set.seed(10086)
+X <- Exponential.Simulate (0.7 , 1000)
+# Built-in function: rexp
+Y <- rexp(1000)
+```
+
+Below is histogram of the sample drawn with Exponential.Simulate. We also superimpose the theoretical density function:
+
+```{r}
+h <- hist (X, breaks = 12)
+h$density <- h$ counts / 1000
+
+hr <- hist (Y, breaks = 12)
+hr$density <- hr$ counts / 1000
+
+par(mfrow = c(1, 2))
+plot (h, freq = FALSE , col = " cornflowerblue ",
+      main = "Exponential Simulate",
+      xlab = "n", ylab = " Percentage ")
+axis (1, at = 1:10)
+xticks = seq (0, max (X), 0.1)
+lines (xticks , dexp ( xticks), col = " red ", xlab = 0:12)
+legend("topright", legend=c("Histogram", "Density"),
+       col=c("cornflowerblue", "red"), lty=1, lwd = c(5, 1), cex=0.8)
+plot (hr, freq = FALSE , col = " cornflowerblue ",
+      main = "rexp",
+      xlab = "n", ylab = " Percentage ")
+axis (1, at = 1:10)
+xticks = seq (0, max (X), 0.1)
+lines (xticks , dexp ( xticks), col = " red ", xlab = 0:12)
+legend("topright", legend=c("Histogram", "Density"),
+       col=c("cornflowerblue", "red"), lty=1, lwd = c(5, 1), cex=0.8)
+```
+
+### Exercise (Inversion transformation Gumble)
+
+```{r}
+# Purpose: Simulate random Gumbels using the inverse transform method.
+# Input: iDraws is the number of draws of standard uniforms
+# Output: Simulated random Gumbels
+
+Gumbel.Simulate <- function(iDraw) {
+  
+U <- runif(iDraw)
+return(-log(-log(U)))
+}
+
+set.seed(1234)
+# Use this function to obtain random standard Gumbels from the inverse 
+# Transform using 100 random draws of standard uniforms.
+x <- Gumbel.Simulate(100)
+x[1:4]
+
+# Below is histogram of the sample drawn with Exponential.Simulate. We also superimpose the theoretical density function:
+h <- hist (X, breaks = 12)
+h$density <- h$ counts / 1000
+
+par(mfrow = c(1, 1))
+plot (h, freq = FALSE , col = " cornflowerblue ",
+      main = "Gumble Simulate",
+      xlab = "n", ylab = " Percentage ")
+axis (1, at = 1:10)
+legend("topright", legend=c("Histogram", "Density"),
+       col=c("cornflowerblue", "red"), lty=1, lwd = c(5, 1), cex=0.8)
+```
+
+## Acceptance-Rejection Method
+
+The inversion method works fine if we can find $F^{-1}$ analytically. It becomes less feasible when $F^{-1}$ does not admit a closed-form representation, although it is still possible to employ (time-consuming) numerical methods to approximate $F^{-1}$.
+
+Yet there is another clever method that is often applicable, called **acceptance-rejection method.**
+
+```{r}
+### Auxiliary functions ###
+gamma.pdf <- function (x, k, theta ) {
+  return ( theta ^k * x^(k -1) * exp (- theta *x) )
+}
+
+exponential.pdf <- function (x, lambda ) {
+  return ( lambda * exp (- lambda *x))
+   }
+
+Exponential.Simulate <- function (lambda, size = 1) {
+  V <- runif ( size )
+  return (-1/ lambda * log (V))
+}
+```
+
+Now we can code up our acceptance-rejection method for simulating Gamma distributed random variable.
+
+```{r}
+Gamma.Simulate <- function (k, theta , size = 1) {
+  
+  lambda <- theta /k
+  c <- k ^ k * exp (-k + 1) / gamma (k)   ## se formel på slide L6-29: f(x)/g(x)
+  
+  U <- rep(NA, size)
+  Y <- rep(NA, size)
+  X <- rep(NA, size)
+  Unaccepted <- rep (TRUE, size )
+  
+  while(any(Unaccepted)) {
+    
+    UnacceptedCount <- sum(Unaccepted)
+    
+    U <- runif(UnacceptedCount)
+    Y <- Exponential.Simulate(lambda, UnacceptedCount) # change if new distribution, could have used rexp
+    
+    Accepted_ThisTime <- Unaccepted[Unaccepted] &
+      (U <= (gamma.pdf(Y, k, theta ) / exponential.pdf (Y, lambda )/c )) # change this, se slide 29 (263 i merged)
+    
+    X[Unaccepted][Accepted_ThisTime] <- Y[Accepted_ThisTime]
+    Unaccepted[Unaccepted] <- ! Accepted_ThisTime
+  
+     }
+   return (X)
+}
+```
+
+We test the function by simulating $10^6$ i.i.d. random variables with distribution $Gamma(2,1)$.
+
+```{r}
+set.seed (10086)
+
+X <- Gamma.Simulate (2, 1, 10^6)
+
+# histogram
+par(mfrow = c(1, 1))
+hist (X, breaks = 30, freq = FALSE ,
+      main = " Theoretical and simulated Gamma (2 ,1) density ",
+      col = " cornflowerblue ",
+      xlim = c(0, 14) , ylim = c (0, 0.35) ,
+      xlab = "x",
+      cex.main = 0.7)
+xticks = seq(0, max (X), 0.1)
+lines(xticks , dgamma ( xticks , 2, 1), col = " red ")
+legend("topright", legend = c(" Simulated ", " Theoretical "), lty = c(1, 1),
+           lwd = c(5, 1), col = c(" cornflowerblue ", "red "))
+
+```
+
+## Simulate Normals
+
+If $Z ∼ N(0,1)$ then $μ+σZ ∼ N(μ,σ2)$. Hence it suffices to have an algorithm for simulating N(0,1) random variable, i.e., standard normal random variable.
+
+We cover three ways of simulating standard normal random variable:
+
+1.  Central limit theorem applied to uniformly distributed random variable.
+
+2.  Acceptance-Rejection method with exponential envelope.
+
+3.  Box-Muller algorithm.
+
+### Using uniformly distributed random variable
+
+-   Let $\{U_i,i=1,2,...\}$ be a sequence of i.i.d. random variables uniformly distributed over (0,1).
+
+-   Note that $\mathbb{E}[U_i]=1/2$ and $\text{var}[U_i]=1/12$ respectively. The classical central limit theorem entails
+
+$$
+\frac{1}{\sqrt{n}} \sum_{i=1}^{n} \frac{U_{i}-\frac{1}{2}}{\sqrt{\frac{1}{12}}} \rightarrow N(0,1)
+$$
+
+-   In particular, for some *n* a random variable $Z=\sum_{i=1}^nU_i-n/2$ is approximately a standard normal distribution.
+
+```{r}
+#Simulate standard normal random variable
+
+Normal.Simulate <- function ( size = 1) {
+  
+  Z <- rep (NA , size )
+  
+  for (i in 1: size ) {
+     Z[i] <- sum ( runif (12)) - 6
+     }
+  
+   return (Z)
+}
+ 
+Z <- Normal.Simulate(1000)
+
+hist (Z, breaks = 14, freq = FALSE ,
+      main = "Theoretical and simulated Normal(01) density",
+      col = "cornflowerblue",
+      xlim = c(-3.5, 3.5) , ylim = c (0, 0.4) ,
+      xlab = "x",
+      cex.main = 0.7)
+
+xticks = seq (-5, max (Z), 0.1)
+lines (xticks, dnorm (xticks), col = " red ")
+legend ("topright", legend = c("Simulated", "Theoretical"), lty = c(1, 1),
+        lwd = c(5, 1), col = c("cornflowerblue", "red"))
+```
+
+Despite its simpleness, this method works well in fact. But it is possible to do better.
+
+### Box-Muller Algorithm
+
+Hence we have the Box-Muller algorithm, which draw two independent standard normal random variables at a time:
+
+1.  Draw independent $U\sim\text{Unif}(0,1)$ and $V\sim\text{Unif}(0,1)$
+
+2.  Set $R=\sqrt{-2\log(U)}$ and $\Theta=2\pi V$
+
+3.  Return $X=R\cos(\Theta)$ and $Y=R\sin(\Theta)$.
+
+```{r}
+BoxMuller <- function(size = 1) {
+# size : number of standard bivariate normal random variables to simulate
+  U <- runif(size)
+  V <- runif(size)
+  
+  X <- sqrt (-2* log(U)) * cos (2*pi*V)
+  Y <- sqrt (-2* log(U)) * sin (2*pi*V)
+  
+  return (c(X,Y))
+}
+
+Z <- BoxMuller(1000)
+
+hist (Z, breaks = 14, freq = FALSE ,
+      main = "Theoretical and simulated Normal(01) density",
+      col = "cornflowerblue",
+      xlim = c(-3.5, 3.5), ylim = c(0, 0.4) ,
+      xlab = "x",
+      cex.main = 0.5)
+xticks = seq (-5, max (Z), 0.1)
+lines (xticks , dnorm ( xticks), col = " red ")
+legend ("topright", legend = c("Simulated ", "Theoretical"), lty = c(1, 1),
+        lwd = c(5, 1), col = c("cornflowerblue", "red"))
+
+```
+
+## Monte Carlo Integration
+
+Suppose that you want to compute the integral
+
+$$
+I=\int_{a}^{b} f(x) d x
+$$
+
+It is not always possible to calculate it analytically. In such cases we can use Monte Carlo by noting that
+
+$$
+I=(b-a) \mathbb{E}[f(U)], \quad U \sim \operatorname{Uniform}(a, b),
+$$
+
+Let $U_{i}: i=1,2, \cdots$ be an i.i.d. sequence of random variables uniformly distributed over (a, b). The strong law of large numbers implies
+
+$$
+\frac{b-a}{n} \sum_{i=1}^{n} f\left(U_{i}\right) \stackrel{\text { a.s. }}{\longrightarrow} I, \text { as } n \rightarrow \infty
+$$
+
+where $\stackrel{a . s \text {. }}{\longrightarrow}$ means almost sure convergence.
+
+Hence, you may pick a large *n*, draw i.i.d. $U_{i} \sim \operatorname{Uniform}(a, b)$, and use $\frac{b-a}{n} \sum_{i=1}^{n} f\left(U_{i}\right)$ as an approximate of *I*. The following function does this:
+
+```{r}
+MonteCarlo.Integration <- function (f, n, a, b) {
+  U <- runif (n, min = a, max = b)
+ return ( (b-a)* mean (f(U)) )
+}
+```
+
+Example 1:$\int_{-1}^{1} \frac{1}{1+x^{2}} d x$ with the accurate value $\frac{\pi}{2} \approx 1.570796$.
+
+Example 2: $\int_{0}^{1} \arctan (x) d x$ with the accurate value $0.4388246$.
+
+```{r}
+set.seed(10086)
+MonteCarlo.Integration(function (x) 1/ (1+x^2) , 100 , -1, 1)
+set.seed(10086)
+MonteCarlo.Integration(function (x) atan (x), 100 , 0, 1)
+
+```
+
+### Exercise (Monte Carlo - area of unit circle)
+
+```{r}
+# MC integrate the area of a unit circle
+U <- runif(100)
+V <- runif(100)
+R <- U^2 + V^2
+
+mean( R < 1 ) * 4 
+
+# Alternatively
+n <- 100
+a <- 0
+b <- 1
+
+U <- runif(n, a, b) 
+V <- runif(n, a, b) 
+R <- (U^2 + V^2)
+
+mean( R < 1)*4
+```
+
+# L7: Root-Finding
+
+When an analytical expression is not available for the root of some function *f* , i.e. the solution to *f(x) = 0*, we have to use numerical methods that are iterative in nature.
+
+The idea behind an iterative method is the following:\
+Starting with an initial approximation, $x_0$, construct a sequence of iterates $\{x_n\}$ using an iteration formula with a hope that this sequence converges to a root of $f (x) = 0$.
+
+## Newton-Raphson
+
+The Newton-Raphson method is a root-finding algorithm that uses an iterative process to approach one root of a function.
+
+It works by producing a sequence of guesses to the root and, under favourable circumstances, converge rapidly to the root from an initial guess.
+
+```{r}
+NR <- function(f, f_prime, dX0, dTol = 1e-9, max.iter = 1000, ...)  {
+# Define inputs: f(x), x0, epsilon (dTol), nmax: Suppose the function f is differentiable with continuous derivative f' and a root a.
+  dX <- dX0 # Let x0 in R and think of x0 as our current 'guess' at a.
+  fx <- f(dX, ...) # Now the straight line through the point (x0, f(x0)) with slope f'(x0) is the best straight line approximation to the function f(x) at the point x0.
+  iter <- 0 # container for iterations to increase it and keep an eye on how many iterations used
+  
+  while((abs(fx)) > dTol && (iter < max.iter)) { # the two stopping criterion (the convergence tolerance) and nmax (the maximum number of iterations).
+    dX <- dX - f(dX, ...)/f_prime(dX, ...)  # The equation of the straight line is given by (2). This line crosses the x-axis at a point x1=x, which should be a better approximation than x0 to a. We find x1 by solving (2) for x with y = 0:
+    fx <- f(dX, ...)  # i.e. we update our best guess to be x1 which is obtained from x0 by subtracting a correction term f (x0)/f'(x0) until the absolute value of f(x1) is very close to 0
+    iter <- iter + 1  # do it until we reach the our while loop condition
+    cat("At iteration", iter, "value of x is:", dX, "\n") # just summarizing
+  }
+  if (abs(fx) > dTol) {
+    cat("Algorithm failed to converge\n") # If n = nmax then stop; Maximum number of iterations has been reached, algorithm failed to converge.
+    return(NULL)
+  } else {
+    cat("Algorithm converged, the value of x is", dX, "\n") # If abs(f(xn) <= epsilon then set xn = a and stop; Algorithm converged.
+    return(dX)
+  }
+}
+```
+
+### Drawbacks of the Newton Raphson
+
+The Newton-Raphson root-finding method works by producing a sequence of guesses to the root and, under favourable circumstances, converge rapidly to the root from an initial guess.
+
+-   Unfortunately, it cannot be guaranteed to work.
+
+It can be a costly task to calculate the required derivative $f ′(x_n)$ for every iteration, or we might not be able to analytically derive it.
+
+Instability: if the iteration hits a value $x_n$ where the function is close to flat (i.e. $f ′(x_n)$ close to zero), the iteration is sent far away from the current point.
+
+No guarantee of convergence: the iteration might get caught up in an infinite loop.
+
+In general, we need to pick a starting point relatively close to the desired root (could be more than one).
+
+### Example (Loan repayments)
+
+$$
+f(r)=\frac{A}{P}-\frac{r(1+r)^N}{(1+r)^N-1}
+$$
+
+```{r}
+
+# Knowing the loan's amount P, the number of months N and the monthly repayment A, what is the interest rate r that we pay? The answer is the solution of f(r )=0, in the function.
+f <- function(dR, dA, dP, iN) { # (change if new function given)
+  dOut = dA/dP - (dR*(1.0 + dR)^iN)/((1.0 + dR)^iN - 1)
+  return(dOut)
+}
+
+f_prime <- function(dX, dA, dP, iN) { # changing dR to dX  - the derivative of f
+  
+  dOut = - (((1.0 + dX)^iN + iN * dX * (1.0 + dX)^(iN - 1)) *
+    ((1.0 + dX)^iN - 1) - iN * dX * (1.0 + dX)^(2 * iN - 1)) / ((1.0 + dX)^iN - 1)^2
+  return(dOut)
+}
+
+# Next step, run the Newton-Raphson
+dUniroot1 <- NR(f, f_prime, dX0 = 0.15, dTol = 1e-9, dA = 10, dP = 100, iN = 20)
+
+f(dUniroot1, dA = 10, dP = 100, iN = 20)  # function value approximately equal to 0 (just checking)
+
+x <- seq(0, 0.2, 0.01)  # change (think about: are there positive/negative limits)
+plot(x, f(x, dA = 10, dP = 100, iN = 20), type = "l", xlab = "x", ylab = "y")
+abline(h = 0, col = "red")
+abline(v = dUniroot1, col = "blue", lty = 2)
+
+#-------------------------------------------------------------------------------------------#
+# Example on Newton-Raphson method: Root of the function cos(x)-x^3
+f <- function(dX) { 
+  dOut = cos(dX)-dX^3 # change if new function
+  return(dOut)
+}
+
+f_prime <- function(dX) {
+  dOut = -sin(dX) - 3*dX^2  # change if new function 
+  return(dOut)
+} 
+
+dUniroot1 <- NR(f, f_prime, dX0 = 0.5)
+
+x = seq(0.2, 1.2, 0.1)
+plot(x, f(x), type = "l", xlab = "x", ylab = "y")
+abline(h = 0, col = "red")
+abline(v = dUniroot1, col = "blue", lty = 2)
+```
+
+## Secant Method
+
+If the derivative $f'$ does not exist, then we can use the secant method, which only requires that the function $f$ is continuous.
+
+Suppose $f$ has a root $q$. For this method we assume that we have two current 'guesses', $x_0$ and $x_1$, for the value of $a$.
+
+We will think of $x_0$ as an older guess and we want to replace the pair $x_0, x_1$ by the pair $x_1, x_2$, where $x_2$ is a new guess.
+
+To find a new guess $x_2$ we first draw the straight line from $(x_0, f(x_0))$ to $(x_1, f(x_1))$, i.e. the secant of the curve $y = f(x)$.
+
+The equation of the secant is
+
+$$
+\frac{y-f(x_1)}{x-x_1}=\frac{f(x_0-f(x_1)}{x_0-x_1}
+$$
+
+As the new guess we will use the x-coordinate $x_2$ of the point at which the secant crosses the x-axis, and so $x_2$ can be found from $y=0$, which implies
+
+$$
+x_2=x_1-f(x_1)\frac{x_0-x_1}{f(x_0)-f(x_1)}
+$$
+
+or equivalently
+
+$$
+x_{n+1}=x_n-f(x_n)\frac{x_{n-1}-x_n}{f(x_{n-1})-f(x_1)}.
+$$
+
+If $x_n$ and $x_{n-1}$ are close together, then
+
+$$
+f'(x_n)\approx\frac{x_{n-1}-x_n}{f(x_{n-1})-f(x_1)},
+$$
+
+and the secant method is an approximation of the Newton-Raphson method.
+
+-   If $f$ is well behaved at $a$ and you start with $x_0$ and $x_1$ sufficiently close to $a$, then $x_n$ will converge quickly to $a$, though not quite as fast as the NR method.
+
+    -   We cannot guarantee convergence.
+
+    -   Trade off comparing to NR: we no longer need to know $f'$ but in return we give up some speed and have to provide two initial points, $x_0$ and $x_1$.
+
+```{r}
+secant <- function(f, dX0, dX1, dTol = 1e-9, max.iter = 1000, ...) {
+  dX_0 <- dX0
+  dX_1 <- dX1
+  fx0 <- f(dX_0, ...)
+  fx1 <- f(dX_1, ...)
+  iter <- 0
+  
+  while((abs(fx1)) > dTol && (iter < max.iter)) {
+    dX_2 <- dX_1 - fx1 * (dX_0 - dX_1)/(fx0 - fx1)   # found from the equation of the secant with y = 0
+    dX_0 <- dX_1
+    dX_1 <- dX_2
+    fx0 <- f(dX_0, ...)
+    fx1 <- f(dX_1, ...)
+    iter <- iter + 1
+    cat("At iteration", iter, "value of x is:", dX_1, "\n")
+  }
+  if (abs(fx1) > dTol) {
+    cat("Algorithm failed to converge\n")
+    return(NULL)
+  } else {
+    cat("Algorithm converged\n")
+    return(dX_1)
+  }
+}
+```
+
+### Example
+
+```{r}
+# Example on the root of the function cos(x)-x^3
+f <- function(dX) { 
+  dOut = cos(dX)-dX^3   # change if new function
+  return(dOut)
+}
+
+dUniroot1 <- secant(f, dX0 = 0.5, dX1 = 0.8)
+
+x = seq(0.2, 1.2, 0.1)
+plot(x, f(x), type = "l", xlab = "x", ylab = "y")
+abline(h = 0, col = "red")
+abline(v = dUniroot1, col = "blue", lty = 2)
+```
+
+## Bisection method
+
+A more reliable but slower approach is root-bracketing, which works by first isolating an interval in which the root must lie, and then successively refining the bounding interval in such a way that the root is guaranteed to always lie inside the interval.
+
+The width of the bounding interval is successively halved.
+
+Suppose that $f$ is a continuous function, then it is easy to see that f has at least one root in the interval $(x.l, x.r)$ if $f(x.l)f(x.r) < 0$ (i.e. if either $f(x.l) < 0$ and $f(x.r) > 0$ or $f(x.l) > 0$ and $f(x.r) < 0$) and if $x.l < x.r$. The algorithm is then guaranteed to converge and we do not need to put a bound on the maximum number of iterations.
+
+The bisection method works by taking an interval $(x.l , x.r)$ that contains a root, then successively refining $x.l$ and $x.r$ until $x.r - x.l \le \epsilon$, where $\epsilon$ is some predefined tolerance.
+
+```{r}
+bisection <- function(f, dX.l, dX.r, dTol = 1e-9, max.iter = 1000, ...) {
+# check inputs
+  if (dX.l >= dX.r) { # Start with X.l < X.r such that f(X.l)f(X.r) < 0.
+    cat("error: x.l >= x.r \n") # provided we start with f(X.l)f(X.r) ) < 0, the algorithm is guaranteed to converge and we do not need to put a bound on the maximum number of iterations.
+    return(NULL)
+  }
+  f.l <- f(dX.l, ...)
+  f.r <- f(dX.r, ...)
+  if (f.l == 0) {
+    return(dX.l)
+  } else if (f.r == 0) {
+    return(dX.r)
+  } else if (f.l*f.r > 0) { # then is there no unit root between l and r
+    cat("error: f(x.l)*f(x.r) > 0 \n")
+    return(NULL)
+  }
+  
+  # successively refine x.l and x.r
+  iter <- 0 
+  while ((dX.r - dX.l) > dTol) {           # If X.r - X.l < epsilon then stop
+    dX.m <- (dX.l + dX.r)/2
+    f.m <- f(dX.m, ...)
+    if (f.m == 0) {                        # if f(X.m) = 0 then stop.
+      return(dX.m)
+    } else if (f.l*f.m < 0) {              # If f(X.l)f(X.m) < 0  
+      dX.r <- dX.m                         # then put X.r = X.m;
+      f.r <- f.m
+    } else {                               # otherwise,
+      dX.l <- dX.m                         # put X.l = X.m.
+      f.l <- f.m
+    }
+    iter <- iter + 1
+    cat("at iteration", iter, "the root lies between", dX.l, "and", dX.r, "\n")
+  }
+  return((dX.l + dX.r)/2)   # Put x.m = (x.l + x.r )/2 to return approximate root
+}
+```
+
+-   The bisection method converges very slowly...
+
+-   The most popular current root-finding methods use root-bracketing to get close to a root, then switch over to the NR or secant method when it seems safe to do so. This strategy combines the safety of bisection with the speed of the secant method.
+
+### Example
+
+```{r}
+# Example on the root of the function cos(x)-x^3
+f <- function(dX) { 
+  dOut = cos(dX)-dX^3                # change if new function
+  return(dOut)
+}
+
+dUniroot1 <- bisection(f, dX.l = 0.4, dX.r = 1.1)
+dUniroot1
+
+x = seq(0.2, 1.2, 0.1)
+plot(x, f(x), type = "l", xlab = "x", ylab = "y")
+abline(h = 0, col = "red")
+abline(v = dUniroot1, col = "blue", lty = 2)
+```
+
+## The *uniroot* function
+
+R implements a general purposed unit root finder with the function uniroot.
+
+uniroot is based on the Brent's method, which is a root-finding algorithm that combines the bisection method, the secant method and a third method called the inverse quadratic interpolation method.
+
+The function uniroot searches the interval from lower to upper for a root (i.e., zero) of the function f with respect to its first argument.
+
+The function is given by: *uniroot()* - look up help if necessary
+
+### Example (Dynamic Poisson Model)
+
+```{r}
+# Consider the score with respect to y for the Dynamic Poisson model:
+# Maximize the log-likelihood by finding the root of its derivative (putting the score equal to zero).
+f_score <- function(dPsi, dAlpha, vY) { # score function given
+  
+  iT = length(vY)
+  dOut = sum(vY[2:iT]/(dPsi + dAlpha * vY[1:(iT - 1)])) - (iT - 1)
+  
+  return(dOut)
+}
+# and the root is found by setting it to zero and solving for y
+# In order to plot the score function for different values of y, we first need to
+# simulate and T simulations from the true DGP: observations yt for t = 1, . . . ,T from a Poisson distribution with parameter lambdat = psi + alpha * yt-1
+iT = 1000                               # number of observations (t = 1,...,T)
+dPsi = 1.0                              # true psi for simulating y_t
+dAlpha = 0.7
+
+iN = 1000                               # number of samples simulated (n = 1,...,N)
+iL = 100                                # range of psi values (different values of psi)
+
+# Initialize matrix of score function values; rows=different values of psi, columns=different samples of y_t, (t=1,...,T)
+mScore = matrix(NA, nrow = iL, ncol = iN)
+
+## grid of values for psi
+vX = seq(0.5, 1.5, length.out = iL)
+
+# Simulate N samples of y_t from Poisson distribution
+for (n in 1:iN) {
+  
+  vY = numeric(iT)
+  vY[1] = rpois(1, 1)
+  
+  for (i in 2:iT) {
+    vY[i] = rpois(1, dPsi + dAlpha * vY[i - 1]) # simulated observations yt from this Poisson parameter distribution
+  }
+  
+# using the n-th observation sample of y_t, calculate the score function for the different values of psi (vX)
+  mScore[, n] = sapply(vX, f_score, dAlpha = dAlpha, vY = vY)
+  
+}
+
+# To estimate y from the sampled data we simply find the zero of f score: (root of the score)
+uniroot(f_score, lower = 0.1, upper = 2.0,
+        dAlpha = dAlpha, vY = vY)$root
+
+# plotting
+ScoreQuantiles = apply(mScore, 1, quantile, probs = c(0.01, 0.1, 0.9, 0.99)) # quantiles of scorefunction (over different simulated samples of y_t)
+vMean = apply(mScore, 1, mean)                                               # mean values of score function (over different simulated samples of y_t)
+
+plot(vX, vMean, lwd = 2, type = "n", ylab = "Score Value", xlab = expression(psi^ML))
+grid(10, 10, col = "gray")
+lines(vX, vMean, lwd = 2)
+lines(vX, ScoreQuantiles[1, ], lty = 2, lwd = 2, col = "red")
+lines(vX, ScoreQuantiles[4, ], lty = 2, lwd = 2, col = "red")
+lines(vX, ScoreQuantiles[2, ], lty = 2, lwd = 2, col = "blue")
+lines(vX, ScoreQuantiles[3, ], lty = 2, lwd = 2, col = "blue")
+legend("topright",
+       legend = c("99%-1%", "90%-10%", "Mean"), col = c("red", "blue", "black"),
+       lwd = 2,
+       lty = c(2, 2, 1),
+       bg = "gray80",
+       cex = 0.75)
+abline(h = dPsi, col = "purple")
+```
+
+## Numerical Derivatives
+
+In order to implement the NR method as well as other numerical algorithms the use of the derivative of the objective function is required. Sometimes we are not able to analytically derive the derivative. In these cases, the derivative can be computed numerically.
+
+## Grad
+
+One of the most used to evaluate numerical derivatives is the grad function in the numDeriv package.
+
+grad calculates a numerical approximation of the first derivative of a function at the point x.
+
+Its formulation is:
+
+```{r}
+library("numDeriv")
+?grad() # look up help
+```
+
+```{r}
+# Example on Root of the function cos(x)-x^3
+f <- function(dX) { 
+  dOut = cos(dX) - dX^3                # change if new function
+  return(dOut)
+}
+
+f_prime <- function(dX) {
+  dOut = -sin(dX) - 3*dX^2           # change if new function 
+  return(dOut)
+} 
+
+# In order to check that our implementation of f prime in the loans problem is correct, we can test it using the grad:
+grad(f, 0.2)
+f_prime(dX = 0.2)
+
+abs(grad(f, 0.2) - f_prime(0.2))            # if close to zero, are they equal
+all.equal(grad(f, 0.2), f_prime(dX = 0.2))  # if TRUE; they are equal
+
+```
+
+Beware that:
+
+-   Numerical derivatives are not always precise.
+
+-   The computational cost generally increases considerably.
+
+```{r}
+library(microbenchmark)
+microbenchmark(
+  grad(f, 0.2),
+  f_prime(0.2), unit = "milliseconds")
+```
+
+# L8: Univariate Numerical Optimization
+
+Numerical optimization: numerically finding the maximum or minimum of a function.
+
+Attention is restricted to maxima, but everything can be equally well applied to minima by multiplying the function by -1.
+
+In some cases the optimal points can be found analytically, but in most cases a closed form solution is not available. In these cases we need numerical optimization methods.
+
+Four different methods for numerical optimization
+
+1.  Newton's method for univariate functions
+
+2.  The golden-section method for univariate functions
+
+3.  The steepest ascent method for multivariate functions
+
+4.  Newton's method for multivariate functions
+
+These search techniques are iterative procedures with the following general structure
+
+1.  Chose a starting point, x0;
+
+2.  Check for optimality in x0;
+
+3.  A series of instructions to select another candidate of an optimal point;
+
+4.  Back to point 2 until an optimality criterion is satisfied;
+
+5.  Final point, xN, is an approximation of the local optimal point, x\*, for the function f(·).
+
+Globally convergent: A search method is said to be globally convergent if it can reach a stationary point starting from any initial point. Otherwise, the method is said to be locally convergent.
+
+Stopping criteria: Limit the number of iterations or obtain an accurate solution.
+
+## Root-finding and optimization
+
+Root-finding and optimization are very closely related subjects which often occur in practical applications. However we can only find local maxima/minima.
+
+Optimizing a function, f(x) is equivalent to finding the roots of its derivative, f'(x)
+
+### Examples
+
+```{r}
+f <- function(dX) {
+  dOut = dX^3/3-dX
+  return(dOut)
+}
+
+f_prime <- function(dX) {
+  dOut = dX^2 - 1
+  return(dOut)
+}
+
+# Optimizing f(x)
+r1 <- optimize(f, lower = -2, upper = 2, maximum = TRUE)$maximum
+r2 <- optimize(f, lower = -2, upper = 2)$minimum
+
+# Alternatively with root finding to the derivative
+r1 <- uniroot(f_prime, lower = -2, upper = 0)$root
+r2 <- uniroot(f_prime, lower = 0, upper = 2)$root
+
+vX <- (seq(-2, 2, 0.01))
+par(mfcol = c(2,1))
+plot(vX, f(vX), type = "l")
+abline(v = r1, col = "red")
+abline(v = r2, col = "red")
+plot(vX, f_prime(vX), type = "l")
+abline(h = 0, col = "blue")
+abline(v = r1, col = "red")
+abline(v = r2, col = "red")
+```
+
+```{r}
+f <- function(dX) {
+  dOut = dX ^ 3 + (6 - dX) ^ 2
+  return(dOut)
+}
+
+f_prime <- function(dX) {
+  dOut = 3 * dX ^ 2 + 2 * dX - 12
+  return(dOut)
+}
+
+# optimize
+r1 <- optimize(f, lower = -5, upper = 5, maximum = TRUE)$maximum # maximum
+r2 <- optimize(f, lower = -5, upper = 5)$minimum                 # minimum
+
+# Plot the function to choose intervals
+vX <- (seq(-5, 5, 0.01))
+par(mfrow = c(1, 1))
+plot(vX, f(vX), type = "l")
+abline(h = f(r1), col = "green")    # maximum
+abline(h = f(r2), col = "red")      # minimum
+abline(v = r1, col = "blue", lty = 2)
+abline(v = r2, col = "blue", lty = 2)
+
+# Alternatively with root finding
+r1 <- uniroot(f_prime, lower = -5, upper = 0)$root
+r2 <- uniroot(f_prime, lower = 0, upper = 5)$root
+
+# for f_prime, optimal points crosses y=0 (unit roots)
+plot(vX, f_prime(vX), type = "l")
+abline(h = 0, col = "blue")
+abline(v = r1, col = "green")
+abline(v = r2, col = "red")
+```
+
+## Newton-Raphson
+
+The Newton-Raphson method uses information on the function *f* and its derivative *f'*. The original formulation of the NR method is intended to find the zeros of a function, and it is based on the following recursive algorithm:
+
+```{r}
+NM <- function(f, f_prime, f_sec, dX0, dTol = 1e-9, n.max = 1000){ # Define inputs: f(x), x0, epsilon, nmax .
+  dX <- dX0
+  fx <- f(dX)
+  fpx <- f_prime(dX) # Compute f'(xn)
+  fsx <- f_sec(dX)
+  n <- 0             # iterations
+  
+  while ((abs(fpx) > dTol) && (n < n.max)) { #  If abs(f(xn)) <= epsilon then set xn = a and stop; Algorithm converged. Otherwise, until stopping condition reached, do:
+    dX <- dX - fpx/fsx  # NR equations solved for x. Since we deal with a problem of optimization, i.e. f'(x) = 0, Newton's method for optimization replaces f(x) with f'(x) in the original NR method.
+    fx <- f(dX)
+    fpx <- f_prime(dX)
+    fsx <- f_sec(dX)
+    n <- n + 1
+    cat("At iteration", n, "the value of x is:", dX, "\n")
+  }
+  if (n == n.max) {
+    cat('newton failed to converge\n')  # If n = nmax then stop; Maximum number of iterations has been reached, algorithm failed to converge.
+  } else {
+    return(dX)
+  }
+}
+```
+
+The Newton's method is such that the convergence is local and quadratic, meaning that near the solution, the convergence is very fast!
+
+The Newton's method is really suitable when the first- and second-order information are readily and easily calculated.
+
+### Example (2 optimal points)
+
+```{r}
+## Example 1 NR optimizing (2 optimal points)
+
+f <- function(dX) {
+  dOut = dX ^ 3 + (6 - dX) ^ 2 # Consider the function:
+  return(dOut)
+}
+
+# Plot the function to pick starting points
+vX <- seq(-5, 5, 0.001)
+plot(vX, f(vX), type = "l")
+
+# First derivative
+f_prime <- function(dX) {
+  dOut = 3 * dX ^ 2 + 2 * dX - 12
+  return(dOut)
+}
+
+# and second derivative
+f_sec <- function(dX) {
+  dOut = 6*dX + 2
+  return(dOut)
+}
+
+# Different starting values
+# x0 = -2
+optima1 <- NM(f, f_prime, f_sec, dX0 = -2)
+plot(vX, f(vX), type = "l")
+abline(v = optima1, col = "blue", lty = 2) 
+abline(h = f(optima1), col = "red")
+
+# x0 = 1.5
+optima2 <- NM(f, f_prime, f_sec, dX0 = 1.5)
+plot(vX, f(vX), type = "l")
+abline(v = optima2, col = "blue", lty = 2) # final value
+abline(h = f(optima2), col = "red")
+```
+
+### Example (3 optimal points)
+
+```{r}
+##  Example 2 NR optimizing (3 optimal points)
+f <- function(dX) {
+  dOut = 2 * dX * (dX - 1)^2 * (dX + 2) # Consider the function:
+  return(dOut)
+}
+
+# Plot the function to pick starting points
+vX <- seq(-2, 2, 0.001)
+plot(vX, f(vX), type = "l")
+
+# First derivative
+f_prime <- function(dX) {
+  dOut = 4 - 12 * dX + 8 * dX^3
+  return(dOut)
+}
+
+# and second derivative
+f_sec <- function(dX) {
+  dOut = 24 * dX^2 - 12
+  return(dOut)
+}
+
+# Different starting values
+# x0 = -2
+optima1 <- NM(f, f_prime, f_sec, dX0 = -2)
+plot(vX, f(vX), type = "l")
+abline(v = optima1, col = "blue", lty = 2) # x_5 final value
+abline(h = f(optima1), col = "red")
+
+# x0 = 1.5
+optima2 <- NM(f, f_prime, f_sec, dX0 = 1.5)
+plot(vX, f(vX), type = "l")
+abline(v = optima2, col = "blue", lty = 2) # final value
+abline(h = f(optima2), col = "red")
+
+# x0 = -0.4
+optima3 <- NM(f, f_prime, f_sec, dX0 = -0.4)
+plot(vX, f(vX), type = "l")
+abline(v = optima3, col = "blue", lty = 2) # final value
+abline(h = f(optima3), col = "red")
+```
+
+From this example we see that when the Newton algorithm converges, we can end up with a minimum, or indeed a 'flat spot', just as easily as a maximum.
+
+The reason is that all such stationary points satisfy f'(x\*) = 0.
+
+## Golden-section
+
+The golden-section method works in one dimension only and needs $f$ to be continuous, but does not need $f'$ - similar to the root-bracketing technique for root-finding.
+
+The golden-section algorithm chooses $y$ such that the ratio of the lengths of the larger to the smaller interval stays the same at each iteration.
+
+Assume that $X_l < X_m < X_r$ and $f(X_l), f(X_r) \le f(X_m)$ such that $f(X_l)f(X_r) \le 0$ then we know that there is a zero in the interval $[X_l, X_r]$.
+
+Local maximum in the interval $[X_l, X_r]$: if $X_l < X_m < X_r$ and $f(Xl) \le f(Xm)$ and $f(Xr) \le f(Xm)$ the algorithm iteratively refines $X_l, X_r$ and $X_m$ and terminates when $X_r - X_l \le \epsilon$, then returns $X_m$.
+
+```{r}
+goldensection <- function(f, dXl, dXr, dXm, dTol = 1e-9, ...) {
+  
+  dFr <- f(dXr, ...)
+  dFl <- f(dXl, ...)
+  dFm <- f(dXm, ...)
+  
+  dGoldenRatio = (1.0 + sqrt(5))/2.0
+  
+  if (dFl > dFm | dFr > dFm) {
+    stop("Initial conditions are not satisfied") # Start with Xl < Xm < Xr such that f(Xl) <= f(Xm) and f(Xr) <= f(Xm).
+  }
+  
+  while (abs(dXr - dXl) > dTol) { # if Xr < Xl <= epsilon then stop; set X* = Xm.
+    
+    if (dXr - dXm > dXm - dXl) {  # if Xr - Xm > Xm - Xl
+      dY <- dXm + (dXr - dXm)/(1.0 + dGoldenRatio) # then choose a point (y = Xm + (Xr - Xm) / (1 + GR)) between (Xm; Xr)
+      dFy <- f(dY, ...)
+      if (dFy >= dFm) { # if f(y) >= f(Xm) then the maximum is in between (Xm, Xr); redefine the interval
+        dXl <- dXm # put Xl = Xm and
+        dXm <- dY  # Xm = y
+      } else {     # otherwise the maximum is in the interval (Xl, y); redefine the interval:
+        dXr <- dY  # put Xr = y.
+      }
+    } else {       # if Xr - Xm > Xm - Xl not is true; do
+      dY = dXm - (dXm - dXl)/(1.0 + dGoldenRatio)  # Choose a point (y = Xm + (Xr - Xm) / (1 + GR)) in beteen (Xl; Xm)
+      dFy = f(dY, ...)
+      if (dFy >= dFm) { # if f(y) >= f(Xm) then the maximum is in (Xl, Xm); redefine the interval: 
+        dXr <- dXm     # put Xr = Xm and 
+        dXm <- dY      # Xm = y;
+      } else {         # otherwise the maximum is in the interval (y, Xr); redefine the interval:
+        dXl <- dY      # put Xl = y
+      }
+    }
+    dFm <- f(dXm, ...)
+  }
+  return(dXm)
+}
+```
+
+### Example
+
+```{r}
+
+# Objective function. Change if given new
+f <- function(dX, ...) {
+dAbsX = abs(dX)
+  if (dAbsX < 2e-16) {
+    dOut = 0.0
+  } else {
+    dOut = dAbsX * log(dAbsX / 2.0) * exp(-dAbsX)
+  }
+  return(dOut)
+}
+
+## plot objective function for visualization
+vX = seq(-10, 10, 0.001)
+vF = sapply(vX, f)
+plot(vX, vF, type = "l")
+
+# Optimize
+dOpt1_GS <- goldensection(f, dXl = -5, dXr = -1, dXm = -3) # first optimum
+dOpt2_GS <- goldensection(f, dXl = 1, dXr = 5, dXm = 3)    # second optimum
+dOpt3_GS <- goldensection(f, dXl = -1, dXr = 1, dXm = 0)   # third optimum
+
+# plot the optimal points
+abline(v = dOpt1_GS , col = 'blue', lty = 2)
+abline(v = dOpt2_GS , col = 'blue', lty = 2)
+abline(v = dOpt3_GS , col = 'blue', lty = 2)
+abline(h = f(dOpt1_GS), col = "red", lty = 1)
+abline(h = f(dOpt2_GS), col = "red", lty = 1)
+abline(h = f(dOpt3_GS), col = "red", lty = 1)
+
+dOpt1_GS
+dOpt2_GS
+dOpt3_GS
+
+```
+
+## optimize
+
+In one dimension R provides the function optimize, which uses a combination of the golden-section algorithm with a technique called parabolic interpolation.
+
+```{r}
+# Solving optimum of previous example
+optimize(f, lower = -5, upper = -1, maximum = TRUE)$maximum
+```
+
+```{r}
+formals(optimize) # look up help. OBS: since maximum = FALSE is default 'optimize' minimizes f.
+# Maximize
+optimize(f, lower = -0.4, upper = 0.8, maximum = TRUE)$maximum
+# Minimize
+optimize(f, lower = -0.4, upper = 0.8)$minimum
+```
+
+# L9: Multivariate Optimization
+
+## Steepest ascent method
+
+In the steepest ascent method we seek a local maximum by moving in the direction of the gradient, which is the direction with the largest slope, i.e. the steepest ascent.
+
+For minimum is it the direction with the smallest slope at the point x
+
+```{r}
+ascent <- function(f, grad.f, vX0, dTol = 1e-9, n.max = 100) {
+  vX.old <- vX0
+  vX <- line.search(f, vX0, grad.f(vX0))
+  n <- 1
+ 
+   while ((f(vX) - f(vX.old) > dTol) & (n < n.max)) {
+    vX.old <- vX
+    vX <- line.search(f, vX, grad.f(vX))
+    cat("at iteration", n, "the coordinates of x are", vX, "\n")
+    n <- n + 1
+  }
+  return(vX)
+}
+```
+
+### Line Search
+
+To complete the steepest ascent algorithm, at each step *n*, given the optimal direction *grad.f(xn)*, we need to find the optimal step size, *alpha*
+
+```{r}
+line.search <- function(f, vX, vY, dTol = 1e-9, dA.max = 2^5) {
+  # f is a real function that takes a vector of length d
+  # x and y are vectors of length d
+  # line.search uses gsection to find a >= 0 such that g(a) = f(x + a*y) has a local maximum      at a, within a tolerance of tol
+  # if no local max is found then we use 0 or a.max for a
+  # the value returned is x + a*y
+  if (sum(abs(vY)) == 0) return(vX) # g(a) constant
+  g <- function(dA) return(f(vX + dA*vY))
+  
+  # find a triple a.l < a.m < a.r such that g(a.l) <= g(a.m) and g(a.m) >= g(a.r)
+  # a.l
+  dA.l <- 0
+  g.l <- g(dA.l)
+  
+  # a.m
+  dA.m <- 1
+  g.m <- g(dA.m)
+  
+  while ((g.m < g.l) & (dA.m > dTol)) {
+    dA.m <- dA.m/2
+    g.m <- g(dA.m)
+  }
+  
+  # if a suitable a.m was not found then use 0 for a
+  if ((dA.m <= dTol) & (g.m < g.l)) return(vX)
+  # a.r
+  dA.r <- 2*dA.m
+  g.r <- g(dA.r)
+  
+  while ((g.m < g.r) & (dA.r < dA.max)) {  # while alpha under stopping criteria alpha_max
+    dA.m <- dA.r
+    g.m <- g.r
+    dA.r <- 2*dA.m
+    g.r <- g(dA.r)
+  }
+  
+  # if a suitable a.r was not found then use a.max for a
+  if ((dA.r >= dA.max) & (g.m < g.r)) return(vX + dA.max*vY)
+  
+  # apply golden-section algorithm to g to find a
+  dA <- goldensection(g, dA.l, dA.r, dA.m)
+  return(vX + dA*vY)
+}
+```
+
+#### Example (2 dimensional)
+
+```{r}
+f <- function(vX) {
+  dOut = sin(vX[1]^2/2 - vX[2]^2/4) * cos(2*vX[1] - exp(vX[2]))
+  return(dOut)
+}
+
+library(numDeriv)
+grad.f <- function(vX) {
+  dX_prime.1 = cos(vX[1]^2/2 - vX[2]^2/4) * vX[1] * cos(2 * vX[1] - exp(vX[2]))
+  dX_prime.2 = sin(vX[1]^2/2 - vX[2]^2/4) * (-sin(2 * vX[1] - exp(vX[2])) * 2)
+  dY_prime.1 = cos(vX[1]^2/2 - vX[2]^2/4) * (-vX[2]/2) * cos(2 * vX[1] - exp(vX[2]))
+  dY_prime.2 = sin(vX[1]^2/2 - vX[2]^2/4) * sin(2*vX[1] - exp(vX[2])) * exp(vX[2])
+  vOut = c(dX_prime.1 + dX_prime.2, dY_prime.1 + dY_prime.2)
+  return(vOut)
+}
+
+grad(f, c(0, 0.5))
+grad.f(c(0, 0.5))
+
+ascent(f, grad.f, vX0 = c(0.1, 0.3))
+ascent(f, grad.f, vX0 = c(0, 0.5))
+
+```
+
+We see that a small difference in where you start can make a big difference to where you end up; we find different local maxima with the two different starting points.
+
+## Newton's method in higher dimensions
+
+The steepest ascent method uses information about the gradient, i.e. the first-order derivatives of f.
+
+By making use of the Hessian, i.e. the second-order derivatives of f , we can construct methods that converge in fewer steps.
+
+The simplest second-order technique is Newton's method, which can be generalized from one dimension to higher dimensions relatively easily.
+
+Here we have both an analytical and numerical method
+
+### Analytical method
+
+```{r}
+newton <- function(f, f_gradient, f_hessian, vX0, dTol = 1e-9, n.max = 100){
+  vX <- vX0
+  fx <- f(vX)
+  vGrad    <- f_gradient(vX)
+  mHessian <- f_hessian(vX)
+  n <- 0
+  
+  while ((max(abs(vGrad)) > dTol) & (n < n.max)) {
+    vX <- vX - solve(mHessian, vGrad)
+    fx <- f(vX)
+    vGrad    <- f_gradient(vX)
+    mHessian <- f_hessian(vX)
+    n <- n + 1
+  }
+  if (n == n.max) {
+    cat("newton failed to converge\n")
+  } else {
+    return(vX)
+  }
+}
+```
+
+#### Example
+
+```{r}
+## Objective function to optimize ## change if new given
+f <- function(vX) {
+  dX = vX[1]
+  dY = vX[2]
+  dOut = (1 - dX)^2 + 100 * (dY - dX^2)^2
+  return(dOut)
+}
+
+# plot it
+vX <- seq(-2, 2, .1)
+vY <- seq(-2, 5, .1)
+dXYZ <- data.frame(matrix(0, nrow = length(vX)*length(vY), ncol = 3))
+names(dXYZ) <- c('x', 'y', 'z')
+n <- 0
+for (i in 1:length(vX)) {
+  for (j in 1:length(vY)) {
+    n <- n + 1
+    dXYZ[n,] <- c(vX[i], vY[j], f(c(vX[i], vY[j]))[[1]])
+  }
+}
+library(lattice)
+print(wireframe(z ~ x*y, data = dXYZ, scales = list(arrows = FALSE),
+                zlab = 'f(x, y)', drape = T))
+
+
+## Gradient of the objective function
+f_gradient <- function(vX) {
+  vGrad = numeric(2)
+  dX = vX[1]
+  dY = vX[2]
+  
+  vGrad[1] = 2.0 * (200 * dX^3 - 200 * dX * dY + dX - 1) # derivative w.r.t x (change if new function given)
+  vGrad[2] = 200 * (dY - dX^2)                           # derivative w.r.t y (change if new function given)
+  
+  return(vGrad)
+}
+
+## Hessian of the objective function
+f_hessian <- function(vX) {
+  
+  mHessian = matrix(NA, 2, 2)
+  dX = vX[1]
+  dY = vX[2]
+  
+  d11 = 1200 * dX^2 - 400 * dY + 2.0  # derivative w.r.t x twice (change if new function given)
+  d12 = -400 * dX                     # derivative w.r.t x and then y (change if new function given)
+  d22 = 200                           # derivative w.r.t y twice (change if new function given)
+  
+  mHessian[1, 1] = d11
+  mHessian[1, 2] = d12
+  mHessian[2, 1] = d12
+  mHessian[2, 2] = d22
+  
+  return(mHessian)
+}
+
+## Starting value (guesses)
+vX0 = c(-2, 4)
+
+## Optimize objective function using Newton's method
+newton(f, f_gradient, f_hessian, vX0, dTol = 1e-9, n.max = 100)
+```
+
+### Numerical method
+
+Newtons method using numerical derivatives to obtain the gradient and Hessian of the objective function
+
+```{r}
+library(numDeriv)
+Newton_Numeric <- function(f, vx0, tol = 1e-9, n.max = 100){
+  vx <- vx0
+  fx <- f(vx)
+  vgrad    <- grad(f, vx)
+  mhessian <- hessian(f, vx)
+  n <- 0
+  while ((max(abs(vgrad)) > tol) & (n < n.max)) {
+    vx <- vx - solve(mhessian, vgrad)
+    fx <- f(vx)
+    vgrad    <- grad(f, vx)
+    mhessian <- hessian(f, vx)
+    n <- n + 1
+  }
+  if (n == n.max) {
+    cat("newton failed to converge\n")
+  } else {
+    return(vx)
+  }
+}
+```
+
+#### Example
+
+```{r}
+## Objective function to optimize. Change if new given
+f <- function(vX) {
+  dX = vX[1]
+  dY = vX[2]
+  dOut = (1 - dX)^2 + 100 * (dY - dX^2)^2
+  return(dOut)
+}
+
+#  plot it
+vX <- seq(-2, 2, .1)
+vY <- seq(-2, 5, .1)
+dXYZ <- data.frame(matrix(0, nrow = length(vX)*length(vY), ncol = 3))
+names(dXYZ) <- c('x', 'y', 'z')
+n <- 0
+for (i in 1:length(vX)) {
+  for (j in 1:length(vY)) {
+    n <- n + 1
+    dXYZ[n,] <- c(vX[i], vY[j], f(c(vX[i], vY[j]))[[1]])
+  }
+}
+library(lattice)
+print(wireframe(z ~ x*y, data = dXYZ, scales = list(arrows = FALSE),
+                zlab = 'f(x, y)', drape = T))
+
+## Starting value (guesses)
+vX0 = c(-2, 4)
+
+## Optimize objective function using the Newton's method above (using numerical derivatives)
+Newton_Numeric(f, vX0, tol = 1e-9, n.max = 100)
+```
+
+##### Example from slides with saddlepoint
+
+```{r}
+# From slides
+
+newton <- function(f3, vX0, dTol = 1e-9, n.max = 100) {
+  
+  # Newton's method for optimization, starting at x0
+  # f3 is a function that given x returns the list {f(x), grad f(x), Hessian f(x)}, for some f
+  
+  vX <- vX0
+  f3.x <- f3(vX)
+  n <- 0
+  
+  while ((max(abs(f3.x[[2]])) > dTol) & (n < n.max)) {
+    vX <- vX - solve(f3.x[[3]], f3.x[[2]])
+    f3.x <- f3(vX)
+    cat("At iteration", n, "the coordinates of x are", vX, "\n")
+    n <- n + 1
+  }
+  if (n == n.max) {
+    cat('newton failed to converge\n')
+  } else {
+    return(vX)
+  }
+}
+
+#-----------------------------------------------------------------------------------------#
+## Example p.44
+
+f3 <- function(vX) {
+  dA <- vX[1]^2/2 - vX[2]^2/4
+  dB <- 2*vX[1] - exp(vX[2])
+  f <- sin(dA)*cos(dB)
+  f1 <- cos(dA)*cos(dB)*vX[1] - sin(dA)*sin(dB)*2
+  f2 <- -cos(dA)*cos(dB)*vX[2]/2 + sin(dA)*sin(dB)*exp(vX[2])
+  f11 <- -sin(dA)*cos(dB)*(4 + vX[1]^2) + cos(dA)*cos(dB) -
+    cos(dA)*sin(dB)*4*vX[1]
+  f12 <- sin(dA)*cos(dB)*(vX[1]*vX[2]/2 + 2*exp(vX[2])) +
+    cos(dA)*sin(dB)*(vX[1]*exp(vX[2]) + vX[2])
+  f22 <- -sin(dA)*cos(dB)*(vX[2]^2/4 + exp(2*vX[2])) - cos(dA)*cos(dB)/2 -
+    cos(dA)*sin(dB)*vX[2]*exp(vX[2]) + sin(dA)*sin(dB)*exp(vX[2])
+  return(list(f, c(f1, f2), matrix(c(f11, f12, f12, f22), 2, 2)))
+}
+
+newton(f3, vX0 = c(1.6, 0.5))    # saddle point
+newton(f3, vX0 = c(1.75, 0.25))  # minimum
+newton(f3, vX0 = c(1.6, 1.2))    # maximum
+
+f1 <- function(vX) {
+  dA <- vX[1]^2/2 - vX[2]^2/4
+  dB <- 2*vX[1] - exp(vX[2])
+  dOut <- sin(dA)*cos(dB)
+  return(dOut)
+}
+
+# plot it
+vX <- seq(-0.5, 3, .1)
+vY <- seq(-0.5, 2, .1)
+dXYZ <- data.frame(matrix(0, nrow = length(vX)*length(vY), ncol = 3))
+names(dXYZ) <- c('x', 'y', 'z')
+n <- 0
+for (i in 1:length(vX)) {
+  for (j in 1:length(vY)) {
+    n <- n + 1
+    dXYZ[n,] <- c(vX[i], vY[j], f1(c(vX[i], vY[j])))
+  }
+}
+library(lattice)
+print(wireframe(z ~ x*y, data = dXYZ, shade = TRUE, scales = list(arrows = FALSE),
+                zlab = 'f(x, y)', drape = T))
+```
+
+The above example have illustrated that:
+
+-   Newton's method can converge to minima or saddle points as well as maxima.
+
+-   Newton's method is faster than the steepest ascent method.
+
+-   Unless you are close to a minimum or maximum, you can move in unexpected directions.
+
+### Disadvantages of steepest ascend and Newton's method
+
+-   Potential disadvantages of the steepest ascend method and Newton's method is the need to calculate the gradient and Hessian.
+
+-   For functions that can be expressed in terms of polynomials and the simple transcendental functions (sin, cos, exp, log etc.) the process of calculating the gradient and Hessian should pose no problems (can use the R function 'deriv' or just 'D' to find the gradient and Hessian of a simple expression - check it out yourselves.)
+
+-   There are, however, plenty of situations where f is available but ∇f is not; e.g. f might be the result of some numerical procedure or an approximation obtained by simulation.
+
+```{r}
+library(numDeriv)
+?grad()    # gradient of f
+?hessian() # hessian of f
+
+```
+
+## Optimization in R
+
+In higher dimensions there are a variety of optimization methods in current use.
+
+The R function optim provides functionalities to maximize a multivariate function:
+
+```{r}
+formals(optim)
+```
+
+Where the method argument specifies the type of optimizer we want to employ. The most used are:
+
+-   method = "Nelder-Mead" the Nelder and Mead (1965), method.
+
+-   method = "BFGS" is a quasi-Newton method.
+
+-   method = "L-BFGS-B" of Byrd et. al. (1995) which allows box constraints.
+
+The output of fn has to be the negative average log-likelihood value evaluated in vPar. Negative, because by convention optimizers in R by default are minimizer.
+
+This option can be often modified using arguments of the optimizer function.
+
+### Writing the likelihood
+
+The code for the negative average log-likelihood of (b, s) would look like:
+
+```{r}
+NegAvgLL <- function(vPar, vY, mX) {
+  dSigma <- vPar[1]
+  vBeta <- vPar[-1]
+  vMean <- mX %*% vBeta
+  vEps <- vY - vMean
+  iN <- length(vY)
+  dSumSquareRes <- as.numeric(t(vEps) %*% vEps)
+  dLLK <- -0.5 * (iN * log(dSigma^2) + dSumSquareRes / dSigma^2)
+  return(-dLLK / iN)
+}
+# Simulate from DGP
+iT <- 100
+mX <- matrix(rnorm(iT * 3), ncol = 3)
+vBeta <- c(1, 2, 3)
+dSigma <- 3
+vY <- mX %*% vBeta + dSigma * rnorm(iT)
+
+# Estimate parameters
+vPar0 <- c(4, c(0, 1, 4)) # choose starting values
+Fit <- optim(vPar0, NegAvgLL, vY = vY, mX = mX, method = "BFGS")
+
+# Check estimation results
+Fit  # look in help 'optim' for more information
+```
+
+Where fn is the function to maximize, in our case fn = NegAvgLL.
+
+gr is the gradient function (numerically evaluated by optim since we haven't define the gr argument in the optim call).
+
+One can use either numerical or analytical first derivatives.
+
+-   Analytical derivatives are more robust, exact, and quicker.
+
+#### Example on the Rosenbrock's banana function with the BFGS method
+
+```{r}
+set.seed(1)
+rm(list = ls())
+
+# Rosenbrock Banana function
+Fn_banana <- function(vX) {   #  Input: vX: 2 x 1 vector of x 
+  vX1 <- vX[1]
+  vX2 <- vX[2]
+  100 * (vX2 - vX1 * vX1)^2 + (1 - vX1)^2
+}
+
+# Grr_banana(vX) computes the gradient for Rosenbrock's banana function
+
+Grr_banana <- function(vX) { # Input: vX: 2 x 1 vector of x 
+  vX1 <- vX[1]
+  vX2 <- vX[2]
+  c(-400 * vX1 * (vX2 - vX1 * vX1) - 2 * (1 - vX1),
+    200 *      (vX2 - vX1 * vX1))
+}
+
+# Estimate parameters
+vPar0 <- c(-1.2,1) # choose starting values
+
+# Estimate parameters using BFGS without using the analytical expression of the gradient.
+Fit_one <- optim(vPar0, Fn_banana, method = "BFGS", control = list(trace=TRUE))
+
+# Estimate parameters using BFGS and the gradient by including the analytical expression of the gradient in the optim function.
+Fit_two <- optim(vPar0, Fn_banana, Grr_banana, method = "BFGS", control = list(trace=TRUE))
+
+# Compare one and two.
+print(Fit_one)  
+print(Fit_two)  
+```
+
+# L10: Parameter constraints
+
+Newton-based method (method = "BFGS") doesn't know about ranges.
+
+Alternative optimization (method = "L-BFGS-B") does but: slower/worse convergence
+
+We have two options:
+
+1.  Use a constrained optimizer like optim with method = "L-BFGS-B".
+
+2.  Reparameterize our problem and use an unrestricted optimizer.
+
+The second option is usually preferred and provides better results.
+
+### Transforming parameters
+
+```{r}
+set.seed(12)
+rm(list = ls())
+
+# Transform: general solution
+NegAvgLL <- function(vPar, vY, mX) { # Computes the negative average log likelihood
+                                     # Input:
+                                        # vPar: 2 x 1 vector of x. 
+                                        # (vBeta, dsigma) where sigma is a standard deviation
+                                        # mX: pointer to the log-likelihood value
+                                        # vY: vector of Y variables
+  
+  dSigma <- exp(vPar[1])  # Extracting the first parameter from vPar (Transform sigma)
+  vBeta  <- vPar[-1]                 # Extracting the second parameter from vPar
+  vMean  <- mX %*% vBeta
+  vEps   <- vY - vMean
+  
+  iN <- length(vY)
+  
+  dSumSquareRes <- as.numeric(t(vEps) %*% vEps)
+  
+  dLLK <- -0.5 * (iN * log(dSigma^2) + dSumSquareRes / dSigma^2) ## Log likelihood function
+  
+  return(-dLLK / iN)                # Return value: dLLK and iN
+}
+
+##  Simulate from the DGP
+iT <- 100 # Number of observations
+
+mX     <- matrix(rnorm(iT * 3), ncol = 3)  # A matrix of randomly drawn values from the normal distribution
+vBeta  <- c(1, 2, 3)                       # True beta values
+dSigma <- 3                                # True variance
+vY     <- mX %*% vBeta + dSigma * rnorm(iT)     
+
+# Transform back the results
+
+# Estimate parameters using BFGS
+vPar0 <- c(log(4), c(0, 1, 4)) # choose starting values
+
+Fit <- optim(vPar0, NegAvgLL, vY = vY, mX = mX, method = "BFGS")
+print(Fit)
+dSigma <- exp(Fit$par[1])
+dSigma
+```
+
+# L11: C++
+
+Sometimes R code just isn't fast enough.
+
+Generally, performance that relates to speed is improved by C++.
+
+One of the key differences between R and C++ is that R is interpreted and C++ is compiled;
+
+-   With a compiled language, code you enter is reduced or 'compiled' into the 'target language' (that is, the actual instructions in machine code).
+
+-   With interpreted languages, the code is saved in the same format that you entered and is reduced/compiled to machine-specific instructions at runtime.
+
+-   The interpreted languages thus allow for more flexibility because a program can be adaptively modified and there is no need for an additional 'compilation stage'.
+
+## Variable declaration in C++
+
+You must declare the type of output the function returns before the function name; this function returns an int (a scalar integer).
+
+OBS:
+
+-   Every statement is terminated by a ';'.
+
+-   Comments are indicated with // instead of #.
+
+-   Arrows to assign values to variables in R do not make sense in C++.
+
+``` r
+cppFunction('
+            int iN = 5;                // integer
+            double dK = 0.156532;      // double
+            bool bJ = true;            // boolean (OBS: true is small instead of TRUE in R)
+            string sT = "Hello World"; // string
+            ')
+```
+
+## For loops in C++
+
+``` r
+cppFunction('
+            for (int i = 0 (init); i < 10 (check); i++ (increment)) {
+            // some code here
+            }
+            ')
+```
+
+Note that we declare the class of the loop index i (this has to be an integer), we indicate the start (i = 0), the end (i \< 10) and the increment at each iteration (i++).
+
+The notation i++ indicates that the variable i needs to be augmented by 1 at each iteration.
+
+The notation i--, indicates that the value of i needs to be decreased by 1 at each iteration.
+
+## C++ functions in R
+
+```{r}
+library(Rcpp)
+
+cppFunction('
+            int add(int x, int y, int z) {  // cppFunction() allows you to write C++        functions in R:
+            int sum = x + y + z;
+            return sum;
+            }')                             
+# When you run this code, Rcpp will compile the C++ code and construct a R function that connects to the compiled C++ function.
+add(1,2,3) # You can then run the function in R:
+
+```
+
+### Example: no inputs, scalar output
+
+A very simple function that takes no arguments and always returns the integer 1:
+
+```{r}
+oneR <- function() 1L # R function
+oneR()
+library(Rcpp)
+cppFunction('  
+            int oneCpp() {  // C++ function. The syntax to create a function in C++ looks like the syntax to call a function in R.
+            return 1;       // You must use and explicit return statement to return a value from a function (which is not necessary in R).
+            }
+            ')
+oneCpp()
+```
+
+### Example: scalar input, scalar output
+
+```{r}
+signR <- function(iX) {
+  if (iX > 0) {
+    1
+  } else if (iX == 0) {
+    0
+  } else {
+    -1
+  }
+}
+
+signR(iX = -3)
+
+cppFunction('int signC(int x) { // We need to declare the function input in the same way as we declare the output.
+            if (x > 0) {        // The if statement syntax in C++ is identical to that in R.
+            return 1;
+            } else if (x == 0) {
+            return 0;
+            } else {
+            return -1;
+            }
+            }')
+
+signC(x = -3)
+```
+
+### Example: vector input, scalar output
+
+Function that returns the sum of a vector using a for loop
+
+```{r}
+sumR <- function(vX) {
+  dTotal <- 0
+  
+  for (i in 1:length(vX)) {
+    dTotal <- dTotal + vX[i]
+  }
+  return(dTotal)
+}
+sumR(c(1, 2, 3))
+
+cppFunction('
+            double sumC(NumericVector x) {   // The classes for the most common types of R vectors are: NumericVector, IntegerVector, CharacterVector, and LogicalVector.
+            int n = x.size();                // To find the length of the vector, we use the .size() method, which returns an integer. In general, C++ methods are called with "." 
+            double total = 0;                // C++ is zero based! The first element of a vector is indexed at 0 and not at 1.
+            for (int i = 0; i < n; i++) {
+            total += x[i];                   // The call total += x[i] is equivalent to total = total + x[i]. Similar operators are -=, *=, and /=.
+            }
+            return total;
+            }')
+sumC(c(1, 2, 3))
+```
+
+#### Efficiency of loops C++ vs. R:
+
+```{r}
+library(microbenchmark)
+vX <- runif(1e4)
+microbenchmark(
+               sum(vX),
+               sumC(vX),
+               sumR(vX), unit = "milliseconds")
+```
+
+The sumC() function even comes close to beating the built-in (and highly optimized) R function sum(), while sumR() is significantly slower.
+
+### Example: Vector input, vector output
+
+A function that computes the Euclidean distance between a value and a vector of values:
+
+```{r}
+pdistR <- function(dX, vY) {
+  sqrt((dX - vY) ^ 2)
+  }
+pdistR(3, c(1, 2, 3))
+
+cppFunction('
+            NumericVector pdistC(double x, NumericVector y) {
+            int n = y.size();
+            NumericVector out(n);                              // A new numeric vector of length n with a constructor: NumericVector out(n). Another useful way of making a vector is to copy an existing one: NumericVector zs = clone(ys).
+            for (int i = 0; i < n; i++) {
+            out[i] = sqrt(pow(y[i] - x, 2.0));                 // C++ uses the function pow() and not ^ for exponentiation.
+            }
+            return out;
+            }')
+pdistC(3, c(1, 2, 3))
+
+dX <- runif(1)
+vY <- runif(1e6)
+microbenchmark(pdistR(dX, vY), pdistC(dX, vY), unit = "milliseconds")
+```
+
+Even though the R function is fully vectorized, the C++ function is still faster.
+
+However, it also takes longer to write the C++ function...
+
+### Example: Matrix input, vector output
+
+Consider the C++ function that reproduces rowSums():
+
+```{r}
+cppFunction('
+            NumericVector rowSumsC(NumericMatrix x) { // Each vector type has a matrix equivalent: NumericMatrix, IntegerMatrix, CharacterMatrix, and LogicalMatrix.
+            int nrow = x.nrow(), ncol = x.ncol();     // Use .nrow() and .ncol() methods to get the dimensions of a matrix.
+            NumericVector out(nrow);
+            for (int i = 0; i < nrow; i++) {
+            double total = 0;
+            for (int j = 0; j < ncol; j++) {
+            total += x(i, j);                         // In C++ you subset a matrix with () and not [].
+            }
+            out[i] = total;
+            }
+            return out;
+            }'
+            )
+
+set.seed(1014)
+mX <- matrix(sample(100), 10)
+rowSums(mX)
+rowSumsC(mX)
+microbenchmark(rowSums(mX), rowSumsC(mX), unit = "milliseconds")
+```
+
+```{r}
+# Example sourceCpp - se filen sourceCpp i Functions
+sDir <- "/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/6. semester/Programming"
+setwd(sDir)
+library(Rcpp)
+sourceCpp("Functions/CppSource.cpp")
+
+```
+
+## Functions
+
+### CumSum
+
+Create a .cpp file with a C++ function that takes a vector as input and returns a vector whose elements are the cumulative sums of the elements of the input (i.e. a C++ function that reproduces the R function cumsum()).
+
+Load the function into your R session using sourceCpp() and compare your C++ function to cumsum().
+
+```{r}
+sourceCpp("Functions/CumSumCpp.cpp") # se filen for mere info og R koder
+```
+
+### Fibonacci
+
+```{r}
+# Using recursive programming we can compute the Fibonacci numbers in R:
+fibR <- function(n) {
+  if (n==0) return(0)
+  if (n==1) return(1)
+  return(fibR(n-1) + fibR(n-2))
+}
+
+# However, it is very insufficient; it can be shown that the algorithm is exponential in n - or in other words, its run-time increases at an exponential rate relative to the argument n.
+# A simple solution to compute F_n much faster using the same simple and intuitive algorithm is to switch to C++.
+# We can write a simple C++ script which contains a function for the Fibonacci number evaluation:
+
+cppFunction('
+            int fibC(int x) {
+            if (x == 0) return(0);
+            if (x == 1) return(1);
+            return (fibC(x - 1)) + fibC(x - 2);
+            }')
+fibC(25)
+
+# or export it from cpp
+sourceCpp("Functions/fibonacci.cpp")
+fibC(25)
+library(microbenchmark)
+microbenchmark(fibR(25), fibC(25), unit = "milliseconds")
+```
+
+## Armadillo
+
+Armadillo includes:
+
+-   Better vector and matrix types; arma::vec, arma::mat
+
+-   Very fast routines for linear algebra operations, e.g. matrix multiplication, matrix inversion, linear system solving etc.
+
+```{r}
+library(Rcpp)
+library(RcppArmadillo)
+sourceCpp("Functions/armadilloexample.cpp")  # multiplying matrices
+
+m1 <- matrix(1:9, 3, 3)
+m2 <- matrix(1:9, 3, 3)
+m1
+matprodC(m1, m2)
+m1 %*% m2
+
+```
+
+### Inverse of matrix product
+
+This function performs a matrix multiplication between mX and mY, and then returns the inverse of the product.
+
+```{r}
+FunR <- function(mX, mY) { 
+  mZ = mX %*% mY
+  mZInv = solve(mZ)
+  return(mZInv)
+}
+
+sourceCpp("Functions/mycfunction.cpp")
+
+# comparison
+M <- 300;
+mX <- matrix(rnorm(M ^ 2), M)
+mY <- matrix(rnorm(M ^ 2), M)
+library(microbenchmark)
+microbenchmark(FunR(mX, mY), FunC(mX, mY), unit = "milliseconds")
+```
+
+### Simulate GARCH(1,1)
+
+A simple model for daily financial returns.
+
+Assume to save the code in the file SimGarch.cpp inside your working directory.
+
+In order to simulate a GARCH(1,1) process, you can then run:
+
+```{r}
+sourceCpp("Functions/SimGarch.cpp")
+
+iT = 1000
+dOmega = 0.1
+dAlpha = 0.05
+dBeta  = 0.94
+
+lSim = GarchSim(iT, dOmega, dAlpha, dBeta)
+
+par(mfrow = c(1,2))
+plot(lSim[[1]], type = "l", main = "Conditional variance", ylab = "sigma^2", xlab = "Time")
+plot(lSim[[2]], type = "l", main = "Log returns", ylab = "Y", xlab = "Time")
+```
+
+## Calling R functions in C++
+
+```{r}
+sDir <- "/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/6. semester/Programming"
+setwd(sDir)
+
+library(Rcpp)
+
+# Define in R the following function which returns the sum of squares of a vector:
+SumOfSquaresR <- function(vX) {
+  dOut = sum(vX^2)
+  return(dOut)
+}
+# We can save the following code in a script callRFunction.cpp in the
+# working directory and load it with the sourceCpp function as usual.
+sourceCpp("Functions/callRFunction.cpp")
+vX <- rnorm(10)
+callRFunction(vX, SumOfSquaresR)
+SumOfSquaresR(vX)
+# of course we obtain the same result.
+
+# Define now the function sum of absolute values:
+SumOfAbsoluteValuesR <- function(vX) {
+  dOut = sum(abs(vX))
+  return(dOut)
+}
+
+# Define now the function sum of absolute values
+SumOfAbsoluteValuesR <- function(vX) {
+  dOut = sum(abs(vX))
+  return(dOut)
+}
+vX <- rnorm(10)
+# We can use the same function callFunction to execute SumOfAbsoluteValuesR in C++ as:
+callRFunction(vX, SumOfAbsoluteValuesR)
+SumOfAbsoluteValuesR(vX)
+
+callRFunction(vX, SumOfAbsoluteValuesR)
+SumOfAbsoluteValuesR(vX)
+# That is, callRFunction(NumericVector vX, Function f) is independent from the definition of f.
+# WARNING, Calling R functions in C++ is slower than calling R functions in R.
+library(microbenchmark)
+vX = rnorm(1e5)
+
+microbenchmark(
+  callRFunction(vX, SumOfSquaresR),
+  SumOfSquaresR(vX), unit = "milliseconds")
+```
+
+# L11: Creating R package
+
+Assume to have saved the following function:
+
+```{r}
+MySunFunction <- function(a, b) {
+    c <- a + b
+    return(c)
+  }
+MySunFunction(5, 7)
+```
+
+## Estimate - Fit the GARCH model
+
+The following function realizes the algorithm. Note that we have vectorized the function.
+
+```{r}
+FitGARCH <- function(vY) {
+  # Starting Values
+  vPar <- StratingPar(vY)
+  # Working parameters
+  vPar_tilde <- Natural2Working(vPar)
+  optimization <- optim(vPar_tilde, NegAvgLL_tilde,
+                        vY = vY, method = "BFGS")
+  vPar_tilde <- optimization$par
+  vPar <- Working2Natural(vPar_tilde)
+  return(vPar)
+}
+
+# Starting values
+StratingPar <- function(vY) {
+  dAlpha = 0.05
+  dBeta  = 0.9
+  dOmega = var(vY) * (1 - dAlpha - dBeta)  # Inspiration from long-run variance
+  vPar = c(dOmega, dAlpha, dBeta)
+  return(vPar)
+}
+
+# Mapping Function
+ModLogTransform_Inv <- function(dX, dL, dU) {
+  dOut <- -log((dU - dL)/(dX - dL) - 1)
+  return(dOut)
+}
+
+Natural2Working <- function(vPar) {
+  
+  dOmega <- vPar[1]
+  dAlpha <- vPar[2]
+  dBeta  <- vPar[3]
+  
+  dOmega_tilde <- log(dOmega)
+  
+  # technical conditions
+  dLowerLimit <- 1e-4
+  dUpperLimit <- 1 - 1e-4
+  dBeta_tilde  <- ModLogTransform_Inv(dBeta, dLowerLimit, dUpperLimit)
+  dAlpha_tilde <- ModLogTransform_Inv(dAlpha, dLowerLimit, dUpperLimit - dBeta)
+  vPar_tilde <- c(dOmega_tilde, dAlpha_tilde, dBeta_tilde)
+  return(vPar_tilde)
+}
+
+ModLogTransform <- function(dX_tilde, dL, dU) {
+  dOut <- dL + (dU - dL)/(1 + exp(-dX_tilde))
+  return(dOut)
+}
+
+Working2Natural <- function(vPar_tilde) {
+  dOmega_tilde <- vPar_tilde[1]
+  dAlpha_tilde <- vPar_tilde[2]
+  dBeta_tilde  <- vPar_tilde[3]
+  
+  dOmega = exp(dOmega_tilde)
+  
+  ## technical conditions
+  dLowerLimit <- 1e-4
+  dUpperLimit <- 1 - 1e-4
+  
+  dBeta  <- ModLogTransform(dBeta_tilde, dLowerLimit, dUpperLimit)
+  dAlpha <- ModLogTransform(dAlpha_tilde, dLowerLimit, dUpperLimit - dBeta)
+  
+  vPar <- c(dOmega, dAlpha, dBeta)
+  return(vPar)
+}
+
+# Estimation function
+NegAvgLL <- function(vPar, vY) {
+  
+  dOmega <- vPar[1]
+  dAlpha <- vPar[2]
+  dBeta  <- vPar[3]
+  
+  iT <- length(vY)
+  vSigma2 <- numeric(iT)
+  vSigma2[1] <- dOmega / (1 - dAlpha - dBeta) # Long-run variance
+  
+  dLLK <- dnorm(vY[1], mean = 0, sd = sqrt(vSigma2[1]), log = TRUE)
+  
+  for (t in 2:iT) {
+    vSigma2[t] <- dOmega + dAlpha * vY[t - 1]^2 + dBeta * vSigma2[t - 1]
+    dLLK <- dLLK + dnorm(vY[t], mean = 0, sd = sqrt(vSigma2[t]), log = TRUE)
+  }
+  return(-dLLK/iT)
+}
+
+NegAvgLL_tilde <- function(vPar_tilde, vY) {
+  vPar <- Working2Natural(vPar_tilde)
+  dNegAvgLL <- NegAvgLL(vPar, vY)
+  return(dNegAvgLL)
+}
+
+# Analysis
+library('devtools')
+
+sDir <- "/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/6. semester/Programming/Functions"
+setwd(sDir)
+
+library('Rcpp')
+library(GAS)
+
+data ("StockIndices")
+vY <- StockIndices[, 1]
+
+par(mfrow = c(1, 1))
+plot (vY , type = "l")
+
+Fit <- FitGARCH(vY)
+
+Fit
+
+```
