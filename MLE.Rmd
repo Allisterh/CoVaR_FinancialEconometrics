@@ -4,7 +4,7 @@ $$
 
 $f_x(x_t,\lambda)=\lambda e^{-\lambda x_t}$
 
-1) $LLK(\lambda,x)=\sum_{t=1}^T[\log \lambda - \lambda x_t ] = T\lambda-\lambda \sum_{t=1}^Tx_t$
+1) $LLK(\lambda,x)=\sum_{t=1}^T[\log \lambda - \lambda x_t ] = T\lambda-\log \lambda \sum_{t=1}^Tx_t$
 
 ```{r}
 
