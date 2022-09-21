@@ -1,19 +1,38 @@
-$$
+Consider an iid sequence of random variables having the exponential distribution:
 
 $$
+f_x(x_t,\lambda)=\lambda e^{-\lambda x_t}
+$$
 
-$f_x(x_t,\lambda)=\lambda e^{-\lambda x_t}$
+with the likelihood function
 
-1) $LLK(\lambda,x)=\sum_{t=1}^T[\log \lambda - \lambda x_t ] = T\lambda-\log \lambda \sum_{t=1}^Tx_t$
+$$
+LK(\lambda,x)=\lambda^T e^{-\lambda \sum_{t=1}^T x_t}
+$$
+
+with the log-likelihood function
+
+$$
+LLK(\lambda,x)=\sum_{t=1}^T[\log \lambda - \lambda x_t ] = T\log\lambda- \lambda \sum_{t=1}^Tx_t
+$$
+
+with
+
+$$
+\frac d{d\lambda} LLK(\lambda,x) 
+\stackrel{!}{=} 0 \Rightarrow \frac T{\lambda} -\sum_{t=1}^Tx_t = 0 \Leftrightarrow \lambda = \frac T{\sum_{t=1}^Tx_t}  
+$$
+
+thus the estimator is the reciprocal of the sample mean.
 
 ```{r}
 
+dLambda <- 5 # True value of lambda
 
-dLambda <- 5
-vX <- rexp(10000, dLambda)
+vX <- rexp(1e4, dLambda) # Random exponential distribution
 
 nLLK <- function(dLambda, vX) {
-  dnLLK <- -sum(dexp(vX, dLambda, log = TRUE))
+  dnLLK <- -sum(dexp(vX, dLambda, log = TRUE)) # Exponential distribution
   return(dnLLK)
 }
 
@@ -22,18 +41,15 @@ vLambda <- seq(1, 10, by = 0.1)
 vnLLK <- sapply(vLambda, nLLK, vX = vX)
 
 plot(vLambda, vnLLK, type = "l")
-abline(v = 1 / mean(vY), col = "red")
-
-mean(1 / mean(vX))
+abline(v = 1 / mean(vX), col = "red")
 
 optimizer <- optim(2, nLLK,
   method = "L-BFGS-B",
   lower = 1e-6,
   upper = 10,
-  vX = vX
-)
+  vX = vX)
 
 options(digits = 10)
-optimizer$par
-1 / mean(vX)
+cat("The estimated value using MLE is ", optimizer$par, "\n" )
+cat("Compared to the analytical solution ", 1/mean(vX))
 ```
