@@ -1,0 +1,697 @@
+%% LyX 2.3.6.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[latin9]{inputenc}
+\usepackage{float}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{graphicx}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{booktabs} 
+\usepackage{longtable}
+
+\@ifundefined{showcaptionsetup}{}{%
+ \PassOptionsToPackage{caption=false}{subfig}}
+\usepackage{subfig}
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\section*{Exam 2019}
+
+\section{Methodology}
+
+Let $Y_{t}$be the VIX at time $t$ adn consider the following model:
+
+\[
+\left.Y_{t}\right|F_{t-1}\sim\mathcal{G}\left(\mu_{t},a\right)
+\]
+
+Where $\mathcal{G}\left(\mu_{t},a\right)$ is the Gamma distribution
+with mean $\mu_{t}>0$ and scale $a>0$ with probability density function
+given by: 
+\[
+p\left(y_{t}\mid\mathcal{F}_{t-1}\right)=\frac{1}{\Gamma(a)}a^{a}y_{t}^{a-1}\mu_{t}^{-a}exp\left(-a\frac{y_{t}}{\mu_{t}}\right)
+\]
+
+Here we implement the parameterization of the Gamma distrubution used
+by Engle and Gallo for which $E\left[\left.Y_{t}\right|F_{t-1}\right]=\mu_{t}$
+and $Var\left[\left.Y_{t}\right|F_{t-1}\right]=\frac{\mu_{t}^{2}}{a}$
+
+Form L9S15 we got. GAS implements this filter as or an updating score
+as: 
+\begin{align*}
+\psi_{t} & =\psi\left(y_{1:t-1}\right)\\
+ & =\omega+\alpha u_{t-1}+\beta\psi_{t-1}
+\end{align*}
+
+Where $\psi_{t}$ is the variable of interest, and the one we want
+to filter out. As we have that $d=\frac{1}{2}$, from L9S19, we have
+that the choice of $S_{t}=I_{t}^{-1}$ will then become the inverse
+square root scaling $\mu_{y}=I_{t}^{-\frac{1}{2}}\nabla_{t}$ such
+that $Var\left(u_{t}\right)=1$. Where $I$ is the Fischer information
+matrix and further more from L10S15 $I_{t}^{-1}=E_{t-1}\left[\nabla_{t}^{2}\right]^{-1}$.
+$\nabla_{t}$ ís the unscaled score of the conditional distribution
+$\nabla_{t}=\frac{\text{\ensuremath{\partial}}logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)}{\text{\ensuremath{\partial}}\mu_{t}}$.
+The approach is to use the score in order to 'force' the direction
+of the updating step, which in our case has been scaled. We will introduce
+a link function to accomodate the specifications of $\mu$, i.e. that
+it is always positive, and from L9S24, we have that when $d\neq1$
+we employ an exponenttial link function
+
+\begin{align}
+\mu_{t}= & exp\left(\tilde{\mu}_{t}\right)\\
+\tilde{\mu}_{t}= & \omega+\alpha\tilde{u}_{t-1}+\beta\tilde{\mu}_{t-1}
+\end{align}
+
+As we have $d=\frac{1}{2},$we have that $u_{t}=\tilde{u_{t}}=I_{t}^{^{-\frac{1}{2}}}\nabla_{t}$
+i.e $\rightarrow$ We would like the score, which is defined as the
+derivative of the log density
+\begin{align*}
+\nabla_{t} & =\frac{\text{\ensuremath{\partial}}logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)}{\text{\ensuremath{\partial}}\mu_{t}}\\
+S_{t} & =I_{t}^{-\frac{1}{2}}=E_{t-1}\left[\nabla_{t}^{2}\right]^{-\frac{1}{2}}
+\end{align*}
+
+Note, the condition that $d=\frac{1}{2}$ imply that $u=\tilde{u}$
+arises from the fact that our reparameterized model require a reparameterized
+$u_{t}$, i.e.:
+
+\begin{align*}
+u & =\tilde{u}=\tilde{S_{t}}\tilde{\nabla_{t}}\\
+ & =\tilde{I}_{t}^{-\frac{1}{2}}\tilde{\nabla}_{t}\\
+ & =\tilde{I}_{t}^{-\frac{1}{2}}\frac{\text{\ensuremath{\partial}}logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\\
+ & =E_{t-1}\left[\tilde{\nabla}_{t}^{2}\right]^{-\frac{1}{2}}\frac{\text{\ensuremath{\partial}}logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)}{\text{\ensuremath{\partial}}\tilde{\mu}_{t}}\\
+ & =E_{t-1}\left[\left(\frac{\text{\ensuremath{\partial}}logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\right)^{2}\right]^{-\frac{1}{2}}\frac{\text{\ensuremath{\partial}}logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\\
+ & =E_{t-1}\left[\left(\frac{\text{\ensuremath{\partial}}logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)}{\text{\ensuremath{\partial}}\mu_{t}}*\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\right)^{2}\right]^{-\frac{1}{2}}\frac{\text{\ensuremath{\partial}}logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)}{\text{\ensuremath{\partial}}\mu_{t}}\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\\
+ & =E_{t-1}\left[\left(\nabla_{t}*\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\right)^{2}\right]^{-\frac{1}{2}}\nabla_{t}\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\\
+ & =E_{t-1}\left[\nabla_{t}^{2}*\left(\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\right)^{2}\right]^{-\frac{1}{2}}\nabla_{t}\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\\
+ & =E_{t-1}\left[\nabla_{t}^{2}\right]^{-\frac{1}{2}}\left(\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\right)^{2*-\frac{1}{2}}\nabla_{t}\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\\
+ & =E_{t-1}\left[\nabla_{t}^{2}\right]^{-\frac{1}{2}}\left(\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\right)^{-\frac{1}{1}}\nabla_{t}\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\\
+ & =E_{t-1}\left[\nabla_{t}^{2}\right]^{-\frac{1}{2}}\nabla_{t}\frac{\text{\ensuremath{\partial}}\mu_{t}}{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}\frac{\text{\ensuremath{\partial}}\tilde{\mu_{t}}}{\text{\ensuremath{\partial}}\mu_{t}}\\
+ & =E_{t-1}\left[\nabla_{t}^{2}\right]^{-\frac{1}{2}}\nabla_{t}\\
+u=\tilde{u} & =S_{t}\nabla_{t}
+\end{align*}
+
+This is the forcing variable. Note, I have used the fact that $\tilde{\mu}_{t}$
+and $\mu_{t}$ is adopted to the filtration at time $t-1$, hence
+one may just take it out of the expectation sign.\\
+This is for the more general case. For the model of the question:
+
+Taking logs to the probability density function of the model we get.
+\begin{align*}
+log\left(p\left(y_{t}\mid\mathcal{F}_{t-1}\right)\right) & =log\left(\frac{1}{\Gamma(a)}a^{a}y_{t}^{a-1}\mu_{t}^{-a}exp\left(-a\frac{y_{t}}{\mu_{t}}\right)\right)\\
+ & =log\left(\frac{1}{\Gamma(a)}\right)+log\left(a^{a}\right)+log\left(y_{t}^{a-1}\right)+log\left(\mu_{t}^{-a}\right)+log\left(exp\left(-a\frac{y_{t}}{\mu_{t}}\right)\right)\\
+ & =-log\left(\Gamma\left(a\right)\right)+alog\left(a\right)+\left(a-1\right)log\left(y_{t}\right)+\left(-a\right)log\left(\mu_{t}\right)-a\frac{y_{t}}{\mu_{t}}
+\end{align*}
+
+Taking the score of this by: $\nabla_{t}=\frac{\text{\ensuremath{\partial}}logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)}{\text{\ensuremath{\partial}}\mu_{t}}$
+\begin{align*}
+\nabla_{t} & =\frac{\text{\ensuremath{\partial}}}{\text{\ensuremath{\partial}}\mu_{t}}\left(logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\varphi_{t},a\right)\right)\\
+ & =\frac{\text{\ensuremath{\partial}}}{\text{\ensuremath{\partial}}\mu_{t}}\left(-log\left(\Gamma\left(a\right)\right)+alog\left(a\right)+\left(a-1\right)log\left(y_{t}\right)+\left(-a\right)log\left(\mu_{t}\right)-a\frac{y_{t}}{\mu_{t}}\right)\\
+ & =-a\frac{1}{\mu_{t}}+a\frac{y_{t}}{\mu_{t}^{2}}
+\end{align*}
+
+This being unscaled score of the model, for this question, we have
+scaled the model by $\nabla_{t}^{2}$ and thereby
+
+\begin{align*}
+\nabla_{t}^{2} & =\left(\frac{ay_{t}}{\mu_{t}^{2}}-\frac{a}{\mu_{t}}\right)^{2}\\
+ & =\left(\frac{ay_{t}}{\mu_{t}^{2}}\right)^{2}-\left(\frac{a}{\mu_{t}}\right)^{2}-2*\left(\frac{ay_{t}}{\mu_{t}^{2}}\frac{a}{\mu_{t}}\right)\\
+ & =\left(\frac{ay_{t}}{\mu_{t}^{2}}\right)^{2}-\left(\frac{a}{\mu_{t}}\right)^{2}-\frac{2a^{2}y_{t}}{\mu_{t}^{3}}\\
+ & =\frac{a^{2}y_{t}^{2}}{\mu_{t}^{4}}+\frac{a^{2}}{\mu_{t}^{2}}-\frac{2a^{2}y_{t}}{\mu_{t}^{3}}\\
+ & =a^{2}\left(\frac{y_{t}^{2}}{\mu_{t}^{4}}+\frac{1}{\mu_{t}^{2}}-\frac{2y_{t}}{\mu_{t}^{3}}\right)
+\end{align*}
+
+As on L9S18, we have that $Var\left(\nabla_{t}\right)=E_{t-1}\left[\nabla_{t}^{2}\right]=I_{t}$,
+and where we use what is in the question about the $E_{t}\left[\left.Y_{t}\right|F_{t-1}\right]=\mu_{t}$
+and $E_{t}\left[\left.Y_{t}^{2}\right|F_{t-1}\right]=\frac{\mu_{t}^{2}\left(1+a\right)}{a}$
+\begin{align*}
+E_{t-1}\left[\nabla_{t}^{2}\right] & =E_{t-1}\left[a^{2}\left(\frac{y_{t}^{2}}{\mu_{t}^{4}}+\frac{1}{\mu_{t}^{2}}-\frac{2y_{t}}{\mu_{t}^{3}}\right)\right]\\
+ & =a^{2}E_{t-1}\left[\frac{y_{t}^{2}}{\mu_{t}^{4}}+\frac{1}{\mu_{t}^{2}}-\frac{2y_{t}}{\mu_{t}^{3}}\right]\\
+ & =a^{2}\left(E_{t-1}\left[\frac{y_{t}^{2}}{\mu_{t}^{4}}\right]+E_{t-1}\left[\frac{1}{\mu_{t}^{2}}\right]-E_{t-1}\left[\frac{2y_{t}}{\mu_{t}^{3}}\right]\right)\\
+ & =a^{2}\left(\frac{1}{\mu_{t}^{4}}\frac{\mu_{t}^{2}\left(1+a\right)}{a}+\frac{1}{\mu_{t}^{2}}-\frac{2}{\mu_{t}^{3}}\mu_{t}\right)\\
+ & =a^{2}\left(\frac{\mu_{t}^{2}\left(1+a\right)}{a\mu_{t}^{4}}-\frac{1}{\mu_{t}^{2}}\right)\\
+ & =\left(\frac{a+a^{2}}{\mu_{t}^{2}}-\frac{a^{2}}{\mu_{t}^{2}}\right)\\
+ & =\left(\frac{a}{\mu_{t}^{2}}+\frac{a^{2}}{\mu_{t}^{2}}-\frac{a^{2}}{\mu_{t}^{2}}\right)\\
+ & =\frac{a}{\mu_{t}^{2}}
+\end{align*}
+
+where the fact that $\mu_{t}$ is constant given the information at
+time $t-1$ - it is adopted to the filtration at time $t-1$ - hence
+we may treat is a constant and just take it out of the expectation
+sign.
+
+Next, one need to recall that we need to find $\mathcal{I}^{-\frac{1}{2}}$,
+hence we get:
+\[
+\mathcal{I}=\frac{a}{\mu_{t}^{2}}\rightarrow\mathcal{I}^{-\frac{1}{2}}=\frac{\text{\ensuremath{\mu_{t}}}}{a^{\frac{1}{2}}}
+\]
+
+\[
+\mathcal{I}^{-\frac{1}{2}}=\frac{\mu_{t}}{\sqrt{a}}.
+\]
+
+Now putting the pieces together we get: $\rightarrow$ forccing variable
+is then $Eq.$
+\begin{align}
+u_{t}=\tilde{u}_{t} & =\mathcal{I}^{-\frac{1}{2}}\nabla_{t}\nonumber \\
+ & =\frac{\mu_{t}}{\sqrt{a}}*\left(\frac{ay_{t}}{\mu_{t}^{2}}-\frac{a}{\mu_{t}}\right)\nonumber \\
+ & =\frac{1}{\sqrt{a}}*\left(\mu_{t}\frac{ay_{t}}{\mu_{t}^{2}}-\mu_{t}\frac{a}{\mu_{t}}\right)\nonumber \\
+ & =\frac{1}{a^{\frac{1}{2}}}*\left(\frac{ay_{t}}{\mu_{t}}-a\right)\nonumber \\
+ & =a^{-\frac{1}{2}}*a\left(\frac{y_{t}}{\mu_{t}}-1\right)\nonumber \\
+ & =a^{\frac{1}{2}}\left(\frac{y_{t}}{\mu_{t}}-1\right)\nonumber \\
+u_{t} & =a^{\frac{1}{2}}\left(\frac{y_{t}}{exp\left(\tilde{\mu_{t}}\right)}-1\right)
+\end{align}
+
+Where $Eq$. now can be interpretede as the the updating step. We
+now have the Gamma-GAS updating step as
+
+\begin{align}
+\mu_{t} & =exp\left(\tilde{\mu_{t}}\right)\\
+\tilde{\mu}_{t} & =\omega+\alpha\tilde{u}_{t-1}+\beta\tilde{\mu}_{t-1}\\
+\tilde{\mu}_{t} & =a^{\frac{1}{2}}\left(\frac{y_{t}}{exp\left(\tilde{\mu_{t}}\right)}-1\right)
+\end{align}
+
+From L9S22 we have that when $d=\frac{1}{2}$ $\tilde{\mu}_{t}=\mu_{t}$
+and from L9S and when $d=\frac{1}{2}$: Inverse square root scaling
+$u_{t}=I_{t}^{-\frac{1}{2}}\nabla_{t}$ such that $Var\left(u_{y}\right)=Var\left(\tilde{u}_{t}\right)=1$
+i.e. taking the variance to $\tilde{\mu_{t}}$ should equal 1.
+
+\begin{align*}
+Var\left(\tilde{\mu}_{t}\right) & =Var\left(a^{\frac{1}{2}}\left(\frac{y_{t}}{exp\left(\tilde{\mu_{t}}\right)}-1\right)\right)\\
+ & =a^{\frac{1}{2}*2}Var\left(\frac{y_{t}}{exp\left(\tilde{\mu_{t}}\right)}-1\right)\\
+ & =a*\left(\frac{1}{exp\left(\tilde{\mu}_{t}\right)}\right)^{2}Var\left(y_{t}\right)\\
+ & =a*\frac{1}{exp\left(\tilde{\mu}_{t}\right)^{2}}\frac{\mu_{t}^{2}}{a}\\
+ & =\frac{a}{\mu_{t}^{2}}\frac{\mu_{t}^{2}}{a}\\
+Var\left(\tilde{\mu}_{t}\right) & =1
+\end{align*}
+
+where I have used that the variance to a constant is zero and that
+$\mu_{t}=exp\left(\tilde{\mu}_{t}\right)$. We may therefore confirm
+that we have found the right $u_{t}=\tilde{u}_{t}$, as we have $Var\left(u_{t}\right)=Var\left(\tilde{u}_{t}\right)=1$.
+
+For the loglikelihood of the model we have
+
+In exercise 1.1, the individual log-likelihood contributions has been
+derived as:
+\begin{equation}
+logp\left(\left.y_{t}\right|\mathbf{y}_{1:t-1},\mu_{t},a\right)=-log\left(\Gamma\left(a\right)\right)+alog\left(a\right)+\left(a-1\right)log\left(y_{t}\right)-alog\left(\mu_{t}\right)-a\frac{y_{t}}{\mu_{t}}.
+\end{equation}
+
+Adding up, recalling that $\mu_{t}$ is a function of $\left(\omega,\alpha,\beta\right)$,
+one obtain for length $T$ the loglikelihood as:
+\begin{align}
+logL\left(\omega,\alpha,\beta,a\right) & =-\sum_{t=1}^{T}\left[log\left(\Gamma\left(a\right)\right)-alog\left(a\right)-\left(a-1\right)log\left(y_{t}For\right)+alog\left(\mu_{t}\left(\omega,\alpha,\beta\right)\right)+a\frac{y_{t}}{\mu_{t}\left(\omega,\alpha,\beta\right)}\right]\\
+ & =T\left(-ln\Game\left(a\right)+aln\left(a\right)\right)+\sum_{t=1}^{T}\left(\left(a-1\right)log\left(y_{t}For\right)+alog\left(\mu_{t}\left(\omega,\alpha,\beta\right)\right)+a\frac{y_{t}}{\mu_{t}\left(\omega,\alpha,\beta\right)}\right)\nonumber 
+\end{align}
+
+When considering the GAMMA-GAS model, I have written a few codes;
+1) to derive the log-pdf of the gamma distribution, 2) that filter
+the means, $\mu_{t}$, and 3) that uses maximum likelihood to estimate
+the parameter values in the filter, i.e. $\left(\omega,\alpha,\beta,a\right)$.
+When initialising the filter, I have taken the unconditional expectation
+to $\text{\ensuremath{\tilde{\mu}}}_{t}$, i.e.:
+
+\begin{align}
+E\left[\tilde{\mu}_{t}\right] & =\omega+\alpha\underset{Eq.6}{\underbrace{\sqrt{a}\left(\frac{E\left[y_{t}\right]}{exp\left(\tilde{\mu}_{t}\right)}-1\right)}}+\beta E\left[\mu_{t-1}\right]\nonumber \\
+ & =\omega+\alpha\sqrt{a}\left(\frac{\mu_{t}}{\mu_{t}}-1\right)+\beta E\left[\mu_{t-1}\right]\nonumber \\
+ & =\omega+\alpha\sqrt{a}\underset{=0}{\underbrace{\left(\frac{\mu_{t}}{\mu_{t}}-1\right)}}+\beta E\left[\mu_{t-1}\right]\nonumber \\
+ & =\frac{\omega}{1-\beta}
+\end{align}
+
+which will be the starting condition for $\tilde{\mu}_{t}$, i.e.
+$\tilde{\mu}_{1}$. Note, we have assumed stationarity in order for
+this to hold, i.e. $E\left[\tilde{\mu}_{t}\right]=E\left[\tilde{\mu}_{t-1}\right]$.
+Furthermore, from the exercise, the parameter constraints has been
+specified for the coefficients $\left(\omega,\alpha,\beta,\alpha\right)$.
+
+\subsection*{Multiplicative Error Model}
+
+After considering the GAMMA-GAS model - constrained and unconstrained
+- one moves onto considering the Multiplicative Errror Model by Engle
+and Gallo (2006). Notice it is formulated in the following way: 
+\begin{align}
+\left.Y_{t}\right|\mathcal{F}_{t-1} & \sim\mathcal{G}a\left(\mu_{t},a\right),\nonumber \\
+\mu_{t} & =\kappa+\eta y_{t-1}+\phi\mu_{t-1}.
+\end{align}
+
+For the estimation of the Multiplicative Error Model, I have created
+two functions, 1) that filter the means, $\mu_{t}$, and 2) that uses
+maximum likelihood to estimate the parameter values in the filter,
+i.e. $\left(\kappa,\eta,\phi,a\right)$. Furthermore it compute the
+BIC as well as the loglikelihood.\\
+
+When estimating the filter, I have taken the unconditional expectation
+to $\text{\ensuremath{\mu}}_{t}$, i.e.:
+\begin{align}
+E\left[\mu_{t}\right] & =\kappa+\eta\underset{\mu_{t-1}}{\underbrace{E\left[y_{t-1}\right]}}+\phi\underset{\mu_{t}}{E\underbrace{\left[\mu_{t-1}\right]}}\nonumber \\
+ & =\kappa+\eta\mu_{t-1}+\phi E\left[\mu_{t}\right]\nonumber \\
+E\left[\mu_{t}\right] & =\kappa+\mu_{t}\left(\eta+\phi\right)\nonumber \\
+\kappa & =\mu_{t}\left(1-\eta-\phi\right)\nonumber \\
+ & =\frac{\kappa}{1-\eta-\phi},
+\end{align}
+where I have used two things; 1) $E\left[y_{t}\right]=\mu_{t}$ and
+stationarity, i.e. $E\left[\mu_{t}\right]=E\left[\mu_{t-1}\right]$.
+Notice that this further imply one condition, which has not been imposed
+in the exercise, i.e. that
+\begin{align*}
+\eta+\phi & <1,
+\end{align*}
+
+
+\section*{Question 2}
+
+\subsection*{Methodology}
+
+\subsection*{Bivariate Gaussian DCC model - model, constraints and factorization
+of the likelihood}
+
+We consider a bivariate random vector of the returns of GSPC and DJI
+returns. As one notices from the exercise, we assume that the distribution
+at time $t$, conditional on the filtration at time $t-1$, is bivarate
+gaussian according to:
+\begin{equation}
+\left.\mathbf{Y}_{t}\right|\mathcal{F}_{t-1}\sim N\left(\mathbf{0},\boldsymbol{\Sigma}_{t}\right).
+\end{equation}
+
+Leopoldo further specifies the model as so:
+
+\begin{align*}
+\boldsymbol{Y}_{t} & =\left(y_{1,t},...,y_{N,t}\right)^{'}\\
+y_{i,t} & =\sigma_{i,t}\epsilon_{t}\\
+\sigma_{i,t}^{2} & =\omega+\alpha_{i}y_{i,t-1}^{2}+\beta\sigma_{i,t-1}^{2}
+\end{align*}
+
+$\sigma_{i,t}^{2}$ are the marginals GARCH, put into the DCC framework
+
+\[
+Y_{y}=\boldsymbol{\Sigma}^{\frac{1}{2}}\epsilon_{t}\rightarrow\boldsymbol{\Sigma}^{\frac{1}{2}}\boldsymbol{\Sigma}^{\frac{1}{2}}=\boldsymbol{D}_{t}\boldsymbol{R}_{t}\boldsymbol{D}_{t}
+\]
+
+For when considering the DCC model we turn to L10S24 / L10S30, were
+we note that the conditional covariance matriz can be factorized as;
+\begin{equation}
+\boldsymbol{H}_{t}=\boldsymbol{D}_{t}^{\frac{1}{2}}\boldsymbol{R}_{t}\boldsymbol{D}_{t}^{\frac{1}{2}}
+\end{equation}
+ where $\boldsymbol{D_{t}}$ is a matrix with the variance on the
+diagonol i.e,
+\begin{equation}
+\boldsymbol{D}_{t}=\left[\begin{array}{ccc}
+\sigma_{1,t}^{2} & 0 & 0\\
+0 & \sigma_{2,t}^{2} & 0\\
+0 & 0 & \sigma_{3,t}^{2}
+\end{array}\right]
+\end{equation}
+
+and where $\sigma_{i,t}^{2}=var\left(\left.y_{i,t}\right|\mathcal{F}_{t-1}\right)$.
+$\boldsymbol{R}_{t}$ is the evaluation matrix with typical element
+$\rho_{i;j,t}=cor\left(\left.y_{i,t},y_{j,t}\right|\mathcal{F}_{t-1}\right)$
+i.e
+
+\begin{equation}
+\boldsymbol{R}_{t}=\left[\begin{array}{ccc}
+1 & \rho_{1.2} & \rho_{1.3}\\
+\rho_{2,1} & 1 & \rho_{2.3}\\
+\rho_{3.1} & \rho_{3.2} & 1
+\end{array}\right]
+\end{equation}
+
+$Eq.15$ is also what Leopoldo calls $\bar{\boldsymbol{R}}_{\boldsymbol{t}}=cor(\eta_{t})$
+
+From here we turn to L10S31 $\rightarrow$ As specified in the exercise,
+in the following, we will allow for the marginal processes or the
+$\sigma^{2}$ to follow a $GARCH(1,1)$ process of below form, and
+further, one needs to incorporate the assumption about $\mathbf{R}_{t}$:
+
+\begin{equation}
+\sigma_{i,j}^{2}=\omega+\alpha y_{i,t-1}^{2}+\beta\sigma_{i.t-1}^{2}
+\end{equation}
+
+\begin{equation}
+\mathbf{R}_{t}=\tilde{\mathbf{Q}}_{t}^{-\frac{1}{2}}\mathbf{Q}_{t}\tilde{\mathbf{Q}}_{t}^{-\frac{1}{2}}
+\end{equation}
+
+Where $\tilde{\boldsymbol{Q}_{t}}$ is a diagonol matrix with typical
+elements of $\boldsymbol{Q}_{t}$, which we can write out as on L10S31.
+
+\begin{equation}
+\boldsymbol{Q}_{t}=\bar{\boldsymbol{Q}}\left(1-a-b\right)+a\left(\boldsymbol{\eta}_{t-1}\boldsymbol{\eta}_{t-1}^{'}\right)+b\left(\boldsymbol{Q}_{t-1}\right)
+\end{equation}
+
+Leopoldo alsp has $\rightarrow$$\boldsymbol{\eta}_{t}=\left(\eta_{1,t},...,\eta_{N,T}\right)^{'},\eta_{i,t}=\frac{y_{i,t}}{\sigma_{i,t}}$
+
+Where $\boldsymbol{\eta}_{t}=\boldsymbol{D}_{t}^{-\frac{1}{2}}\boldsymbol{y}_{t}$
+are standarized returns, and $\bar{\boldsymbol{Q}}$ is fixed to the
+emperical evaluation of $\text{\ensuremath{\boldsymbol{\eta}_{t}}\ensuremath{\bar{\boldsymbol{Q}_{t}}=\bar{\boldsymbol{R}_{t}}=cor\left(z_{t}\right)} used in the CCC model where the correlation is static.}$Note,
+in above formulation, we have the following constraints for our model.
+this is to insure both that the variances are positive but $\beta+\alpha\leq1,$
+is also for weak stationarity
+
+\[
+positivity\ of\ \sigma_{i,t}^{2}=\left\{ \begin{array}{c}
+\omega_{i}>0\\
+\alpha_{i}>0\\
+\beta_{i}>0
+\end{array}\right.
+\]
+
+\[
+weak\ stationarity\ of\ y_{i,t}=\left\{ \alpha_{i}+\beta_{i}<1\right.
+\]
+
+\begin{align}
+0 & \leq a,b\leq1, & a+b & \leq1,\\
+0 & \leq\alpha,\beta<1, & \alpha+\beta & <1.\nonumber 
+\end{align}
+These constraints do not only cause weak stationarity of the our GARCH(1,1)
+process\footnote{Note, the GARCH model has been initialised with its unconditional
+variance, i.e. 
+\begin{align*}
+E\left[\sigma_{i,t}^{2}\right] & =\omega+\alpha\underset{\sigma_{i,t-1}^{2}}{\underbrace{E\left[y_{i,t-1}^{2}\right]}}+\beta\left[\sigma_{i,t-1}^{2}\right]\\
+ & =\frac{\omega}{1-\alpha-\beta}.
+\end{align*}
+}, but also causes the conditional covariance matrix, $\mathbf{Q}_{t}$,
+to be positive definite, which in terms imply that $\mathbf{R}_{t}$
+is positive definite. As oppose to the CCC model, $\mathbf{Q}_{t}$
+allows for $\mathbf{R}_{t}$ to change over time, but a drawback of
+the general procedure is that $a$ and $b$ drive the dynamics of
+the correlations, which has led to more recent extensions of the DCC
+model, which overcomes this feature.\\
+
+Next step is to derive the loglikelihood, hence one consider the density
+of $\left.\mathbf{y}_{t}\right|\mathcal{F}_{t-1}$; note $\mu=0$,
+hence it reduces to: Simply taking from wiki, and with $\sigma^{2}=\boldsymbol{\Sigma}$
+\begin{equation}
+p\left(\mathbf{y};0,\boldsymbol{\Sigma}\right)=\frac{1}{2\pi\left|\boldsymbol{\Sigma}_{t}\right|^{\frac{1}{2}}}exp\left\{ -\frac{1}{2}\mathbf{\mathbf{y}_{t}}'\boldsymbol{\Sigma}_{t}^{-1}\mathbf{\mathbf{y}_{t}}\right\} .
+\end{equation}
+
+Taking logs yields:
+
+\begin{align}
+log\left(p\left(\mathbf{y};0,\boldsymbol{\Sigma}\right)\right) & =log\left(\frac{1}{2\pi\left|\boldsymbol{\Sigma}_{t}\right|^{\frac{1}{2}}}exp\left\{ -\frac{1}{2}\mathbf{\mathbf{y}_{t}}'\boldsymbol{\Sigma}_{t}^{-1}\mathbf{\mathbf{y}_{t}}\right\} \right)\nonumber \\
+ & =log\left(2\pi\left|\boldsymbol{\Sigma}_{t}\right|^{\frac{1}{2}}\right)^{-1}exp\left\{ -\frac{1}{2}\mathbf{\mathbf{y}_{t}}'\boldsymbol{\Sigma}_{t}^{-1}\mathbf{\mathbf{y}_{t}}\right\} \nonumber \\
+ & =-log\left(2\pi\right)-log\left(\left|\boldsymbol{\Sigma}_{t}\right|^{\frac{1}{2}}\right)exp\left\{ -\frac{1}{2}\mathbf{\mathbf{y}_{t}}'\boldsymbol{\Sigma}_{t}^{-1}\mathbf{\mathbf{y}_{t}}\right\} \nonumber \\
+ & =-log\left(2\pi\right)-\frac{1}{2}log\left(\left|\boldsymbol{\Sigma}_{t}\right|\right)-\frac{1}{2}\mathbf{\mathbf{y}_{t}}'\boldsymbol{\Sigma}_{t}^{-1}\mathbf{\mathbf{y}_{t}}
+\end{align}
+
+And considering of lenght $T$
+
+\begin{align}
+logL_{t} & =\sum_{t=1}^{T}-log\left(2\pi\right)-\frac{1}{2}log\left(\left|\boldsymbol{\Sigma}_{t}\right|\right)-\frac{1}{2}\mathbf{\mathbf{y}_{t}}'\boldsymbol{\Sigma}_{t}^{-1}\mathbf{\mathbf{y}_{t}}\nonumber \\
+ & =-\frac{1}{2}\sum_{t=1}^{T}+2log\left(2\pi\right)+log\left(\left|\boldsymbol{\Sigma}_{t}\right|\right)+\mathbf{\mathbf{y}_{t}}'\boldsymbol{\Sigma}_{t}^{-1}\mathbf{\mathbf{y}_{t}}\nonumber \\
+ & =-\frac{1}{2}\sum_{t=1}^{T}\left(2log\left(2\pi\right)+log\left(\left|\underset{\boldsymbol{\Sigma}_{t}}{\underbrace{\mathbf{D}_{t}^{\frac{1}{2}}\mathbf{R}_{t}\mathbf{D}_{t}^{\frac{1}{2}}}}\right|\right)+\mathbf{\mathbf{y}}'_{t}\left(\underset{\boldsymbol{\Sigma}_{t}}{\underbrace{\mathbf{D}_{t}^{\frac{1}{2}}\mathbf{R}_{t}\mathbf{D}_{t}^{\frac{1}{2}}}}\right)^{-1}\mathbf{y}_{t}\right)\nonumber \\
+ & =-\frac{1}{2}\sum_{t=1}^{T}\left(2log\left(2\pi\right)+log\left(\left|\mathbf{R}_{t}\right|\right)+log\left(\left|\mathbf{D}_{t}\right|\right)+\underset{\boldsymbol{\eta_{t}}}{\underbrace{\mathbf{\mathbf{y}}'_{t}\mathbf{D}_{t}^{-\frac{1}{2}}}}\mathbf{R}_{t}^{-1}\underset{\boldsymbol{\eta_{t}}}{\underbrace{\mathbf{D}_{t}^{-\frac{1}{2}}\mathbf{\mathbf{y}}_{t}}}\right)\nonumber \\
+ & =-\frac{1}{2}\sum_{t=1}^{T}\left(2log\left(2\pi\right)+log\left(\left|\mathbf{R}_{t}\right|\right)+log\left(\left|\mathbf{D}_{t}\right|\right)+\boldsymbol{\eta}_{t}'\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}\right)
+\end{align}
+As introduced in L10S34, we add and substract $\mathbf{Y}_{t}'\mathbf{D}_{t}^{-\frac{1}{2}}\mathbf{D}_{t}^{-\frac{1}{2}}\mathbf{Y}_{t}=\mathbf{\boldsymbol{\eta}}_{t}'\mathbf{\boldsymbol{\eta}}\rightarrow_{t}\mathbf{Y}_{t}'\mathbf{D}_{t}^{-\frac{1}{2}}\mathbf{D}_{t}^{-\frac{1}{2}}\mathbf{Y}_{t}-\mathbf{\boldsymbol{\eta}}_{t}'\mathbf{\boldsymbol{\eta}}$
+\begin{align}
+logL_{T} & =-\frac{1}{2}\sum_{t=1}^{T}\left(2log\left(2\pi\right)+log\left(\left|\mathbf{D}_{t}\right|\right)+\mathbf{y}_{t}'\mathbf{D}_{t}^{-\frac{1}{2}}\mathbf{D}_{t}^{-\frac{1}{2}}\mathbf{y}_{t}-\mathbf{\boldsymbol{\eta}}_{t}'\mathbf{\boldsymbol{\eta}}_{t}+log\left(\left|\mathbf{R}_{t}\right|\right)+\boldsymbol{\eta}_{t}'\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}\right)\nonumber \\
+ & =\underset{logL_{V,T}\left(\theta\right)}{\underbrace{-\frac{1}{2}\sum_{t=1}^{T}\left(2log\left(2\pi\right)+log\left(\left|\mathbf{D}_{t}\right|\right)+\mathbf{y}_{t}'\mathbf{D}_{t}^{-1}\mathbf{y}_{t}\right)}}\;\underset{logL_{C,T}\left(\theta,\phi\right)}{\underbrace{-\frac{1}{2}\sum_{t=1}^{T}\left(\boldsymbol{\eta}_{t}'\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}-\mathbf{\boldsymbol{\eta}}_{t}'\mathbf{\boldsymbol{\eta}}_{t}+log\left(\left|\mathbf{R}_{t}\right|\right)\right)}},
+\end{align}
+
+\begin{align}
+logL_{V,T}\left(\theta\right)= & -\frac{1}{2}\sum_{t=1}^{T}\left(2log\left(2\pi\right)+log\left(\left|\mathbf{D}_{t}\right|\right)+\mathbf{y}_{t}'\mathbf{D}_{t}^{-1}\mathbf{y}_{t}\right)\\
+ogL_{C,T}\left(\theta,\phi\right)= & -\frac{1}{2}\sum_{t=1}^{T}\left(\boldsymbol{\eta}_{t}'\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}-\mathbf{\boldsymbol{\eta}}_{t}'\mathbf{\boldsymbol{\eta}}_{t}+log\left(\left|\mathbf{R}_{t}\right|\right)\right)
+\end{align}
+
+The procedure is then to seperately maximizing the likelihoods and
+then sum them in order to report the total likelihood of the model.
+The procedure is following a two-step approach, where one initially
+maximizes the likelihood with regards to the volatility, hence obtain
+$\hat{\theta}$, and then one maximizes the likelihood of the correlation
+part with regards to $\phi$ in order to obtain $\hat{\phi}$. This
+approach is possible due to the nice factorization of the likelihood
+functions.\\
+
+For the volatility part of the likelihood, one may write:
+\begin{align}
+logL_{V,T}\left(\theta\right) & =-\frac{1}{2}\sum_{t=1}^{T}\left(2log\left(2\pi\right)+log\left(\left|\mathbf{D}_{t}\right|\right)+\mathbf{y}_{t}'\mathbf{D}_{t}^{-1}\mathbf{y}_{t}\right)\nonumber \\
+ & =-\frac{1}{2}\sum_{t=1}^{T}\sum_{i=1}^{N}\left(2log\left(2\pi\right)+log\left(h_{i,t}\right)+\frac{r_{i,t}^{2}}{h_{i,t}}\right),
+\end{align}
+which simply imply that we may split the problem into 'severals' i.e.
+one may maximize each GARCH likelihood seperately and then sum them
+at the end, which is exactly what our function in R will do with the
+data on GSPC and DJI.\\
+
+The succes of the procedure crucially depends on consistency of the
+first estimate, i.e. $\hat{\theta}$ - if it is consistent, then the
+estimate of phi, $\hat{\phi}$, will be consistent assuming continuity
+of the loglikelihood function around the true value of $\phi$.\\
+
+As we have specified the DCC model, one may consider the special case
+with $\mathbf{R}_{t}=\mathbf{R}$, which is the CCC model. For the
+CCC model we set $a=b=0$ in $\boldsymbol{Q}_{t}$, CCC is a special
+case of the DCC model.
+
+\subsection*{Constant Conditional Correlation (CCC) Model}
+
+When considering the Constant Conditional Correlation model, we will
+make use of most parts of above in regards to the DCC model, but the
+crucial point is the definition of $\mathbf{R}$, where the CCC model
+make use of a time-invariant correlation matrix defined as:
+\[
+\mathbf{R}=\left[\begin{array}{cc}
+1 & \rho\\
+\rho & 1
+\end{array}\right],
+\]
+hence we NO longer need the part regarding $\mathbb{\mathbf{Q}}_{t}$
+in our estimation procedure. This assumption imply a factorization
+of $\boldsymbol{\Sigma}_{t}$ according to $\mathbf{D}_{t}^{\frac{1}{2}}\mathbf{R}\mathbf{D}_{t}^{\frac{1}{2}}$,
+hence our estimation procedure becomes marginally easier as we no
+longer need to derive $\mathbf{R}_{t}$ for each time period. Instead
+of filtering out the correlation matrix across time - as it is now
+constant - one now only needs to filter out the covariances across
+time, which may do by recalling the formula for correlation:
+\[
+\rho_{i;j}=\frac{\sigma_{i;j,t}}{\sigma_{i,t}\sigma_{j_{t}}}\Rightarrow\sigma_{i;j,t}=\rho_{i;j}\sigma_{i,t}\sigma_{j_{t}}.
+\]
+
+Note, this is obviously for the simplified case, in practice, we consider
+the factorization and obtain
+\[
+\boldsymbol{\Sigma}_{t}=\mathbf{D}_{t}^{\frac{1}{2}}\mathbf{R}\mathbf{D}_{t}^{\frac{1}{2}}
+\]
+One may therefore realise that modelling the conditional variances
+will be sufficient as they explain all variation in $\boldsymbol{\Sigma}_{t}$.\\
+
+Considering the CCC model, it has been widely used in the litterature
+due to its simplicity, but in general, it may face difficulties when
+considering financial returns as the assumption of constant correlation
+seldom is supported by data - one should note that due to the quite
+high and quite constant (except for a few spikes) correlation among
+the indexes we consider, GSPC and DJI, the CCC model will still perform
+quite well.\\
+
+Considering the constraints of the model, as it is also based on the
+GARCH(1,1) marginal processes, we must require that (as we do with
+the DCC model)
+\begin{align*}
+0\leq & \alpha,\beta<1, & \alpha+\beta & <1,
+\end{align*}
+in order to have weak stationarity. Furthermore, we have that if the
+conditional variances, $\mathbf{D}_{t}$, is all positive, $\mathbf{R}$
+is positive definite, then $\boldsymbol{\Sigma}_{t}$ will be guarenteed
+to be positive definite.
+
+\subsection*{DCC vs CCC}
+
+In order to visualize the difference between the two models, one may
+consider the following graph, which indeed describe the main difference
+between the models, i.e. the correlation matrix for the two models,
+i.e. $\mathbf{R}_{t}$ for DCC and $\mathbf{R}$ for CCC.
+
+\begin{figure}[H]
+\begin{centering}
+\includegraphics[scale=0.4,bb = 0 0 200 100, draft, type=eps]{2019/DCC vs CCC.jpeg}
+\par\end{centering}
+\caption{DCC vs CCC model - Correlation}
+\end{figure}
+
+Hence as described in words; the DCC model will allow for the correlation
+to vary across time, whereas the CCC model will keep correlation constant.
+
+\section*{Empirical Analysis}
+
+\subsection*{Data Series}
+
+Note, as stated initially, for question 2, I have made use of the
+updated dataset, i.e. data\_new.csv, which features the returns for
+the indexes GSPC and DJI.\\
+
+As an initial step, I have started by plotting the returns against
+time and against each other.
+
+\begin{figure}[H]
+\begin{centering}
+\subfloat[Returns against time]{\begin{centering}
+\includegraphics[scale=0.4,bb = 0 0 200 100, draft, type=eps]{2019/Returns of the series.jpeg}
+\par\end{centering}
+} \subfloat[Returns against returns]{\begin{centering}
+\includegraphics[scale=0.4,bb = 0 0 200 100, draft, type=eps]{2019/Returns plotted against each other.jpeg}
+\par\end{centering}
+}
+\par\end{centering}
+\caption{Index returns}
+\end{figure}
+
+As one instantly notices, the returns of the two indexes follow very
+much the same pattern and considering returns against returns, one
+clearly find a strong positive correlation between the indexes. This
+seems quite intuitive - the indexes features a variety of companies
+and if the indexes contain similar companies, one would have indexes
+that would be positively correlated. This is indeed the case and considering
+the correlation between the indexes over the entire time interval,
+it is close to 1.\\
+
+The strong positive correlation may help us in the following, as it
+will allow us to form expectations about the results we obtain, including:
+\begin{enumerate}
+\item One would expect that the portfolio weights in the minimum variance
+portfolio would vary quite a lot over time due to the postive correlation.
+\item When computing the Conditional Value at Risk, CoVaR, it will (most
+likely) be negative.
+\end{enumerate}
+
+\subsection*{Minimum Variance Portfolio (MVP)}
+
+Considering the minimum variance portfolio, we seek to compute the
+weight, $\omega_{t}$ associated to the MVP constructed using GSPC
+and DJI at each point in time, i.e.
+\[
+y_{t}=\omega_{t}y_{t}^{GSPC}+\left(1-\omega_{t}\right)y_{t}^{DJI}.
+\]
+
+In the following, we have illustrated the weights in both indexes
+for both models. Note that short selling as well as fractional holdings
+of either index is allowed in our setting.
+
+\begin{figure}[H]
+\begin{centering}
+\subfloat[Weight on GSPC, $\omega_{t}$]{\begin{centering}
+\includegraphics[scale=0.4,bb = 0 0 200 100, draft, type=eps]{2019/MVP - Weight on GSPC.jpeg}
+\par\end{centering}
+}\subfloat[Weight on DJI, $1-\omega_{t}$]{\begin{centering}
+\includegraphics[scale=0.4,bb = 0 0 200 100, draft, type=eps]{2019/MVP - Weight on DJI.jpeg}
+\par\end{centering}
+}
+\par\end{centering}
+\caption{Minimum Variance Portfolio}
+\end{figure}
+
+One notices instantly that short selling is used to a large extend
+and that the portfolio weights vary a great deal over the time horizon.
+It it is a bit difficult to state a clear pattern, but in the first
+couple of years, our DCC model tends to short the GSPC index more
+than the CCC model does - it tends to favour larger positions in DJI
+than the CCC model. The pattern gets less clear as time goes by and
+the two models look more similar in terms of weights from 2014 and
+forward.\\
+
+In general, one may conclude that the DCC model is extreme in terms
+of the position in the indexes, which must be caused by the time-varying
+correlation, i.e. the model is less restricted, hence become more
+'extreme' in terms of portfolio weights.
+
+\subsection*{CoVaR of GSPC given DJI}
+
+As a last step, we woud like to obtain the Conditional Value at Risk
+- CoVaR for our two models; DCC and CCC. The Conditional Value at
+Risk is defined in the following way as in L14S4:
+\[
+P\left(\left.Y_{1,t}\leq CoVaR_{t}\left(\alpha\right)\right|Y_{2,t}\leq VaR_{t}\left(\alpha\right),\mathcal{F}_{t-1}\right)=\alpha,
+\]
+hence the size we compute is essentially the $\alpha\%$ chance of
+returns below $VaR_{GSPC,t}\left(\alpha\right)$ conditioning on the
+$\alpha\%$ chance of returns below $VaR_{DJI,t}\left(\alpha\right)$.
+To clarify with an example; if the $CoVaR_{GSPC,t}=VaR_{DJI,t}$ is
+a $2\%$ return, then $\alpha=0.01$ imply that we have $1\%$ chance
+of realising returns smaller than or equal to 2\% on our GSPC index,
+conditioning on the fact that we have a $1\%$ chance of realising
+returns smaller than or equal to $2\%$ for the DJI index.\\
+
+As we have already considered the data series and noted that the indexes
+are very positive correlated, one would therefore naturally assume
+that the $CoVaR$ is negative. Note, if the two indexes where uncorrelated,
+$CoVaR_{GSPC,t}=VaR_{GSPC,t}$.\\
+
+To take a step deeper into the theory, I have decided to follow the
+approach by Giulio Girardi and A. Tolga Ergün (Journal of Banking
+\& Finance, Volume 37, Issue 8, August 2013, Pages 3169-3180).
+
+Using their definition and reframing it according to our problem,
+the CoVaR is defined as the VaR for index $i$, GSPC, conditional
+on index $j$, DJI, being in 'financial distress', which will allow
+to show some of the risk spillovers that may exists between the indexes.\\
+
+In general we consider two versions of the $CoVaR$;
+\begin{enumerate}
+\item $CoVaR=$ which imply that the event we are conditioning on is \emph{exactly}
+at its $VaR$, i.e. 
+\[
+P\left(\left.Y_{1,t}\leq CoVaR_{t}\left(\alpha\right)\right|Y_{2,t}=VaR_{t}\left(\alpha\right),\mathcal{F}_{t-1}\right)=\alpha,
+\]
+
+\begin{enumerate}
+\item This version has been modelled at the end of the code (but is NOT
+graphed below, if one would like to compare.
+\end{enumerate}
+\item $CoVaR=$ which imply that the event we are conditioning on is \emph{at
+most} at its $VaR$, i.e. 
+\[
+P\left(\left.Y_{1,t}\leq CoVaR_{t}\left(\alpha\right)\right|Y_{2,t}\leq VaR_{t}\left(\alpha\right),\mathcal{F}_{t-1}\right)=\alpha.
+\]
+
+\begin{enumerate}
+\item This version is graphed below.\\
+\end{enumerate}
+\end{enumerate}
+In the following we will consider the second version and in order
+to estimate the size, we follow the three-step procedure, which reads:
+\begin{enumerate}
+\item Derive $P\left(Y_{2,t}\leq VaR_{t}\left(\alpha\right)\right)=\alpha$
+as it will constitute a upper bound in the integral at point 3.
+\item Estimation of the bivariate model one consider; i.e. note it is the
+bivariate gaussian DCC (and CCC) model.
+\item Computation of $P\left(\left.Y_{1,t}\leq CoVaR_{t}\left(\alpha\right)\right|Y_{2,t}\leq VaR_{t}\left(\alpha\right),\mathcal{F}_{t-1}\right)=\alpha$
+by the integral:
+\[
+\int_{-\infty}^{\text{CoVaR}_{t}\left(\alpha\right)}\int_{-\infty}^{\text{VaR}_{t}\left(\alpha\right)}pdf_{t}\left(x,y\right)dydx=\alpha^{2},
+\]
+which one derives by the uniroot procedure, where we solve for the
+unknown $\text{CoVaR}_{t}\left(\alpha\right)$.
+\end{enumerate}
+The formal steps to get to the integral is from the fact that we have:
+\begin{align*}
+P\left(\left.Y_{1,t}\leq CoVaR_{t}\left(\alpha\right)\right|Y_{2,t}\leq VaR_{t}\left(\alpha\right),\mathcal{F}_{t-1}\right) & =\alpha\\
+\frac{P\left(\left.Y_{1,t}\leq CoVaR_{t}\left(\alpha\right),Y_{2,t}\leq VaR_{t}\left(\alpha\right)\right|\mathcal{F}_{t-1}\right)}{\underset{=\alpha}{\underbrace{P\left(\left.Y_{2,t}\leq VaR_{t}\left(\alpha\right)\right|\mathcal{F}_{t-1}\right)}}} & =\alpha\\
+P\left(\left.Y_{1,t}\leq CoVaR_{t}\left(\alpha\right),Y_{2,t}\leq VaR_{t}\left(\alpha\right)\right|\mathcal{F}_{t-1}\right) & =\alpha\underset{=\alpha}{\underbrace{P\left(\left.Y_{2,t}\leq VaR_{t}\left(\alpha\right)\right|\mathcal{F}_{t-1}\right)}}\\
+\int_{-\infty}^{\text{CoVaR}_{t}\left(\alpha\right)}\int_{-\infty}^{\text{VaR}_{t}\left(\alpha\right)}pdf_{t}\left(x,y\right)dydx & =\alpha^{2}.
+\end{align*}
+
+We obtain the $CoVaR_{GSPC,t}\left(\alpha\right)$ for $\alpha\in[0.01,0.05]$
+as:
+
+\begin{figure}[H]
+\begin{centering}
+\subfloat[DCC model]{\begin{centering}
+\includegraphics[scale=0.4,bb = 0 0 200 100, draft, type=eps]{2019/CoVaR - DCC.jpeg}
+\par\end{centering}
+}\subfloat[CCC model]{\begin{centering}
+\includegraphics[scale=0.4,bb = 0 0 200 100, draft, type=eps]{2019/CoVaR - CCC.jpeg}
+\par\end{centering}
+}
+\par\end{centering}
+\caption{Conditional Value at Risk - GSPC Given DJI}
+\end{figure}
+
+As expected, the $CoVaR_{GSPC}$ is indeed negative for both models.
+As one notices, the smaller the $\alpha$, i.e. percentage chance
+of extreme event, the effect of that event becomes larger, which intuitive
+makes great sense; the more extreme event one consider, the smaller
+the probability for that event to occur. Hence moving from $\alpha=0.05$
+to $\alpha=0.01$ simply shifts the curve downward.
+\end{document}

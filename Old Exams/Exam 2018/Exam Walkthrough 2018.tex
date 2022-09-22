@@ -1,0 +1,454 @@
+%% LyX 2.3.6.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[latin9]{inputenc}
+\usepackage{amsmath}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{booktabs} 
+\usepackage{longtable}
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+
+\section*{Exam 2018}
+
+\subsubsection*{Leopoldo rewritten}
+
+\subsection*{1) Derive the GAS updating}
+
+We have
+\[
+p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)=\left[2^{\left(1+\frac{1}{\upsilon}\right)}\varphi_{t}\Gamma\left(1+\frac{1}{\upsilon}\right)\right]^{-1}exp\left(-\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}\right)
+\]
+
+Such that
+\begin{align*}
+logp\left(y_{t}\mid\mathbf{y}_{1:t-1};\varphi_{t},\nu\right)= & -\left[(1+\frac{1}{\nu})log(2)+log\left(\varphi_{t}\right)+log(\Gamma(1+\frac{1}{\nu}))\right]-\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\nu}}{2}\\
+logp\left(y_{t}\mid\mathbf{y}_{1:t-1};\varphi_{t},\nu\right)\propto & -log\left(\varphi\right)-\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}
+\end{align*}
+
+Note that $\varphi>0$ such that $\left|\varphi\right|=\varphi$
+
+The score with respect to $\varphi$ is
+
+\[
+\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\nu}}{2}=\frac{1}{2}y_{t}^{\upsilon}\varphi_{t}^{-\nu}=\frac{1}{2}-\nu y_{t}^{\upsilon}\varphi_{t}^{-\nu-1}=\frac{1}{2}\left(-\nu\frac{y_{t}^{\upsilon}}{\varphi_{t}^{\nu+1}}\right)
+\]
+\begin{align*}
+\frac{\partial log\left(p\left(y\right)\right)}{\partial\varphi} & =-\frac{1}{\varphi}+\frac{\upsilon\left|y-\mu\right|^{\upsilon}}{2\varphi^{\upsilon+1}}\\
+ & =\frac{1}{\varphi}\left(\frac{\upsilon}{2}\frac{\left|y-\mu\right|^{\upsilon}}{\varphi^{\upsilon}}-1\right)
+\end{align*}
+
+Note that when $\upsilon=2$ we obtain $\frac{1}{\varphi}\left[\frac{\left(y-\mu\right)^{2}}{\varphi^{2}}-1\right]$
+which is the score of the gaussian distribution, as on L9S38.
+
+The GAS-GED model is defined as
+
+\begin{align*}
+\varphi_{t} & =exp\left(\tilde{\varphi}_{t}\right)\rightarrow\frac{\partial}{\partial\tilde{\varphi_{t}}}\left(\varphi_{t}\right)=\frac{\partial}{\partial\tilde{\varphi_{t}}}\left(exp\left(\tilde{\varphi_{t}}\right)\right)\\
+\tilde{\varphi_{t}} & =\omega+\alpha s_{t-1}+\beta\tilde{\varphi}_{t-1}
+\end{align*}
+
+Where 
+\begin{align*}
+s_{t} & =\frac{\partial log\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)}{\partial\tilde{\varphi_{t}}}\\
+ & =\frac{\partial\varphi_{t}}{\partial\tilde{\varphi_{t}}}\frac{\partial log\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)}{\partial\varphi_{t}}\\
+ & =\underset{exp\left(\tilde{\varphi_{t}}\right)}{\underbrace{\frac{\partial\varphi_{t}}{\partial\tilde{\varphi_{t}}}}}\frac{1}{\varphi}\left(\frac{\upsilon}{2}\frac{\left|y-\mu\right|^{\upsilon}}{\varphi^{\upsilon}}-1\right)\\
+ & =exp\left(\bar{\varphi}_{t}\right)\left[-\frac{1}{\varphi_{t}}+\nu\frac{\frac{\left|y_{t}\right|^{2}}{\left|\varphi_{t}\right|^{\upsilon+1}}}{2}\right]\\
+ & =exp\left(\bar{\varphi}_{t}\right)\left[-\frac{1}{exp\left(\bar{\varphi}_{t}\right)}+\nu\frac{\frac{\left|y_{t}\right|^{\upsilon}}{exp\left(\bar{\varphi_{t}}\right)^{\upsilon+1}}}{2}\right]\\
+ & =\left[-\frac{exp\left(\bar{\varphi}_{t}\right)}{exp\left(\bar{\varphi}_{t}\right)}+\nu\frac{1}{2}\frac{exp\left(\bar{\varphi}_{t}\right)*\left|y_{t}\right|^{\upsilon}}{exp\left(\bar{\varphi_{t}}\right)^{\upsilon+1}}\right]\\
+ & =-1+\nu\frac{1}{2}\frac{\left|y_{t}\right|^{\upsilon}}{exp\left(\bar{\varphi_{t}}\right)}\\
+s_{t}\left(y_{t},\nu,\bar{\varphi}_{t}\right) & =\nu\frac{\left|y_{t}\right|^{\nu}}{2exp\left(\nu\bar{\phi}_{t}\right)}-1
+\end{align*}
+
+Futher we have
+\begin{align*}
+E\left[\left.S_{t}\right|F_{t-1}\right] & =\int s_{t}*p\left(\left.y_{t}\right|F_{t-1}\right)dy_{t}\\
+ & =\int\frac{\partial log\left(p\left(\left.y_{t}\right|F_{t-1}\right)\right)}{\partial\tilde{\varphi}_{t}}p\left(\left.y_{t}\right|F_{t-1}\right)dy_{t}\\
+ & =\int\frac{\partial\left(p\left(\left.y_{t}\right|F_{t-1}\right)\right)}{\partial\tilde{\varphi}_{t}}*\frac{1}{p\left(\left.y_{t}\right|F_{t-1}\right)}*p\left(\left.y_{t}\right|F_{t-1}\right)dy\\
+ & =\int\frac{\partial\left(p\left(\left.y_{t}\right|F_{t-1}\right)\right)}{\partial\tilde{\varphi}_{t}}dy\\
+ & =\frac{\partial}{\partial\tilde{\varphi}_{t}}\int\left(p\left(\left.y_{t}\right|F_{t-1}\right)\right)1dy\\
+ & =\frac{\partial}{\partial\tilde{\varphi}_{t}}1=0
+\end{align*}
+
+Also note that $E\left[s_{t}\right]=E\left[E\left[\left.s_{t}\right|F_{t-1}\right]\right]=E\left[0\right]=0$
+
+\subsection*{2) Derive the log likelihood
+\begin{align*}
+p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right) & =\left[2^{\left(1+\frac{1}{\upsilon}\right)}\varphi_{t}\Gamma\left(1+\frac{1}{\upsilon}\right)\right]^{-1}exp\left(-\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}\right)\protect\\
+log\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right) & =log\left(\left[2^{\left(1+\frac{1}{\upsilon}\right)}\varphi_{t}\Gamma\left(1+\frac{1}{\upsilon}\right)\right]^{-1}exp\left(-\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}\right)\right)\protect\\
+ & =-log\left(2^{\left(1+\frac{1}{\upsilon}\right)}\right)-log\left(\varphi_{t}\right)-log\left(\Gamma\left(1+\frac{1}{\upsilon}\right)\right)-\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}\protect\\
+ & =-\left(1+\frac{1}{\upsilon}\right)log\left(2\right)-log\left(\varphi_{t}\right)-log\left(\Gamma\left(1+\frac{1}{\upsilon}\right)\right)-\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}
+\end{align*}
+}
+
+The log likelihood is
+
+\begin{align*}
+L\left(\left.y_{1:t}\right|\theta_{t}\right) & =\sum_{t=1}^{T}\left(-\left(1+\frac{1}{\upsilon}\right)log\left(2\right)-log\left(\varphi_{t}\right)-log\left(\Gamma\left(1+\frac{1}{\upsilon}\right)\right)-\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}\right)\\
+ & =-\sum_{t=1}^{T}\left(\left(1+\frac{1}{\upsilon}\right)log\left(2\right)+log\left(\varphi_{t}\right)+log\left(\Gamma\left(1+\frac{1}{\upsilon}\right)\right)+\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}\right)\\
+ & =-T\left(1+\frac{1}{\upsilon}\right)log\left(2\right)-Tlog\left(\Gamma\left(1+\frac{1}{\upsilon}\right)\right)-\sum_{t=1}^{T}\left(log\left(\varphi_{t}\right)+\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}\right)\\
+ & =-T\left(1+\frac{1}{\upsilon}\right)log\left(2\right)-Tlog\left(\Gamma\left(1+\frac{1}{\upsilon}\right)\right)-\sum_{t=1}^{T}log\left(\varphi_{t}\right)-\sum_{t=1}^{T}\frac{\left|\frac{y_{t}}{\varphi_{t}}\right|^{\upsilon}}{2}
+\end{align*}
+
+where $\varphi_{t}=\varphi_{t}\left(\theta\right)$ and $\theta=\left(\omega,\alpha,\beta,v\right)^{'}$
+
+Constraints to impose that $\tilde{\varphi_{t}}$is covariance stationary
+
+\[
+\tilde{\varphi_{t}}=\omega+\alpha s_{t-1}+\beta\tilde{\varphi}_{t-1}
+\]
+
+Can be written as 
+\[
+\tilde{\varphi_{t}}=\frac{\omega}{1-\beta}+\alpha\sum_{s=0}^{\infty}\beta^{s}s_{t-1-s}
+\]
+
+
+\subsubsection*{First moment}
+
+\begin{align*}
+E\left[\tilde{\varphi_{t}}\right] & =E\left[\frac{\omega}{1-\beta}+\alpha\sum_{k=0}^{\infty}\beta^{k}s_{t-1-k}\right]\\
+ & =\frac{\omega}{1-\beta}+\alpha E\left[\sum_{k=0}^{\infty}\beta^{k}s_{t-1-k}\right]\\
+ & =\frac{\omega}{1-\beta}+\alpha\sum_{k=0}^{\infty}\beta^{k}E\left[s_{t-1-k}\right]
+\end{align*}
+
+and sim
+\[
+E\left[s_{t}\right]=0
+\]
+
+\[
+E\left[\tilde{\varphi_{t}}\right]=\frac{\omega}{1-\beta}<\infty
+\]
+
+
+\subsubsection*{Second moment}
+
+\begin{align*}
+E\left[\tilde{\varphi_{t}^{2}}\right] & =E\left[\left(\frac{\omega}{1-\beta}+\alpha\sum_{k=0}^{\infty}\beta^{k}s_{t-1-k}\right)^{2}\right]\\
+ & =\left(\frac{\omega}{1-\beta}\right)^{2}+\alpha^{2}E\left[\left(\sum_{k=0}^{\infty}\beta^{k}s_{t-1-k}\right)^{2}\right]+2*\left(\frac{\omega}{1-\beta}\right)*\left(\alpha E\left[\sum_{k=0}^{\infty}\beta^{k}s_{t-1-k}\right]\right)\\
+ & =\frac{\omega^{2}}{\left(1-\beta\right)^{2}}+\alpha^{2}E\left[\left(\sum_{k=0}^{\infty}\beta^{k}s_{t-1-k}\right)\left(\sum_{l=0}^{\infty}\beta^{e}s_{t-1-l}\right)\right]+\frac{2\alpha\omega}{1-\beta}\sum_{k=0}^{\infty}\underset{=0}{\underbrace{E\left[\beta^{k}s_{t-1-k}\right]}}\\
+ & =\frac{\omega^{2}}{\left(1-\beta\right)^{2}}+\alpha^{2}E\left[\left(\sum_{k=0}^{\infty}\sum_{l=0}^{\infty}\beta^{k}\beta^{e}s_{t-1-k}s_{t-1-e}\right)\right]\\
+ & =\frac{\omega^{2}}{\left(1-\beta\right)^{2}}+\alpha^{2}\sum_{k=0}^{\infty}\sum_{l=0}^{\infty}\beta^{k}\beta^{e}E\left[\left(s_{t-1-k}s_{t-1-e}\right)\right]
+\end{align*}
+
+Conclusion
+
+\[
+E\left[\left(s_{t-1-k}s_{t-1-l}\right)\right]=\left\{ \begin{array}{c}
+E\left[\left(s_{t-1-k}^{2}\right)\right]=e<\infty\ if\ k=e\\
+E\left[\left(s_{t-1-k}s_{t-1-e}\right)\right]=0\ if\ k\neq0
+\end{array}\right.
+\]
+
+Assume $k<e$
+
+\begin{align*}
+E\left[\left(s_{t-1-k}s_{t-1-l}\right)\right] & =E\left[E\left[\left(\left.s_{t-1-k}s_{t-1-e}\right|F_{t-1-k}\right)\right]\right]\\
+ & =E\left[s_{t-1-k}E\left[\left.s_{t-1-e}\right|F_{t-1-k}\right]\right]
+\end{align*}
+
+But
+\begin{align*}
+E\left[\left(\left.s_{t-1-k}\right|F_{t-1-k}\right)\right] & =E\left[E\left.\left[\left.s_{t-1-e}\right|F_{t-2-l}\right]\right|F_{t-1-k}\right]\\
+ & =E\left[\left.0\right|F-t-1-k\right]=0
+\end{align*}
+
+if $k>l$ the same applies
+
+\[
+E\left[\left(s_{t-1-k}s_{t-1-e}\right)\right]=\left\{ \begin{array}{c}
+e<\infty\ if\ k=e\\
+0\ if\ k\neq0
+\end{array}\right.
+\]
+
+Then 
+\[
+\sum_{k=0}^{\infty}\sum_{l=0}^{\infty}\beta^{k}\beta^{e}E\left[s_{t-1-k}s_{t-1-e}\right]=\sum_{k=0}^{\infty}\beta^{2k}e=\frac{e}{1-\beta^{2}}
+\]
+
+and 
+\[
+E\left[\tilde{\varphi_{t}}^{2}\right]=\frac{\omega^{2}}{\left(1-\beta\right)^{2}}+\frac{\alpha^{2}e}{1-\beta^{2}}<\infty\ \ if\ \left|\alpha\right|<\infty,\left|\omega\right|<\infty,\left|\beta\right|<1
+\]
+
+
+\subsection*{The autocovariance}
+
+\begin{align*}
+cov\left(\tilde{\varphi_{t}},\tilde{\varphi}_{t-k}\right) & =E\left[\tilde{\varphi}_{t}\tilde{\varphi}_{t-k}\right]-E\left[\tilde{\varphi_{t}}\right]E\left[\tilde{\varphi_{t-k}}\right]\\
+ & =E\left[\tilde{\varphi_{t}}\tilde{\varphi}_{t-k}\right]-\frac{\omega^{2}}{\left(1-\beta^{2}\right)}
+\end{align*}
+
+We have to study $E\left(\tilde{\varphi}_{t}\tilde{\varphi}_{t-k}\right)$,
+
+Consider the case $k=1$
+
+\begin{align*}
+E\left[\tilde{\varphi}_{t}\tilde{\varphi}_{t-1}\right] & =E\left[\left(\omega+\alpha s_{t-1}+\beta\tilde{\varphi}_{t-1}\right)\tilde{\varphi}_{t-k}\right]\\
+ & =\omega E\left[\tilde{\varphi}_{t-1}\right]+\alpha\underset{=0}{\underbrace{E\left[s_{t-1}\tilde{\varphi}_{t-1}\right]}}+\beta E\left[\tilde{\varphi}_{t-1}^{2}\right]
+\end{align*}
+
+Consider the case $k=2$
+
+\begin{align*}
+E\left[\tilde{\varphi}_{t}\tilde{\varphi}_{t-2}\right] & =E\left[\left(\omega+\alpha s_{t-1}+\beta\tilde{\varphi}_{t-1}\right)\tilde{\varphi}_{t-2}\right]\\
+ & =\omega E\left[\tilde{\varphi}_{t-2}\right]+\alpha\underset{=0}{\underbrace{E\left[s_{t-1}\tilde{\varphi}_{t-2}\right]}}+\beta E\left[\tilde{\varphi}_{t-1}\tilde{\varphi}_{t-2}\right]\\
+ & =\omega E\left[\tilde{\varphi}_{t-2}\right]+\beta\left(\omega E\left[\tilde{\varphi}_{t-1}\right]+\beta E\left[\tilde{\varphi}_{t-1}^{2}\right]\right)\\
+ & =\omega E\left[\tilde{\varphi}_{t-2}\right]+\beta\omega E\left[\tilde{\varphi}_{t-1}\right]+\beta^{2}E\left[\tilde{\varphi}_{t-1}^{2}\right]\\
+ & =\omega E\left[\tilde{\varphi}_{t-2}\right]+\beta\omega E\left[\tilde{\varphi}_{t-1}\right]+\beta^{2}E\left[\tilde{\varphi}_{t-1}^{2}\right]
+\end{align*}
+
+However we know that $E\left[\tilde{\varphi}_{t-1}\right]=E\left[\tilde{\varphi}_{t-2}\right]=\frac{\omega}{1-\beta}$
+
+\[
+=\omega\left(E\left[\tilde{\varphi}_{t-1}\right]+\beta E\left[\tilde{\varphi}_{t-1}\right]\right)+\beta^{2}E\left[\tilde{\varphi}_{t-1}^{2}\right]
+\]
+
+By interative substitutions we obtain
+
+\begin{align*}
+E\left[\tilde{\varphi}_{t}\tilde{\varphi}_{t-h}\right] & =\omega E\left[\tilde{\varphi}_{t-1}^{2}\right]\sum_{e=0}^{k-1}\beta^{e}+\beta^{k}E\left[\tilde{\varphi}_{t-1}^{2}\right]\\
+ & =\frac{\omega^{2}}{1-\beta}\sum_{e=0}^{k-1}\beta^{e}+\beta^{k}\left[\frac{\omega^{2}}{\left(1-\beta\right)^{2}}+\frac{\alpha^{2}e}{1-\beta^{2}}\right]
+\end{align*}
+
+which does not depend from $t$
+
+So conditions for the covariance stationarity are $\left|\beta\right|<1,\left|\omega\right|<\infty,\left|\alpha\right|<\infty$
+
+\subsubsection*{Leopoldo finished}
+
+\section*{1 Theoretical part}
+
+\subsection*{1.1 Derive the GAS updating for $\varphi_{t}$}
+
+In general the updating step in GAS model with no scaling is
+
+\begin{align}
+\psi_{t} & =\psi\left(\boldsymbol{y}_{1:t-1}\right)\\
+ & =\omega+\alpha u_{t-1}+\beta\psi_{t-1}
+\end{align}
+
+Where $\psi_{t}$is the variable of interest, and the one we seek
+to filter out, and where
+
+\begin{equation}
+u_{t}=\nabla_{t}=\frac{\partial logp\left(y_{\tau}\mid y_{1:t-1};\psi\right)}{\partial\psi}
+\end{equation}
+
+which is the unscaled score of the conditional distribution. The general
+idea is to use this score of the conditional distribution to give
+the direction update step. In some applications it is convenient to
+introduce a link function, such that we restrict our variable in some
+way. In this particular exercise for the GAS-GED model, we want to
+have the svale parameter $\varphi_{t}$ which is the variable of interest,
+is positive. We impose this restriction by introducing a exponential
+line equation such that: 
+\begin{align}
+\varphi_{t} & =exp\left(\bar{\varphi_{t}}\right)\\
+\tilde{\varphi_{t}} & =\omega+\alpha\tilde{u}_{t-1}+\beta\tilde{\varphi}_{t-1}
+\end{align}
+
+with $\tilde{u_{t}}\equiv s_{t}$ as stated in exercise, where
+
+\begin{equation}
+s_{t}=\frac{\partial logp\left(\left.y_{t}\right|\boldsymbol{y}_{1:t-1:};\tilde{\varphi},\upsilon,\mu\right)}{\partial\tilde{\varphi}_{t}}=\frac{\partial logp\left(\left.y_{t}\right|\boldsymbol{y}_{1:t-1:};\tilde{\varphi},\upsilon,\mu\right)}{\partial\tilde{\varphi}_{t}}\frac{\partial\varphi_{t}}{\partial\tilde{\varphi}_{t}}
+\end{equation}
+
+is the score of $\left.Y_{t}\right|F_{t-1}$with respect to $\tilde{\varphi}$.
+This means that in this exercise we need to find the logarithm to
+hte PDF of the conditional distribution of $Y_{t}$ given infomation
+up through time $t-1$, $F_{t-1}$which is the genarlized error distribution,
+i.e. $\left.Y_{t}\right|F_{t-1}\sim GED\left(0,\varphi,\upsilon\right)$
+(Note that $\mu=0$ . with $\mu=0$ the pdf is
+
+\begin{equation}
+p\left(y_{t}\mid\mathbf{y}_{1:t-1};\varphi_{t},\nu\right)=\left[2^{(1+1/v)}\varphi_{t}\Gamma(1+1/\nu)\right]^{-1}exp\left(-\frac{\left|y_{t}/\varphi_{t}\right|^{\nu}}{2}\right)
+\end{equation}
+
+and log-transformed it is: 
+\begin{align}
+log\left(p\left(y_{t}\mid\mathbf{y}_{1:t-1};\varphi_{t},\nu\right)\right) & =log\left(\left[2^{(1+1/v)}\varphi_{t}\Gamma(1+1/\nu)\right]^{-1}exp\left(-\frac{\left|y_{t}/\varphi_{t}\right|^{\nu}}{2}\right)\right)\nonumber \\
+ & =-log\left(2^{(1+1/v)}\right)-log\left(\varphi_{t}\right)-log\left(\Gamma(1+1/\nu)\right)-\frac{\left|y_{t}/\varphi_{t}\right|^{\nu}}{2}\nonumber \\
+ & =-(1+1/v)log\left(2\right)-log\left(\varphi_{t}\right)-log\left(\Gamma(1+1/\nu)\right)-\frac{\left|y_{t}/\varphi_{t}\right|^{\nu}}{2}
+\end{align}
+
+Let us now find $s_{t}$ by using the chain rule and then insert $\varphi_{t}=exp\left(\tilde{\varphi_{t}}\right)$
+
+\begin{align}
+s_{t} & =\frac{\partial log\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)}{\partial\tilde{\varphi_{t}}}\\
+ & =\frac{\partial\varphi_{t}}{\partial\tilde{\varphi_{t}}}\frac{\partial log\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)}{\partial\varphi_{t}}\nonumber \\
+ & =\underset{exp\left(\tilde{\varphi_{t}}\right)}{\underbrace{\frac{\partial\varphi_{t}}{\partial\tilde{\varphi_{t}}}}}\frac{1}{\varphi}\left(\frac{\upsilon}{2}\frac{\left|y-\mu\right|^{\upsilon}}{\varphi^{\upsilon}}-1\right)\nonumber \\
+ & =exp\left(\bar{\varphi}_{t}\right)\left[-\frac{1}{\varphi_{t}}+\nu\frac{\frac{\left|y_{t}\right|^{2}}{\left|\varphi_{t}\right|^{\upsilon+1}}}{2}\right]\nonumber \\
+ & =exp\left(\bar{\varphi}_{t}\right)\left[-\frac{1}{exp\left(\bar{\varphi}_{t}\right)}+\nu\frac{\frac{\left|y_{t}\right|^{\upsilon}}{exp\left(\bar{\varphi_{t}}\right)^{\upsilon+1}}}{2}\right]\nonumber \\
+ & =\left[-\frac{exp\left(\bar{\varphi}_{t}\right)}{exp\left(\bar{\varphi}_{t}\right)}+\nu\frac{1}{2}\frac{exp\left(\bar{\varphi}_{t}\right)*\left|y_{t}\right|^{\upsilon}}{exp\left(\bar{\varphi_{t}}\right)^{\upsilon+1}}\right]\nonumber \\
+ & =-1+\nu\frac{1}{2}\frac{\left|y_{t}\right|^{\upsilon}}{exp\left(\bar{\varphi_{t}}\right)}\nonumber \\
+s_{t}\left(y_{t},\nu,\bar{\varphi}_{t}\right) & =\nu\frac{\left|y_{t}\right|^{\nu}}{2exp\left(\nu\bar{\phi}_{t}\right)}-1
+\end{align}
+
+Now we have everything need in order to formalise the updating step
+for the GAS-GED model
+
+\begin{align}
+\varphi_{t} & =exp\left(\bar{\varphi_{t}}\right)\\
+\tilde{\varphi_{t}} & =\omega+\alpha\tilde{u}_{t-1}+\beta\tilde{\varphi}_{t-1}\\
+s_{t} & =\nu\frac{\left|y_{t}\right|^{\nu}}{2exp\left(\nu\bar{\phi}_{t}\right)}-1
+\end{align}
+
+In order to find the unconditional expected value of $s_{t},$$E\left[s_{t}\right]$
+we consider $s_{t}$ in its general expression $s_{t}=\frac{\partial log\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)}{\partial\tilde{\varphi_{t}}}$
+
+\begin{equation}
+E\left[s_{t}\right]=E\left[\frac{\partial log\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)}{\partial\tilde{\varphi_{t}}}\right]
+\end{equation}
+
+We compute the expectation by using the PDF of $y_{t}$ in the conditional
+distribution, since $s_{t}$ is the score of the conditional distribution
+
+\begin{align*}
+E\left[s_{t}\right] & =\int_{y}\frac{\partial log\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)}{\partial\tilde{\varphi_{t}}}p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)dy\\
+ & =\int_{y}\frac{\partial\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)}{\partial\tilde{\varphi_{t}}}*\frac{1}{p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)}p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)dy\\
+ & =\int_{y}\frac{\partial\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)}{\partial\tilde{\varphi_{t}}}dy\\
+ & =\frac{\partial\int_{y}\left(p\left(\left.y_{t}\right|y_{1:t-1};\varphi_{t},\upsilon\right)\right)dy}{\partial\tilde{\varphi_{t}}}\\
+ & =\frac{\partial1}{\partial\tilde{\varphi_{t}}}\\
+ & =0
+\end{align*}
+
+Similarly, we can find $E\left[\left.s_{t}\right|F_{t-1}\right]$
+by using the argument that $s_{t}$ is the score of the conditional
+distribution, meaning that conditioning again on the same information
+set will give us $E\left(s_{t}\right)$ by the law of of interated
+expectation. That is: 
+\[
+E\left[\left.s_{t}\right|F_{t-1}\right]=E\left(s_{t}\right)=0
+\]
+
+
+\subsection*{1.2 Log-likelihood and parameter restrictions}
+
+In question 1, we have already established the individual log-likelihodd
+contribution as
+
+\[
+logp\left(y_{t}\mid\mathbf{y}_{1:t-1};\varphi_{t},\nu\right)=-\left[(1+1/\nu)log(2)+log\left(\varphi_{t}\right)+log(\Gamma(1+1/\nu))\right]-\frac{\left|y_{t}/\varphi_{t}\right|^{\nu}}{2}
+\]
+
+Adding up, we get the log-likelihood function where we note that $\varphi_{t}$
+is a function of $\left(\omega,\alpha,\beta\right)$ such that the
+log-likelihood is also a function of these parameters
+
+\begin{align}
+logL\left(\omega,\alpha,\beta,\upsilon\right) & =\sum_{t=1}^{T}\left(-\left[(1+1/\nu)log(2)+log\left(\varphi_{t}\right)+log(\Gamma(1+1/\nu))\right]-\frac{\left|y_{t}/\varphi_{t}\right|^{\nu}}{2}\right)\\
+ & =-T(1+1/\nu)log(2)-Tlog(\Gamma(1+1/\nu))-\sum_{t=1}^{T}\left(log\left(\varphi_{t}\right)+\frac{\left|y_{t}/\varphi_{t}\right|^{\nu}}{2}\right)
+\end{align}
+
+This function must be numerically maximized with respect to the parameters
+$\omega,\alpha,\beta$ and $\upsilon$. Let us now look at the parameter
+constraints needed. In order to establish covariance stationarity
+of the sequence $\tilde{\varphi_{t}}$ we must have that the mean
+and variance of $\tilde{\varphi_{t}}$ is constant over time
+
+\begin{align}
+E\left[\tilde{\varphi}_{t}\right] & =E\left[\tilde{\varphi}_{t+h}\right]=\mu_{\tilde{\varphi}}<\infty\\
+Var\left(\tilde{\varphi_{t}}\right) & =Var\left(\tilde{\varphi}_{t+h}\right)=\sigma_{\tilde{\varphi}}^{2}\in\left(0;\infty\right)
+\end{align}
+
+The expected value of $\tilde{\varphi}_{t}$
+
+\begin{equation}
+\begin{aligned}E\left(\tilde{\varphi}_{t}\right) & =E\left(\omega+\alpha s_{t-1}+\beta\tilde{\varphi}_{t-1}\right)\\
+ & =\omega+\beta E\left(\tilde{\varphi}_{t-1}\right)\\
+E(\tilde{\varphi}) & =\frac{\omega}{1-\beta}
+\end{aligned}
+\end{equation}
+
+In order for this to be finite, we need to impose $\beta\neq1.$The
+varianxe of $\tilde{\varphi_{t}}$ is
+
+\begin{equation}
+\begin{aligned}Var\left(\tilde{\varphi}_{t}\right) & =Var\left(\omega+\alpha s_{t-1}+\beta\tilde{\varphi}_{t-1}\right)\\
+ & =\alpha^{2}Var\left(s_{t}\right)+\beta^{2}Var\left(\tilde{\varphi}_{t-1}\right)\\
+Var(\tilde{\varphi}) & =\frac{\alpha^{2}E\left(s_{t}^{2}\right)}{1-\beta^{2}}
+\end{aligned}
+\end{equation}
+
+If we assume that $E\left[s_{t}^{2}\right]<\infty$, we need to restrict
+$\left|\beta\right|<1$ in order to have a finite positive variance.
+This means that the two restrictions we need to make are
+
+\[
+\upsilon>0\ and\ \left|\beta\right|<1
+\]
+
+
+\subsection*{1.3 Scale parameter response to special cases}
+
+Let us write the two functions; 
+\begin{equation}
+\begin{array}{l}
+f_{1}\left(y_{t}\right)=s\left(y_{t},1,0\right)=\frac{\left|y_{t}\right|}{2}-1\\
+f_{2}\left(y_{t}\right)=s\left(y_{t},2,0\right)=y_{t}^{2}-1
+\end{array}
+\end{equation}
+
+Let us compare the value of two and see when one is bigger than the
+other. We have $f_{1}\left(y_{t}\right)>f_{2}\left(y_{t}\right)$
+if 
+\begin{equation}
+\begin{array}{c}
+\frac{\left|y_{t}\right|}{2}-1>y_{t}^{2}-1\\
+\frac{\left|y_{t}\right|}{2}>y_{t}^{2}\\
+\left|y_{t}\right|<\frac{1}{2}
+\end{array}
+\end{equation}
+
+Intuitively, this makes sense as $\upsilon$ indicates the fat of
+the tails. For $\upsilon=1$ the tails are fatter than for $\upsilon=2$.
+In a distribution with fatter tails, we will have that the sclae parameter
+will respond the most(for a given $\alpha$ at least) if we observe
+$\left|y_{t}\right|<\frac{1}{2}$ since it has less probability mass
+close to the mean (of zero), which means that it will correct its
+scale/variance relatively more than the distribution with thinner
+tails and, hence, more probability mass around its mean. In contrast,
+we see that for $\left|y_{t}\right|>\frac{1}{2}$ the thinner-tailed
+distribution will have to correct its scale (and hence variance) the
+most, in order to make the observation more \textquotedblleft likely\textquotedblright{}
+to occur.
+
+\subsection*{2 Computational part}
+
+\subsubsection*{2.1 Estimation of GAS-GED}
+
+In order to estimate a GAS-GED model, I have written two central codes.
+One that filter the scale parameter and, hence, the standard deviation
+for given parameter values and data. Another that uses maximum likelihood
+to estimate the parameter values in the filter. I have commented a
+bit on the input and outputs of each function in the R code. However,
+I want to comment on a particular decision of mine here. I have initialized
+the recursions for the scales by setting the standard deviation equal
+to the sample standard deviation estimated from the first 150 observations
+of the process. This is done for two reasons: Firstly, in the empirical
+part, we want to compare the filtered volatilities from a GAS-GED
+model with those from a GARCH(1,1) estimated by the ugarchfit function
+in the rugarch package. This function initializes the process, by
+default, to the sample variance based on the whole sample. However,
+as mentioned later, I have changed this as well. Secondly, the variance
+seem to increase significantly towards the financial crises such that
+initializing the process by the sample variance based on the whole
+sample, will be a very misleading guess on the initial variance.
+
+\begin{equation}
+\sigma=2^{\frac{1}{\upsilon}}\sqrt{\frac{\Gamma\left(\frac{3}{\upsilon}\right)}{\Gamma\left(\frac{1}{\upsilon}\right)}\varphi}
+\end{equation}
+
+\begin{equation}
+\tilde{\psi}_{t}=\omega+\beta*\tilde{\psi}_{t-1}+\alpha*\underset{s_{t-1}}{\underbrace{\left(\frac{\left|y_{t-1}\right|^{\upsilon}}{\tilde{\psi^{\upsilon}}_{t-1}}-1\right)}}
+\end{equation}
+
+\end{document}

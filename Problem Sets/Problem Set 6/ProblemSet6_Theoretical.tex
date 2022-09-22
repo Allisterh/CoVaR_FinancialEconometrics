@@ -1,0 +1,207 @@
+\documentclass{article}
+
+%----------------------------------------------------------------------------------------
+%	FONTS AND ENCODINGS
+%----------------------------------------------------------------------------------------
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage[english]{babel} % language pack..
+\usepackage{amsmath} % math symbols
+\usepackage{lastpage}
+\usepackage{amssymb} % math symbols
+\usepackage{cmbright} % font
+\usepackage{pifont}
+\usepackage{graphicx,float} % for pictures etc.
+\usepackage{subcaption}
+\usepackage{tcolorbox}
+\usepackage{ulem}
+\usepackage{cancel}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{slashed}
+\usepackage{multirow}
+\usepackage{wasysym}
+\usepackage{minted}
+\usepackage[hidelinks]{hyperref}
+\usepackage{subfiles}
+
+%----------------------------------------------------------------------------------------
+%	PAGE LAYOUT
+%----------------------------------------------------------------------------------------
+\setlength{\parindent}{0bp} % No paragraph indentation
+\usepackage{fancyhdr} % Headings/footers
+
+\usepackage{geometry} % Required for adjusting page dimensions and margins
+\geometry{
+	paper=a4paper, % Paper size, change to letterpaper for US letter size
+	top=2cm, % Top margin
+	bottom=2cm, % Bottom margin
+	left=3cm, % Left margin
+	right=3cm, % Right margin
+	inner=2cm,
+	outer=2cm,
+	headheight=2cm, % Header height
+	footskip=1cm, % Space from the bottom margin to the baseline of the footer
+	headsep=0.75cm, % Space from the top margin to the baseline of the header
+}
+
+\fancyhead{} % Clear all headers
+\fancyfoot{} % Clear all footers
+\fancyfoot[R]{\footnotesize \thepage\ / \pageref{LastPage}}
+\fancyhead[L]{} %Left
+\fancyhead[C]{} %Center
+\fancyhead[R]{} %Right
+
+\renewcommand{\headrulewidth}{0pt} % Remove header rule
+\renewcommand{\footrulewidth}{0pt} % Remove footer rule
+\pagestyle{fancy} % Set page style to "fancy"
+
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\section{Problem Set 6 - Problem 1)}
+
+\begin{tcolorbox}[colback=white]
+We know that the log likelihood of a DCC model with Gaussian shocks nicely factorizes in two parts: one for the volatilities and one for the correlation, see lecture 10. However, we also know that the assumption of joint Gaussianity for financial returns is too restrictive in practice. Can you state three reasons why this is true? Use formal derivations to support your arguments.
+\end{tcolorbox}
+
+First of all we have that in general to assume joint Gaussianity for financial returns is very restrictive in practice. This for example due to financial returns often is not centered and further returns are often skewed differently from the normal distribution, where skewness is equal to $0$. 
+
+\bigskip
+
+Joint Gaussianity implies implies that each marginal is Gaussian. Specifically if:
+
+$$
+\left(\begin{array}{l}
+x \\
+y
+\end{array}\right) \sim N\left(\left(\begin{array}{l}
+\mu_{x} \\
+\mu_{y}
+\end{array}\right),\left(\begin{array}{ll}
+\sigma_{x}^{2} & \sigma_{x y} \\
+\sigma_{x y} & \sigma_{0}^{2}
+\end{array}\right)\right)
+$$
+
+we have that $x \sim N\left(\mu_{x}, \sigma_{x}^{2}\right)$ and $Y \sim N\left(\mu_{x}, \sigma_{y}^{2}\right)$ 
+
+\begin{itemize}
+    \item Kurtosis: $x$ and $y$ does not exhibit excess of kurtosis, i.e. $\frac{\mathbb{E}\left[\left(x-\mu_{x}\right)^{4}\right]}{\mathbb{E}\left[\left(x-\mu_{x}\right)^{2}\right]^{2}}=\frac{\mathbb{E}\left[\left(y-\mu_{3}\right)^{4}\right]}{\mathbb{E}\left[\left(y-\mu_{3}\right)^{2}\right]^{2}}=3$. This is because the kurtosis of any univariate normal distribution is 3, which is very restrictive assumption. 
+    
+    \begin{itemize}
+        \item Kurtosis is a statistical measure that is used to describe the size of the tails on a distribution. We know that for financial returns the tails will often contain more mass in the tails compared to the normal distribution. 
+        \item Kurtosis is often as a measure of financial risk within finance.
+    \end{itemize}
+    
+    \item $x$ and $y$ do not exhibit positive/negative skewness, i.e. $\frac{\mathbb{E}\left[\left(x-\mu_{x}\right)^{3}\right]}{\mathbb{E}\left[\left[\left(x-\mu_{x}\right)^{2}\right]^{3 / 2}\right.}=\frac{\mathbb{E}\left[\left(y-\mu_{y}\right)^{3}\right]}{\mathbb{E}\left[\left(y-\mu_{y}\right)^{2}\right]^{3 / 2}}=0$. 
+    
+    \begin{itemize}
+        \item This is because that we have for the normal distribution that skewness is equal to $0$. Again, this is a very restrictive assumption, especially when modelling financial returns. At least for stocks we will often observe right(positive) skewness for returns. 
+    \end{itemize}
+    
+    \item The third one is concerning the dependence structure when dealing with joint Gaussian assumption. This means that we have no tail dependence, i.e. $\lim _{z \rightarrow-\infty} P(x \leq z \mid y \leq z)=\lim _{z \rightarrow \infty} P(x \geq z \mid y \geq z)=0$, which in most cases for financial returns are not valid. Within financial returns we observe empirically that extreme returns of asset $x$ will influence the return of asset $y$. This is seen in times of financial crises and booms.
+    
+\end{itemize}
+
+
+
+\begin{tcolorbox}[colback=white]
+A possibility to depart from the Gaussian assumption is to assume that returns, conditionally on past observations, are multivariate Student's $t$ distributed. The probability density function of a $p$-dimensional Student's $t$ distribution with location vector $\mu$, scale matrix $\Psi$, and $\nu$ degrees of freedom is given by:
+
+$$
+p\left(\mathbf{y};\boldsymbol{\mu},\boldsymbol{\Psi}\right)=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\nu^{p/2}\rvert\boldsymbol{\Psi}\rvert^{1/2}}\left(1+\frac{\left(\mathbf{y}-\boldsymbol{\mu}\right)^{\prime}\boldsymbol{\Psi}^{-1}\left(\mathbf{y}-\boldsymbol{\mu}\right)}{\nu}\right)^{-\frac{\nu+p}{2}}
+$$
+
+where $\Gamma(\cdot)$ is the gamma function. The covariance matrix $\boldsymbol{\Sigma}$ is related to the scale by $\boldsymbol{\Sigma}=\boldsymbol{\Psi} \frac{\nu}{\nu-2}$ and can be factorized as $\mathbf{D}^{1 / 2} \mathbf{R} \mathbf{D}^{1 / 2}$, where $\mathbf{D}$ is a diagonal matrix with variances at its main diagonal and $\mathbf{R}$ is the correlation matrix.
+\end{tcolorbox}
+
+
+\begin{tcolorbox}[colback=white]
+	\textbf{i)} Can you derive a DCC model with multivariate Student's $t$ shocks? Write down the log-likelihood of this model.
+\end{tcolorbox}
+
+\textbf{DCC: dynamic conditional correlation}
+
+\bigskip
+
+First we write up the expression for $y$ which is given by: 
+\begin{align*}
+    y_{t}=\Sigma_{t}^{1/2}z_{t},\quad z_{t}\sim $\mathcal{T}$(0,I)
+\end{align*}
+where $z_t$ follows a $\mathcal{T}$ distribution parameterized by $\boldsymbol{\mu}=0$ and $I$ (identity matrix). As written in exercise description we have the covariance matrix $\boldsymbol{\Sigma}$ is related to the scale by $\boldsymbol{\Sigma}=\boldsymbol{\Psi} \frac{\nu}{\nu-2}$ and can be factorized as $\mathbf{D}^{1 / 2} \mathbf{R} \mathbf{D}^{1 / 2}$, where $\mathbf{D}$ is a diagonal matrix with variances at its main diagonal and $\mathbf{R}$ is the correlation matrix.
+
+\bigskip
+
+To derive the log-likelihood function, we need the density of $y_t$ conditional on past information. 
+
+We set $\mu=0$ and $\Psi=I\frac{\nu-2}{\nu}$ in the expression given in the exercise.
+
+\begin{align*}
+    p(\mathbf{y};\boldsymbol{\mu},\boldsymbol{\Psi})&=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\nu^{p/2}|\boldsymbol{\Psi}|^{1/2}}\left(1+\frac{(\mathbf{y}-\boldsymbol{\mu})^{\prime}\boldsymbol{\Psi}^{-1}(\mathbf{y}-\boldsymbol{\mu})}{\nu}\right)^{-\frac{\nu+p}{2}}\\
+	p(z)&=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\nu^{p/2}|I\frac{\nu-2}{\nu}|^{1/2}}\left(1+\frac{\mathbf{y}{}^{\prime}\left(\boldsymbol{I\frac{\nu-2}{\nu}}\right)^{-1}\mathbf{y}}{\nu}\right)^{-\frac{\nu+p}{2}}\\
+	&=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\nu^{p/2}\frac{\nu-2}{\nu}^{p/2}|I|^{1/2}}\left(1+\frac{\mathbf{y}{}^{\prime}\boldsymbol{I}^{-1}\mathbf{y}}{\nu-2}\right)^{-\frac{\nu+p}{2}}\\
+	&=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\left(\nu-2\right)^{p/2}|I|^{1/2}}\left(1+\frac{\left(\Sigma_{t}^{\frac{1}{2}}z_{t}\right){}^{\prime}\boldsymbol{I}^{-1}\mathbf{\Sigma_{t}^{\frac{1}{2}}}z_{t}}{\nu-2}\right)^{-\frac{\nu+p}{2}}\\
+	&=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\left(\nu-2\right)^{p/2}|I|^{1/2}}\left(1+\frac{\left(\boldsymbol{I}^{\frac{1}{2}}z_{t}\right){}^{\prime}\boldsymbol{I}^{-1}\mathbf{I^{\frac{1}{2}}}z_{t}}{\nu-2}\right)^{-\frac{\nu+p}{2}}\\
+	&=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\left(\nu-2\right)^{p/2}|I|^{1/2}}\left(1+\frac{z_{t}{}^{\prime}z_{t}}{\nu-2}\right)^{-\frac{\nu+p}{2}}
+\end{align*}
+
+In the derivation we use that we use $\left|ax\right|=a^{p}\left|x\right|$ and $\left(ax\right)^{-1}=\frac{1}{a}x^{-1}$
+
+and that inserting $\Psi=I\frac{\nu-2}{\nu}$ in $\Sigma=\Psi\frac{\nu}{\nu-2}$ yields $\Sigma=I$
+
+Then using $y_{t}=\Sigma_{t}^{\frac{1}{2}}z_{t}\Rightarrow z_{t}=\Sigma_{t}^{-\frac{1}{2}}y_{t}$ and $\Sigma=I$
+
+then we get 
+\begin{align*}
+    p(z)&=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\left(\nu-2\right)^{p/2}|I|^{1/2}}\left(1+\frac{z_{t}{}^{\prime}z_{t}}{\nu-2}\right)^{-\frac{\nu+p}{2}}\\
+	p\left(y_{t}|\mathcal{F}_{t-1}\right)&=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\left(\nu-2\right)^{p/2}|\Sigma|^{1/2}}\left(1+\frac{\left(\Sigma_{t}^{-\frac{1}{2}}y_{t}\right){}^{\prime}\Sigma_{t}^{-\frac{1}{2}}y_{t}}{\nu-2}\right)^{-\frac{\nu+p}{2}}\\
+	&=\frac{\Gamma\left(\frac{\nu+p}{2}\right)}{\Gamma\left(\frac{\nu}{p}\right)\pi^{p/2}\left(\nu-2\right)^{p/2}|\Sigma|^{1/2}}\left(1+\frac{\left(y_{t}\right){}^{\prime}\Sigma_{t}^{-1}y_{t}}{\nu-2}\right)^{-\frac{\nu+p}{2}}
+\end{align*}
+
+Taking the log 
+\begin{align*}
+    \ln p\left(y_{t}|\mathcal{F}_{t-1}\right)&=\ln\Gamma\left(\frac{\nu+p}{2}\right)-\ln\Gamma\left(\frac{\nu}{p}\right)-\frac{p}{2}\ln\pi-\frac{p}{2}\ln\left(\nu-2\right)-\frac{1}{2}\ln|\Sigma|\\
+	&-\frac{\nu+p}{2}\ln\left(1+\frac{\left(y_{t}\right){}^{\prime}\Sigma_{t}^{-1}y_{t}}{\nu-2}\right)\\
+	&=\ln\Gamma\left(\frac{\nu+p}{2}\right)-\ln\Gamma\left(\frac{\nu}{p}\right)-\frac{p}{2}\ln\pi-\frac{p}{2}\ln\left(\nu-2\right)-\frac{1}{2}\ln|D^{\frac{1}{2}}RD^{\frac{1}{2}}|\\
+	&-\frac{\nu+p}{2}\ln\left(1+\frac{\left(y_{t}\right){}^{\prime}\left(D^{1/2}RD^{1/2}\right){}^{-1}y_{t}}{\nu-2}\right)\\
+	&=\ln\Gamma\left(\frac{\nu+p}{2}\right)-\ln\Gamma\left(\frac{\nu}{p}\right)-\frac{p}{2}\ln\pi-\frac{p}{2}\ln\left(\nu-2\right)-\frac{1}{2}\left(\ln\left|D\right|+\ln\left|R\right|\right)\\
+	&-\frac{\nu+p}{2}\ln\left(1+\frac{y_{t}{}^{\prime}\left(D^{1/2}RD^{1/2}\right){}^{-1}y_{t}}{\nu-2}\right)\\
+	&=\ln\Gamma\left(\frac{\nu+p}{2}\right)-\ln\Gamma\left(\frac{\nu}{p}\right)-\frac{p}{2}\ln\pi-\frac{p}{2}\ln\left(\nu-2\right)-\frac{1}{2}\ln\left|D\right|-\frac{1}{2}\ln\left|R\right|\\
+	&-\frac{\nu+p}{2}\ln\left(1+\frac{y_{t}{}^{\prime}\left(D^{1/2}RD^{1/2}\right){}^{-1}y_{t}}{\nu-2}\right)
+\end{align*}
+
+We use $\Sigma=D^{\frac{1}{2}}RD^{\frac{1}{2}}$ and get the log-likelihood function 
+
+\begin{align*}
+    LLK&=T\left[\ln\Gamma\left(\frac{\nu+p}{2}\right)-\ln\Gamma\left(\frac{\nu}{p}\right)-\frac{p}{2}\ln\pi-\frac{p}{2}\ln\left(\nu-2\right)\right]-\frac{1}{2}\sum_{t=1}^{T}\ln\left|D_{t}\right|\\
+	&-\frac{\nu+p}{2}\sum_{t=1}^{T}\ln\left(1+\frac{y_{t}{}^{\prime}\left(D^{1/2}RD^{1/2}\right){}^{-1}y_{t}}{\nu-2}\right)
+\end{align*}
+
+\begin{tcolorbox}[colback=white]
+	\textbf{ii)} Show that the log-likelihood of this model does not factorize in two parts as in the Gaussian case.
+\end{tcolorbox}
+We cannot factorize the likelihood due to the last term in the log-likelihood function 
+$$\sum_{t=1}^{T}\ln\left(1+\frac{y_{t}{}^{\prime}\left(D^{1/2}RD^{1/2}\right){}^{-1}y_{t}}{\nu-2}\right)$$ Which cannot be factorized as we are taking the log of a sum.
+
+
+\begin{tcolorbox}[colback=white]
+	\textbf{iii)} How can we still estimate the Student's $t$ DCC model in two steps? At which costs? 
+\end{tcolorbox}
+
+We can use a quasi-maximum likelihood approach where we first estimate $\Sigma$ using 
+the gaussian likelihood function and find $\widehat{z}_{t}=\widehat{\Sigma}_{t}^{1/2}y_{t}$. 
+Note that we use the Gaussian distribution even though we are aware that this is not the true distribution, we will obtain a consistent estimator of $Sigma$. 
+
+In the next step we use maximum likelihood to estimate $\nu$. 
+We estimate this $\nu$ by using LLK for $z$. We obtained the density for $z$ previously in this exercise - to obtain the LLK we just have log this density and then take sum over the time-period from $1$ up till $T$. 
+
+
+This will yield consistent but inefficient estimates.
+
+
+\end{document}

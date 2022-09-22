@@ -1,0 +1,781 @@
+ \documentclass{EconHomework}
+
+\fancyhead{} % Clear all headers
+\fancyfoot{} % Clear all footers
+\fancyfoot[C]{\footnotesize \thepage\ / \pageref{LastPage}}
+\fancyhead[L]{Flow ID: 50} %Left
+\fancyhead[C]{4394: Financial Econometrics} %Center
+\fancyhead[R]{2022-01-10} %Right
+\usepackage{bbm}
+\usepackage{natbib}
+\usepackage{svg}
+
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\part*{Theoretical part}
+\setcounter{section}{0}
+
+
+Consider the general volatility model:
+\begin{equation}
+    \begin{aligned}
+        y_{t} &=\sigma_{t} \varepsilon_{t}, \quad \varepsilon_{t} \stackrel{i i d}{\sim}(0,1) \\
+        \sigma_{t+1}^{2} &=\omega+\sigma_{t}^{2}\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right),
+    \end{aligned}
+\label{GVM}
+\end{equation}
+
+
+where $\varepsilon_{t} \stackrel{i i d}{\sim}(0,1)$ means that the random variable $\varepsilon_{t}$ is identically and independently distributed over time with $\mathbb{E}\left[\varepsilon_{t}\right]=0$ and $\mathbb{E}\left[\varepsilon_{t}^{2}\right]=1$. Also assume that $\varepsilon_{t}$ is symmetrically distributed around zero.
+
+\bigskip
+
+The real-valued function $g()$ maps the real line, $\mathbb{R}$, to the interval $[\underline{m}, \overline{m}](g: \mathbb{R} \rightarrow[\underline{m}, \overline{m}])$ where $0 \leq \underline{m}<\overline{m}$, it is even $(g(x)=g(-x))$, and such that $\mathbb{E}\left[g\left(\varepsilon_{t}\right)\right]=\overline{g}$ with $\underline{m}<\overline{g}<\overline{m}$, for all $t$. Model (1) nests many volatility models such as the GARCH for $g\left(\varepsilon_{t}\right)=\varepsilon_{t}^{2}$ and the GJRGARCH for $g\left(\varepsilon_{t}\right)=\varepsilon_{t}^{2}+\gamma \mathbbm{1}\left(\varepsilon_{t}<0\right)$, where $\mathbbm{1}(A)$ is the indicator function for the event A.
+
+\bigskip
+
+Indicate by $\left\{{ }_{u} \sigma_{t}^{2}\right\}_{t \in \mathbb{Z}}$ the squared volatility process initialized at the infinite past, and by $\left\{\sigma_{t}^{2}\right\}_{t \in \mathbb{N}}$ the squared volatility process initialized at time $0(t=0)$ at the value $\sigma_{0}^{2}>0$. Exploiting the results of Nelson (1991), solve:
+
+
+
+\section{Problem 1}
+\label{T_P1}
+
+\begin{tcolorbox}[colback=white]
+Show that $_{u}\sigma_{t}^{2}$ admits the following representation: 
+
+\begin{equation*}
+    _{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\end{equation*}
+\end{tcolorbox}
+
+
+We apply recursive substitution from the volatility process in Equation \ref{GVM}.
+\begin{align*}
+    \sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\sigma_{t}^{2}\\
+    \underset{t-1}{\Longrightarrow}\quad\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\left(\omega+\sigma_{t-1}^{2}\left(\beta+\alpha g\left(\varepsilon_{t-1}\right)\right)\right)\\
+    \underset{t-2}{\Longrightarrow}\quad\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\left(\omega+\left(\omega+\sigma_{t-2}^{2}\left(\beta+\alpha g\left(\varepsilon_{t-2}\right)\right)\right)\left(\beta+\alpha g\left(\varepsilon_{t-1}\right)\right)\right)\\
+    \underset{\text{define}}{\Longrightarrow}\quad\sigma_{t+1}^{2} & =\omega+\underbrace{\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)}_{\phi_{t}}\left(\omega+\left(\omega+\sigma_{t-2}^{2}\left(\beta+\alpha g\left(\varepsilon_{t-2}\right)\right)\right)\left(\beta+\alpha g\left(\varepsilon_{t-1}\right)\right)\right)\\
+    \sigma_{t+1}^{2} & =\omega+\phi_{t}\left(\omega+\left(\omega+\sigma_{t-2}^{2}\phi_{t-2}\right)\phi_{t-1}\right)\\
+    \sigma_{t+1}^{2} & =\omega+\phi_{t}\omega+\phi_{t}\phi_{t-1}\left(\omega+\sigma_{t-2}^{2}\phi_{t-2}\right)\\
+    \sigma_{t+1}^{2} & =\omega+\phi_{t}\omega+\phi_{t}\phi_{t-1}\omega+\phi_{t}\phi_{t-1}\phi_{t-2}\sigma_{t-2}^{2}
+\end{align*}
+
+We know that there is $\omega$ contained in $\sigma_{t}^{2}\;\forall t$
+thus I am able to factorize $\omega$ in the expression above. We're
+conditioning on all infinite past observations in this case and employ the
+unconditional notation.
+\begin{align*}
+    \underset{\text{factorize }\omega\text{ and continue till }-\infty}{\Longrightarrow}\quad{}_{u}\sigma_{t+1}^{2} & =\omega\left[1+\phi_{t}+\phi_{t}\phi_{t-1}+\phi_{t}\phi_{t-1}\phi_{t-2}+\phi_{t}\phi_{t-1}\phi_{t-2}\phi_{t-3}+\dots\right]
+\end{align*}
+
+As we're interested in the unconditional process $_{u}\sigma_{t}^{2}$
+at period $t$, we lag the entire process one period
+\[
+    _{u}\sigma_{t}^{2}=\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\phi_{t-1}\phi_{t-2}\phi_{t-3}\phi_{t-4}+\dots\right]
+\]
+
+We notice a pattern in this expression and start by writing out the
+products
+\begin{align*}
+    _{u}\sigma_{t}^{2} & =\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\phi_{t-1}\phi_{t-2}\phi_{t-3}\phi_{t-4}+\dots\right]\\
+    _{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots\right]
+\end{align*}
+
+Now we're getting close - we just need to recognize the sums. We're
+summing each product for a varying product limit. This limit should
+be defined by the sum operator. Thus we're able to write,
+\begin{align*}
+    _{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots\right]\\
+    _{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+    \underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad{}_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right],\quad\square
+\end{align*}
+
+
+\section{Problem 2}
+
+\begin{tcolorbox}[colback=white]
+    Show that $\sigma_{t}^{2}$ admits the following representation:
+    \begin{align*}
+        \sigma_{t}^{2}=\sigma_{0}^{2} \prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1} \prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+    \end{align*}
+\end{tcolorbox}
+
+
+We're no longer conditioning on all infinite past observations, thus
+there is a limit for $t$ to the result derived in Problem \ref{T_P1}
+thus we can write \textit{(copying from before and keeping definition
+of $\phi_{t}$)}
+\begin{align*}
+\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\sigma_{t}^{2}\\
+ & \vdots\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots\right]
+\end{align*}
+
+We know that $\sigma_{t}^{2}$ is initialized at time $t=0$ where
+we have some positive value for $\sigma_{0}^{2}>0$. Thus we're able
+to write the results from Problem \ref{T_P1} as we know that the
+process starts at $t=0$ and not infinite past
+\begin{align*}
+\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots+\prod_{i=1}^{t-1}\phi_{t-i}\right]+\sigma_{0}^{2}\prod_{i=1}^{t}\phi_{t-i}\\
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\phi_{t-i}+\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots+\prod_{i=1}^{t-1}\phi_{t-i}\right]
+\end{align*}
+
+Now we're writing out the sums again
+\begin{align*}
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\phi_{t-i}+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+\underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right],\quad\square
+\end{align*}
+
+\pagebreak
+
+\section{Problem 3}
+
+\begin{tcolorbox}[colback=white]
+    Derive sufficient conditions on $\left(\omega,\alpha,\beta\right)$ such that $_{u}\sigma_{t}^{2}>0$.
+\end{tcolorbox}
+
+
+
+We know that $_{u}\sigma_{t}^{2}$ is defined as,
+
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+Investigating this expression for $_{u}\sigma_{t}^{2}$ we see that
+for $_{u}\sigma_{t}^{2}>0$ we can easily constrain $\omega\neq0$.
+We cannot say anything about $\omega<0$ before investigating conditions
+on $\alpha$ and $\beta$ more thoroughly.
+
+\bigskip
+
+We know moreover that $g()$ maps only to postive values on the real line. Thus we're able to deduce more information about the constraints on $(\alpha,\beta)$. As we know that $(\alpha,\beta)$ do not vary with $k$ or $i$, sufficient conditions for $_{u}\sigma_{t}^{2}>0$ are $\alpha>0,\beta>0$ of course given $\omega>0$.
+
+
+
+
+\section{Problem 4}
+
+\begin{tcolorbox}[colback=white]
+    Derive the lower and the upper bound of the process $\left\{{ }_{u} \sigma_{t}^{2}\right\}_{t \in \mathbb{Z}}$, i.e. show that ${ }_{u} \sigma_{t}^{2} \in[l, u]$ where $l<u$. Derive $l$ and $u$.
+\end{tcolorbox}
+
+In the following we need to apply these assumptions, 
+\begin{align*}
+    \omega & >0\\
+    \alpha & >0\\
+    \beta & \geq0\\
+    \alpha+\beta & <1
+\end{align*}
+
+
+We remember $_{u}\sigma_{t}^{2}$ is defined as
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+We start by assuming,
+
+\begin{align*}
+    \inf\left[g\left(\left\{ \varepsilon_{t}\right\} _{t\in\mathbb{Z}}\right)\right]&=\underline{m}\\\sup\left[g\left(\left\{ \varepsilon_{t}\right\} _{t\in\mathbb{Z}}\right)\right]&=\overline{m}
+\end{align*}
+
+and that these values exists for the set $t\in\mathbb{Z}$.
+
+\bigskip
+
+Thus I can write the lower bound $l$ of the process as,
+
+\begin{align*}
+    l&=\inf\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+    l&=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\underline{m}\right)\right]\\
+    \underset{\text{Product of a constant}}{\Longrightarrow}\quad l&=\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\underline{m}\right)^{k}\right]\\
+    \underset{\text{simplify}}{\Longrightarrow}\quad l&=\omega\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\underline{m}\right)^{k}\right]
+\end{align*}
+
+Repeating this for the upper bound $u$ yields,
+
+\begin{align*}
+    u&=\sup\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+    u&=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\overline{m}\right)\right]\\
+    \underset{\text{Product of a constant}}{\Longrightarrow}\quad u&=\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\overline{m}\right)^{k}\right]\\
+    \underset{\text{simplify}}{\Longrightarrow}\quad u&=\omega\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\overline{m}\right)^{k}\right]
+\end{align*}
+
+We remember
+\begin{equation*}
+    a+ar+ar^{2}+ar^{3}+ar^{4}+\cdots=\sum_{k=0}^{\infty}ar^{k}=\frac{a}{1-r},\text{ for }|r|<1\tag{Geo 1}
+    \label{geo_1}
+\end{equation*}
+
+Thus - making assumptions about $(\underline{m}, \overline{m})$ and using Equation \ref{geo_1} - we're able to write,
+
+\begin{align*}
+    l&=\begin{cases}
+    \frac{\omega}{1-\left(\beta+\alpha\underline{m}\right)} & \text{if }\left(\beta+\alpha\underline{m}\right)<1\\
+    x & \text{if }\left(\beta+\alpha\underline{m}\right)>1\text{ where }\underline{m}<x<u
+    \end{cases}\\u&=\begin{cases}
+    \frac{\omega}{1-\left(\beta+\alpha\overline{m}\right)} & \text{if }\left(\beta+\alpha\overline{m}\right)<1\\
+    +\infty & \text{if }\left(\beta+\alpha\overline{m}\right)>1
+    \end{cases}
+\end{align*}
+
+Such that,
+
+\begin{equation*}
+    _{u}\sigma_{t}^{2}\in\left[l,u\right],\quad \text{where } l<u
+\end{equation*}
+
+We know that $\varepsilon_{t} \stackrel{i i d}{\sim}(0,1)$ and that this distribution is symmetric around the mean $0$. Thus - the likelihood of $\left(\beta+\alpha\underline{m}\right)>1$ should not really exists when investigating the unconditional process $\left\{{ }_{u} \sigma_{t}^{2}\right\}_{t \in \mathbb{Z}}$ and applying constraints on $\alpha,\beta,\omega$. However I have included a second case of l, in case the process also explodes in the lower bound.
+
+\bigskip
+
+\textit{I am pretty certain the second case for l is incorrect, but this is my best guess at the problem.}
+
+\section{Problem 5)}
+
+Show that if $\omega=0$ : 
+
+\subsection{Problem 5.a }
+
+\begin{tcolorbox}[colback=white]
+    $_{u}\sigma_{t}^{2}=0$ for all $t$. 
+\end{tcolorbox}
+
+
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+_{u}\sigma_{t}^{2} & =\underbrace{\omega}_{=0}\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+_{u}\sigma_{t}^{2} & =0,\;\forall t
+\end{align*}
+
+\pagebreak
+
+\subsection{Problem 5.b}
+
+\begin{tcolorbox}[colback=white]
+$\sigma_{t}^{2}\rightarrow\infty$ as $t\rightarrow\infty$ if $\mathbb{E}\left[\log\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$.
+\end{tcolorbox}
+
+\textbf{Solved using heavy inspiration from the lecture note Univariate Volatility Modelling.}
+
+\bigskip
+
+We remember that $\omega=0$ and thus we can write our process for
+$\sigma_{t}^{2}$ as 
+\begin{align*}
+    \sigma_{t}^{2}&=\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\underbrace{\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]}_{=0}\\
+    \sigma_{t}^{2}&=\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\\
+    \underset{\text{log transform}}{\Longrightarrow}\quad\ln\left[\sigma_{t}^{2}\right]&=\ln\left[\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+    \ln\left[\sigma_{t}^{2}\right]&=\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\underbrace{\ln\left[\beta+\alpha g\left(\varepsilon_{t-i}\right)\right]}_{\phi_{t-i}}\\
+    \ln\left[\sigma_{t}^{2}\right]&=\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\phi_{t-i}\\
+    \underset{+/-\;\mathbb{E}\left(\phi_{t-i}\right)}{\Longrightarrow}\quad\ln\left[\sigma_{t}^{2}\right]&=\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\left\{ \underbrace{\phi_{t-i}-\mathbb{E}\left(\phi_{t-i}\right)}_{\widetilde{\phi}_{t-i}}+\mathbb{E}\left(\phi_{t-i}\right)\right\} \\
+    \ln\left[\sigma_{t}^{2}\right]&=\ln\left[\sigma_{0}^{2}\right]+\underbrace{t\cdot\mathbb{E}\left(\phi_{t}\right)}_{\text{drift-term }>0}+\sum_{i=1}^{t}\widetilde{\phi}_{t-i}
+\end{align*}
+
+We recognize this as a random walk with a drift. We remember that
+the value of a random walk with a drift either diverges to $+\infty$
+or $-\infty$ depending on the value of the drift. Thus we can easily
+see that as $t\rightarrow\infty$ then $\ln\left[\sigma_{t}^{2}\right]\rightarrow\infty$
+and $\sigma_{t}^{2}\rightarrow\infty$ for all $\mathbb{E}\left(\phi_{t}\right)=\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$.
+
+\subsection{Problem 5.c}
+
+\begin{tcolorbox}[colback=white]
+$\sigma_{t}^{2}\rightarrow0$ as $t\rightarrow\infty$ if $\mathbb{E}\left[\log\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]<0$.
+\end{tcolorbox}
+
+\textbf{Solved using heavy inspiration from the lecture note Univariate Volatility Modelling.}
+
+\bigskip
+
+Here we see that we have a similar case as in the former problem however
+the inequality is flipped. However similar arguments can be applied.
+We again recognize a random walk with a drift. We remember that the
+value of a random walk with a drift either diverges to $+\infty$
+or $-\infty$ depending on the value of the drift. Thus we can easily
+see that as $t\rightarrow\infty$ then $\ln\left[\sigma_{t}^{2}\right]\rightarrow-\infty$
+and $\sigma_{t}^{2}\rightarrow0$ for all $\mathbb{E}\left(\phi_{t}\right)=\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]<0$.
+
+
+\section{Problem 6}
+
+Show that if $\omega>0$ and $\mathbb{E}\left[\log\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$
+:
+
+\subsection{Problem 6.a}
+\begin{tcolorbox}[colback=white]
+    $\sigma_{t}^{2}\rightarrow\infty$ as $t\rightarrow\infty$
+\end{tcolorbox}
+
+\textbf{Solved using heavy inspiration from Slide 20 Lecture 4.}
+
+\bigskip
+
+We remember our definition of $\sigma_{t}^{2}$
+
+\begin{align*}
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\end{align*}
+
+We recognize that 
+\[
+\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\geq\omega\sup_{1\leq k\leq t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)
+\]
+
+taking logs yields
+\[
+\ln\left(\sigma_{t}^{2}\right)\geq\ln\left(\omega\right)+\sup_{1\leq k\leq t-1}\sum_{i=1}^{k}\ln\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)
+\]
+
+Using the results from Theorem 1 in \cite{nelson1990}
+the right term above diverges to $+\infty$ when $t\rightarrow\infty$
+if $\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$.
+If this expression is smaller than equal to $\ln\left(\sigma_{t}^{2}\right)$
+this expression must also approach $\infty$ as $t\rightarrow\infty$
+thus yielding
+\[
+\sigma_{t}^{2}\rightarrow\infty\quad\text{if}\quad\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0
+\]
+
+
+
+\subsection{Problem 6.b}
+\begin{tcolorbox}[colback=white]
+$_{u}\sigma_{t}^{2}\rightarrow\infty$ for all $t$
+\end{tcolorbox}
+
+\textbf{Solved using heavy inspiration from Slide 20 Lecture 4.}
+
+\bigskip
+
+Remembering we can write $_{u}\sigma_{t}^{2}$ as 
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+Again we recognize that
+\[
+\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\geq\omega\sup_{1\leq k\leq\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)
+\]
+
+Using similar arguments as in Problem 6.a we see that the right
+side diverges to $+\infty$ for all $t$.
+
+
+
+
+\section{Problem 7}
+Consider the GARCH case where $g\left(\varepsilon_{t}\right)=\varepsilon_{t}^{2}$.
+
+\subsection{Problem 7.a i)}
+\begin{tcolorbox}[colback=white]
+    Discuss the necessary conditions on $(\omega, \alpha, \beta)$ such that: 
+    
+    \textbf{i)} $\left\{y_{t}\right\}$ is weakly stationary,
+\end{tcolorbox}
+
+To have weak stationarity of $y_{t}$ we require $\mathbb{E}\left[\sigma_{t}^{2}\right]=\sigma^{2}<\infty$
+for all $t$. Substituting for $g\left(\varepsilon_{t}\right)=\varepsilon_{t}^{2}$,
+rewriting, recursively substituting and taking the unconditional expectation
+of the process to check for this condition.
+\begin{align*}
+\sigma_{t+1}^{2} & =\omega+\sigma_{t}^{2}\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\\
+\sigma_{t+1}^{2} & =\omega+\sigma_{t}^{2}\left(\beta+\alpha\varepsilon_{t}^{2}\right)\\
+\underset{\text{lag 1 period}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\omega+\sigma_{t-1}^{2}\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)
+\end{align*}
+
+Recursive substitution
+
+\begin{align*}
+\sigma_{t}^{2} & =\omega+\sigma_{t-1}^{2}\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)\\
+\sigma_{t}^{2} & =\omega+\left(\omega+\sigma_{t-2}^{2}\left(\beta+\alpha\varepsilon_{t-2}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)\\
+\sigma_{t}^{2} & =\omega+\left(\omega+\left(\omega+\sigma_{t-3}^{2}\left(\beta+\alpha\varepsilon_{t-3}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-2}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)\\
+\underset{\text{defining }\phi_{t}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\omega+\left(\omega+\left(\omega+\sigma_{t-3}^{2}\left(\beta+\alpha\varepsilon_{t-3}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-2}^{2}\right)\right)\underbrace{\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)}_{\phi_{t-1}}\\
+\sigma_{t}^{2} & =\omega+\left(\omega+\left(\omega+\sigma_{t-3}^{2}\left(\phi_{t-3}\right)\right)\left(\phi_{t-2}\right)\right)\phi_{t-1}\\
+\sigma_{t}^{2} & =\omega+\omega\phi_{t-1}+\phi_{t-1}\phi_{t-2}\omega+\phi_{t-1}\phi_{t-2}\phi_{t-3}\sigma_{t-3}^{2}
+\end{align*}
+
+Recognizing the same pattern as earlier and continueing till $\infty$
+
+\begin{align*}
+    _{u}\sigma_{t}^{2}&=\omega+\phi_{t-1}\omega+\phi_{t-1}\phi_{t-2}\omega+\phi_{t-1}\phi_{t-2}\phi_{t-3}\omega+\dots\\
+    _{u}\sigma_{t}^{2}&=\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\dots\right]\\
+    _{u}\sigma_{t}^{2}&=\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\dots\right]\\
+    _{u}\sigma_{t}^{2}&=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+    \underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad{}_{u}\sigma_{t}^{2}&=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]
+\end{align*}
+
+Taking the unconditional expectation
+\begin{align*}
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\mathbb{E}\left[\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]\right]\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[1+\sum_{k=1}^{\infty}\mathbb{E}\left[\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]\right]\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[1+\sum_{k=1}^{\infty}\mathbb{E}\left[\prod_{i=1}^{k}\underbrace{\beta+\alpha\varepsilon_{t-i}^{2}}_{b_{t-i}}\right]\right]
+\end{align*}
+
+We first show $\mathbb{E}\left[b_{t}\right]$ and then substitute
+back into $\mathbb{E}\left[\sigma_{t}^{2}\right]$
+
+\[
+\mathbb{E}\left[b_{t}\right]=\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]=\beta+\alpha\underbrace{\mathbb{E}\left[\varepsilon_{t}^{2}\right]}_{=1}=\beta+\alpha
+\]
+
+Now we can derive the unconditional expectation
+\begin{align*}
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\right)\right]\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\underbrace{\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\right)^{k}\right]}_{\text{removing 1 with sum}}\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\right)^{k}\right]
+\end{align*}
+
+Applying the following geometric series
+\begin{equation*}
+    \sum_{k=0}^{\infty}ar^{k}=\frac{a}{1-r},\quad\text{for }\rvert r\rvert<1\tag{Geo 2}
+    \label{geo_2}
+\end{equation*}
+
+We know that we can only apply \ref{geo_2}, if $\rvert\beta+\alpha\rvert<1$.
+Thus we are left with
+\[
+\mathbb{E}\left[\sigma_{t}^{2}\right]=\sigma^{2}=\frac{\omega}{1-\alpha-\beta}
+\]
+
+We know $\sigma^{2}>0$ thus we get the following conditions
+for weak stationarity
+\begin{align*}
+    \alpha+\beta & <1\Rightarrow\alpha<1,\beta<1\\
+    \omega & >0
+\end{align*}
+
+\subsection{Problem 7.a ii)}
+\begin{tcolorbox}[colback=white]
+    Discuss the necessary conditions on $(\omega, \alpha, \beta)$ such that: 
+    
+    \textbf{ii)} $\left\{y_{t}\right\}$ is strongly stationary.
+\end{tcolorbox}
+
+
+We know from Lecture 4 Slide 16, that \cite{nelson1990}
+ shows that for $\omega>0$ we almost surely have $\sigma_{t}^{2}<\infty$.
+And that the joint process $\left\{ y_{t},\sigma_{t}^{2}\right\} $
+is strictly stationary iff. $\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]<0$.
+If we apply Jensen's equality we get
+\[
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]<\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right)
+\]
+
+We can reduce 
+\begin{align*}
+\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right) & =\ln\left(\mathbb{E}\left[\beta\right]+\alpha\underbrace{\mathbb{E}\left[\varepsilon_{t}^{2}\right]}_{=1}\right)\\
+\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right) & =\ln\left(\beta+\alpha\right)
+\end{align*}
+
+Inserting
+\begin{align*}
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right)\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(\beta+\alpha\right)
+\end{align*}
+
+We know we have weak stationarity for $\beta+\alpha<1$. However for
+the expression above we know that $\alpha+\beta=1$ satisfies the
+condition for strong stationarity as we have
+\begin{align*}
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(\beta+\alpha\right)\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(1\right)\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <0
+\end{align*}
+
+Thus we know that for $\alpha+\beta=1$ we have strong, but not weak
+stationarity.
+
+
+
+\subsection{Problem 7.b}
+\begin{tcolorbox}[colback=white]
+    Let $\omega=0.1, \alpha=0.041, \beta=0.96$, and assume that $\varepsilon_{t}$ is iid standard Gaussian, i.e. $\varepsilon_{t} \stackrel{i i d}{\sim} N(0,1)$. Discuss whether $\left\{y_{t}\right\}$ is weakly stationary and/or strongly stationary.
+\end{tcolorbox}
+
+Investigating whether $\left\{ y_{t}\right\} $ is weakly stationary
+is relatively straightforward. As we have previously shown, the condition
+for weak stationarity can be stated as $\alpha+\beta<1$. This condition
+is violated in this case as $0.041+0.96=1.001>1$. 
+
+\bigskip
+
+To study whether we have strong stationarity, I use direct Monte Carlo
+simulation following example R-code from lectures, filename Code04112021.R.
+Here I simulate 1e7 draws from the standard Gaussian distribution
+and then compute the moment condition. For set.seed(123) I get 
+\[
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]=-0.00053<0,\quad\text{(rounded)}
+\]
+
+Thus the condition for strong stationarity is fulfilled and $\left\{ y_{t}\right\} $
+is strongly stationary.
+
+\pagebreak
+
+\subsection{Problem 7.c}
+\begin{tcolorbox}[colback=white]
+    Let $\omega=0.1, \alpha=0.06, \beta=0.96$, and assume that $\varepsilon_{t}$ is iid standard Student's $t$, i.e. $\varepsilon_{t} \stackrel{i i d}{\sim} T(0,1, \nu)$, with density
+    $$
+    p\left(\varepsilon_{t}\right)=\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\Gamma\left(\frac{\nu}{2}\right) \sqrt{(\nu-2) \pi}}\left[1+\frac{\varepsilon_{t}^{2}}{\nu-2}\right]^{-\frac{\nu+1}{2}}
+    $$
+    Discuss whether $\left\{y_{t}\right\}$ is weakly stationary and/or strongly stationary in the cases $\nu=2.5$ and $\nu=20$. What do you observe here?
+\end{tcolorbox}
+
+Investigating whether $\left\{ y_{t}\right\} $ is weakly stationary
+is relatively straightforward. As we have previously shown, the condition
+for weak stationarity can be stated as $\alpha+\beta<1$. This condition
+is violated in this case as $0.06+0.96=1.02>1$. 
+
+\bigskip
+
+To test for strong stationarity we can employ the same Monte Carlo simulation as in Problem 7.b. However we are given that the shocks are distributed with the standardized $t$ distribution with scale parameter 1. Thus to perform the Monte Carlo simulation we need to standardize the output of the dt() function in R by normalizing using the standard deviation. \textit{(I am unable to show the derivation explicitly, but I didn't recognize the density function as the conventional PDF for the $t$ distribution and thus found resources online\footnote{\href{https://stats.stackexchange.com/questions/8466/standardized-students-t-distribution}{https://stats.stackexchange.com/questions/8466/standardized-students-t-distribution}} on how to normalize.)}
+
+\begin{align*}
+    \mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]_{\nu=2.5}&=-0.00384<0,\quad\text{(rounded)}\\
+    \mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]_{\nu=20}&=0.01638>0,\quad\text{(rounded)}
+\end{align*}
+
+Here we see that the condition for strong stationarity is satisfied for $\left\{ y_{t}\right\}$ if $\nu=2.5$ but not for $\nu=20$.
+
+\pagebreak
+\setcounter{section}{0}
+\part*{Computational part}
+
+\begin{tcolorbox}
+    \textbf{General comments on the code in Problem 1 and 2}
+    \begin{itemize}
+        \item When updating $\mathbf{R}_{t}$ I apply the generalized matrix format of the equation for $\boldsymbol{\Psi_t}$ in equation (5) of \cite{tsetsui2002}.
+        \item I program in a condition on $M$. If $M=1$ I return a $\boldsymbol{\Psi_t}=I$ for all $t$ following the arguments on page 353 in \cite{tsetsui2002}.
+    \end{itemize}
+\end{tcolorbox}
+
+\section{Problem 1}
+\begin{tcolorbox}[colback=white]
+    Write a code to simulate $T$ observations from the model of Tse and Tsui (2002) under the assumption that $\varepsilon_{t}$ is iid multivariate Gaussian with mean $\mathbf{0}$ and covariance matrix $\mathbb{I}_{p} .$ It should be possible to choose any (reasonable) $M .$ Set $\mathbf{R}_{t}=\mathbf{R}$ for $t \leq M .$
+\end{tcolorbox}
+
+See R file with docstrings and comments.
+
+\section{Problem 2}
+\begin{tcolorbox}[colback=white]
+    Write a code to estimate $a$ and $b$ using the two steps Quasi Maximum Likelihood estimator for multivariate volatility models discussed in Engle (2002). You can estimate the univariate models using the rugarch package. Set $\mathbf{R}$ to the empirical correlation matrix estimated from the data.
+\end{tcolorbox}
+
+See R file with docstrings and comments.
+
+\begin{tcolorbox}
+    \textbf{Comments on the method in Problem 2}
+    
+    \bigskip
+    
+    I apply similar methods for coding the QML estimator in this exam as we applied in Problem Set 6. Thus I apply the Likelihood decomposition stated on Slide 35 Lecture 10:
+    
+    \begin{align*}
+        \underset{\text{volatility component}}{\Longrightarrow}\quad\mathcal{L}_{V}(\theta)&\equiv\log L_{V,T}(\theta)=-\frac{1}{2}\sum_{t=1}^{T}\left(N\log(2\pi)+\log\left|\mathbf{D}_{t}\right|+\mathbf{y}_{t}^{\prime}\mathbf{D}_{t}^{-1}\mathbf{y}_{t}\right)\\\underset{\text{correlation component}}{\Longrightarrow}\quad\mathcal{L}_{C}(\theta,\phi)&\equiv\log L_{C,T}(\theta,\phi)=-\frac{1}{2}\sum_{t=1}^{T}\left(\eta_{t}^{\prime}\mathbf{R}_{t}^{-1}\eta_{t}-\eta_{t}^{\prime}\eta_{t}+\log\left|\mathbf{R}_{t}\right|\right)\\\underset{\text{total likelihood}}{\Longrightarrow}\quad\mathcal{L}_{T}&=\mathcal{L}_{V}(\theta)+\mathcal{L}_{C}(\theta,\phi)
+    \end{align*}
+\end{tcolorbox}
+
+\pagebreak
+
+\section{Problem 3}
+Set the seed to 123 (set.seed (123)), $p=2, M=5, \omega_{i}=0.01, \alpha_{i}=0.04, \beta=0.95$ for $i=1,2, a=0.003, b=0.995$ and $\mathbf{R}=\left(\begin{array}{cc}1 & 0.8 \\ 0.8 & 1\end{array}\right)$
+
+\subsection{Problem 3.a}
+\begin{tcolorbox}[colback=white]
+    Simulate $T=1000$ observations from the model using the function you created at point 1). Plot the series of simulated returns, time-varying variances, and time-varying correlation.
+\end{tcolorbox}
+
+\begin{figure}[htbp]
+  \centering
+  %\def\svgwidth{\columnwidth}
+  \includesvg[width=\columnwidth]{Pictures/sim.svg}
+  \caption{Plot of simulated returns, time-varying variances and time-varying correlation}
+\end{figure}
+
+\subsection{Problem 3.b}
+\begin{tcolorbox}[colback=white]
+    Estimate the parameters of the model using the function you created at point 2). Compare the estimated parameters with the true ones. (It is a good idea to initialize the optimizer at the true values of $a$ and $b$ ).
+\end{tcolorbox}
+
+I estimate the QML estimator from Problem 2) and get the following parameters
+\begin{align*}
+    \overline{a}&=0.01024993 \\
+    \overline{b}&=0.97838795 
+\end{align*}
+
+These are relatively close to the true parameters, but it seems some information is lost in the estimation.
+
+\pagebreak
+\setcounter{section}{0}
+\part*{Empirical part}
+
+Consider $p=3$ series of your choice from the dji30ret dataset in the rugarch package. Multiply the series by 100 and remove the mean.
+
+\section{Problem 1}
+\begin{tcolorbox}[colback=white]
+    Report descriptive statistics of your choice for the three series. Discuss the unconditional distribution of these series and provide evidence for the presence of heteroscedasticity.
+\end{tcolorbox}
+
+I choose IBM, GE and JPM from the DJ index. I use the entire sample period available in the dji30ret dataset so I can get as many periods of extreme volatility into my sample as possible. All metrics below are calculated using the de-meaned returns times 100. When looking at the period in question, these stocks are interesting as one could reasonably argue that JPM will have high volatility during the financial crisis, similar for IBM during the dotcom bubble and GE will probably be more cyclical in terms of volatility and be more dependent on business-cycles.
+
+\bigskip
+
+For descriptive statistics I choose to calculate correlations, kurtosis and skewness.
+
+\bigskip
+
+The empirical correlations are reported below. We see that the returns are relatively highly correlated.
+
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ c | c c c }
+        & \textbf{IBM} & \textbf{GE} & \textbf{JPM} \\
+        \hline
+        \textbf{IBM} & 1.0000000 &  & \\
+        \textbf{GE} & 0.4522698 & 1.0000000 & \\
+        \textbf{JPM} & 0.3893852 & 0.5365391 & 1.0000000 \\
+    \end{tabular}
+    \caption{Correlations of returns}
+    %\label{tab:my_label}
+\end{table}
+
+We see for the skewness (reported below) that we indeed have negative skewness. Thus we have fat tails to the left of the distributions of returns. This is also clear when we visually inspect the distribution of returns in Figure \ref{empirical_density}.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ c c c }
+        \textbf{IBM} & \textbf{GE} & \textbf{JPM} \\
+        \hline
+        -0.4663979 & -0.3991383 & -0.3676563  \\
+    \end{tabular}
+    \caption{Skewness of returns}
+    %\label{tab:my_label}
+\end{table}
+
+Along these lines we can futher investigate the tails of the distributions by computing kurtusis. We see that these values are indeed larger than 3 (Gaussian). Thus we have fat-tailed distribution for the stock returns (this is expected).
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ c c c }
+        \textbf{IBM} & \textbf{GE} & \textbf{JPM} \\
+        \hline
+        16.27492 & 11.61437 & 17.34640   \\
+    \end{tabular}
+    \caption{Kurtosis of the returns}
+    %\label{tab:my_label}
+\end{table}
+
+I provide evidence for heteroscedasticity by plotting a rolling window of variance. If we had homoscedasticity this series should be relatively flat (in best case constant). It is clear that the returns do not exhibit a constant variance as especially periods of large financial turmoil (dotcom, black monday, financial crisis) heavily impact the empirical volatilities. These rolling series are plotted in Figure \ref{rolling_variance}. I arbitrarily choose the set my rolling window-size to 25.
+
+
+\begin{figure}[htbp]
+  \centering
+  %\def\svgwidth{\columnwidth}
+  \includesvg[width=\columnwidth]{Pictures/rolling_var.svg}
+  \caption{Rolling variance for the three assets}
+  \label{rolling_variance}
+\end{figure}
+
+\begin{figure}[htbp]
+  \centering
+  %\def\svgwidth{\columnwidth}
+  \includesvg[width=\columnwidth]{Pictures/stocks_dist.svg}
+  \caption{Empirical densities for the three assets}
+  \label{empirical_density}
+\end{figure}
+
+\pagebreak
+
+\section{Problem 2}
+\begin{tcolorbox}[colback=white]
+    For $M=1, \ldots, 5$ estimate the model of Tse and Tsui (2002) on the three series. Select the value of $M$ that resulted in the highest $\log$ likelihood value at its maximum.
+\end{tcolorbox}
+
+I estimate the model (coded in Computational part, Problem 2) to estimate the model of \cite{tsetsui2002}. I vary $M$ as stated. The log-likelihoods are reported below.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{ c | r }
+        \textbf{M} & \textbf{Log-likelihood}\\
+        \hline
+        1 & -34,000.30 \\
+        2 & -33,857.92 \\
+        3 & -33,832.14 \\
+        4 & -33,826.60 \\
+        5 & -33,828.08 \\
+    \end{tabular}
+    %\caption{Kurtosis of the returns}
+    %\label{tab:my_label}
+\end{table}
+
+We see here that $M=4$ yields the highest likelihood. Thus we select this model. Estimating the model for GE, JPM and IBM with $M=4$ yields the following estimated parameters.
+
+\begin{equation*}
+    \overline{a}=0.01432655,\quad \overline{b}=0.98167289
+\end{equation*}
+
+\pagebreak
+
+\section{Problem 3}
+\begin{tcolorbox}[colback=white]
+    Estimate the DCC model of Engle (2002) using the rmgarch (i.e., the returns have the stochastic representation reported in (2), with GARCH variances as in (3), but $\mathbf{R}_{t}$ follows the DCC updating equation). Which model between the one of Tse and Tsui (2002) and the one of Engle (2002) provides the highest likelihood value?
+\end{tcolorbox}
+
+Estimating the \cite{engle2002} model for the three assets yields a log-likelihood value of $-31,048.77$. Seen in constrast to the TVC log-likelihood of $-33,826.60$ for $M=4$, the Engle model seems to do better. Thus the DCC model of \cite{engle2002} does a better job in describing the particular data. One should although keep in mind that in practical terms these likelihood values are relatively close.
+
+
+\section{Problem 4}
+\begin{tcolorbox}[colback=white]
+    In a plot, compare the estimated correlations of the two models.
+\end{tcolorbox}
+
+\textit{Disclaimer: I had some issues with the vector graphics in LaTeX, but hope the legend is readable.}
+
+\bigskip
+
+Investigating the estimated correlations from the two models we generally see that the TVC model seems more stable but still relatively persistent.
+
+\begin{figure}[htbp]
+  \centering
+  %\def\svgwidth{\columnwidth}
+  \includesvg[width=\columnwidth]{Pictures/dcc_vs_tvc.svg}
+  \caption{Conditional correlations for each asset-combination over fixed date x-axis}
+  \label{cond_corr}
+\end{figure}
+
+\pagebreak
+
+\section{Problem 5}
+\begin{tcolorbox}[colback=white]
+    Draw some general conclusion about the evolution of the estimated volatilities and correlations for the series you considered.
+\end{tcolorbox}
+
+There are a lot of stories to be told when investigating the path of the time-varying conditional correlations and conditional volatilities. We see for the time-varying conditional correlations that generally during optimistic periods in the financial markets conditional correlation is lower. However in periods of turmoil (black monday, dotcom etc.) conditional correlation is higher. Linking Figure  \ref{cond_corr} and \ref{cond_var} we also see this contagiousness of variation. It seems that periods of turmoil and high volatility creates higher spillover into other stocks. In the words of \cite{tsetsui2002} page 360 \textit{"...contagion is stronger for negative returns than for positive returns."}.
+
+\bigskip
+
+Particularly for the three stocks selected in this analysis we see an interesting pattern w.r.t IBM. IBM is a stock which was highly affected by the burst of the dotcom bubble. We see that for this particular stock, that the conditional correlation (IBM x GE, IBM x JPM) becomes relatively low around year 2000 (when investigating Figure \ref{cond_corr}). One may cautiously infer that there were little contagiousness in terms of returns both during the dotcom boom and later crash of technology/internet stocks in the early 2000's.
+
+\begin{figure}[htbp]
+  \centering
+  %\def\svgwidth{\columnwidth}
+  \includesvg[width=\columnwidth]{Pictures/vol_garch.svg}
+  \caption{Conditional variance for each asset over time}
+  \label{cond_var}
+\end{figure}
+
+
+
+\bibliographystyle{agsm}
+\bibliography{fe}
+
+\end{document}

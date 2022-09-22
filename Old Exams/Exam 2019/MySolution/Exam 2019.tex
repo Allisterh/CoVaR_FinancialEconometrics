@@ -1,0 +1,466 @@
+%% LyX 2.3.6.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[latin9]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{cancel}
+\usepackage{babel}
+\begin{document}
+
+\section{Question 1 - Methodology}
+
+\subsection{Point a) Derive a GAS model for $\mu_{t}$}
+
+Let $Y_{t}$ be the VIX at time $t$ and consider the following model:
+
+\[
+Y_{t}\mid\mathcal{F}_{t-1}\sim\mathcal{G}a\left(\mu_{t},a\right)
+\]
+
+where $\mathcal{G}a\left(\mu_{t},a\right)$ is the Gamma distribution
+with mean $\mu_{t}>0$ and scale $a>0$ with probability density function
+given by:
+\[
+p\left(y_{t}\mid\mathcal{F}_{t-1}\right)=\frac{1}{\Gamma(a)}a^{a}y_{t}^{a-1}\mu_{t}^{-a}\exp\left(-a\frac{y_{t}}{\mu_{t}}\right)
+\]
+
+We implement the parameterization of the Gamma distribution used by
+Engle and Gallo (2006) where
+\begin{align*}
+\mathbb{E}\left[Y_{t}\rvert\mathcal{F}_{t-1}\right] & =\mu_{t}\\
+\mathbb{V}\left[Y_{t}\rvert\mathcal{F}_{t-1}\right] & =\frac{\mu_{t}^{2}}{a}
+\end{align*}
+
+Derive a GAS model for $\mu_{t}$ and scale the score by the inverse
+of the square root of the Fisher information quantity for $\mu_{t}$,
+i.e. set $d=1/2$ in slide 19 of Lecture 10. Note that 
+\[
+E\left[Y_{t}^{2}\mid\mathcal{F}_{t-1}\right]=\frac{\mu_{t}^{2}(1+a)}{a}
+\]
+If you cannot derive the information quantity, use identity scaling,
+i.e. $d=0$.\\
+\\
+\\
+\\
+
+We start by logging the density function to make it easier to take
+the derivative w.r.t. $\mu_{t}$
+\begin{align*}
+p\left(y_{t}\mid\mathcal{F}_{t-1}\right) & =\frac{1}{\Gamma(a)}a^{a}y_{t}^{a-1}\mu_{t}^{-a}\exp\left(-a\frac{y_{t}}{\mu_{t}}\right)\\
+\ln\left[p\left(y_{t}\mid\mathcal{F}_{t-1}\right)\right] & =\ln\left[\frac{1}{\Gamma(a)}a^{a}y_{t}^{a-1}\mu_{t}^{-a}\exp\left(-a\frac{y_{t}}{\mu_{t}}\right)\right]\\
+\ln\left[p\left(y_{t}\mid\mathcal{F}_{t-1}\right)\right] & =\underbrace{\ln\left(1\right)}_{=0}-\ln\left(\Gamma\left(a\right)\right)+a\ln\left(a\right)+\left(a-1\right)\ln\left(y_{t}\right)-a\ln\left(\mu_{t}\right)-a\frac{y_{t}}{\mu_{t}}\\
+\ln\left[p\left(y_{t}\mid\mathcal{F}_{t-1}\right)\right] & =-\ln\left(\Gamma\left(a\right)\right)+a\ln\left(a\right)+\left(a-1\right)\ln\left(y_{t}\right)-a\ln\left(\mu_{t}\right)-a\frac{y_{t}}{\mu_{t}}
+\end{align*}
+
+Now we want to find the score of the conditional distribution $\left(\nabla_{t}\right)$
+\begin{align*}
+\nabla_{t} & =\frac{\partial\ln\left[p\left(y_{t}\mid\mathcal{F}_{t-1}\right)\right]}{\partial\mu_{t}}=-\frac{a}{\mu_{t}}-\left(-\frac{ay_{t}}{\mu_{t}^{2}}\right)\\
+\nabla_{t} & =-\frac{a}{\mu_{t}}+\frac{ay_{t}}{\mu_{t}^{2}}\\
+\nabla_{t} & =\frac{ay_{t}}{\mu_{t}^{2}}-\frac{a}{\mu_{t}}
+\end{align*}
+
+We know from slides (Lecture 9 slide 17) that the score $\nabla_{t}$
+has zero expectation. The derivitation below is pasted from slides,
+whereas we write $\psi$.
+\[
+\begin{aligned}\mathbb{E}_{t-1}\left[\nabla_{t}\right] & =\int_{\mathcal{Y}}\frac{\partial\log p\left(y_{t}\mid\mathbf{y}_{1:t-1};\psi\right)}{\partial\psi_{t}}p\left(y_{t}\mid\mathbf{y}_{1:t-1};\psi\right)\mathrm{d}y\\
+ & =\int_{\mathcal{Y}}\frac{\partial p\left(y_{t}\mid\mathbf{y}_{1:t-1};\psi\right)}{\partial\psi_{t}}\frac{1}{p\left(y_{t}\mid\mathbf{y}_{1:t-1};\psi\right)}p\left(y_{t}\mid\mathbf{y}_{1:t-1};\psi\right)\mathrm{d}y\\
+ & =\int_{\mathcal{Y}}\frac{\partial p\left(y_{t}\mid\mathbf{y}_{1:t-1};\psi\right)}{\partial\psi_{t}}\mathrm{~d}y\\
+ & =\frac{\partial}{\partial\psi_{t}}\int_{\mathcal{Y}}p\left(y_{t}\mid\mathbf{y}_{1:t-1};\psi\right)\mathrm{d}y\\
+ & =\frac{\partial}{\partial\psi_{t}}1=0
+\end{aligned}
+\]
+
+Since $\mathbb{E}_{t-1}\left[\nabla_{t}\right]=0$ we can write the
+Fisher information matrix $\mathcal{I}_{t}\left(\mu_{t}\right)$ as
+\begin{align*}
+\mathbb{V}\left(\nabla_{t}\right) & =\mathbb{E}_{t-1}\left[\nabla_{t}^{2}\right]=\mathcal{I}_{t}\left(\mu_{t}\right)\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\underbrace{\mathbb{E}_{t-1}\left[\left(\frac{ay_{t}}{\mu_{t}^{2}}-\frac{a}{\mu_{t}}\right)^{2}\right]}_{\mathbb{E}_{t-1}\left[\nabla_{t}^{2}\right]}\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\mathbb{E}_{t-1}\left[\left(\frac{ay_{t}}{\mu_{t}^{2}}-\frac{a}{\mu_{t}}\right)^{2}\right]\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\mathbb{E}_{t-1}\left[\left(\frac{ay_{t}}{\mu_{t}^{2}}\right)^{2}+\left(\frac{a}{\mu_{t}}\right)^{2}-2\cdot\frac{ay_{t}}{\mu_{t}^{2}}\frac{a}{\mu_{t}}\right]\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\mathbb{E}_{t-1}\left[\frac{a^{2}y_{t}^{2}}{\mu_{t}^{4}}+\frac{a^{2}}{\mu_{t}^{2}}-2\cdot\frac{a^{2}y_{t}}{\mu_{t}^{3}}\right]\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\mathbb{E}_{t-1}\left[\frac{a^{2}y_{t}^{2}}{\mu_{t}^{4}}+\frac{a^{2}}{\mu_{t}^{2}}-2\cdot\frac{a^{2}y_{t}}{\mu_{t}^{3}}\right]\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\mathbb{E}_{t-1}\left[\frac{a^{2}y_{t}^{2}}{\mu_{t}^{4}}\right]+\mathbb{E}_{t-1}\left[\frac{a^{2}}{\mu_{t}^{2}}\right]-\mathbb{E}_{t-1}\left[2\cdot\frac{a^{2}y_{t}}{\mu_{t}^{3}}\right]\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\mathbb{E}_{t-1}\left[\frac{a^{2}y_{t}^{2}}{\mu_{t}^{4}}\right]+\mathbb{E}_{t-1}\left[\frac{a^{2}}{\mu_{t}^{2}}\right]-\mathbb{E}_{t-1}\left[2\cdot\frac{a^{2}y_{t}}{\mu_{t}^{3}}\right]
+\end{align*}
+
+Now we can use the information given in the question, namely 
+\begin{align*}
+\mathbb{E}\left[Y_{t}\rvert\mathcal{F}_{t-1}\right] & =\mu_{t}\\
+E\left[Y_{t}^{2}\mid\mathcal{F}_{t-1}\right] & =\frac{\mu_{t}^{2}(1+a)}{a}\\
+\mathbb{V}\left[Y_{t}\rvert\mathcal{F}_{t-1}\right] & =\frac{\mu_{t}^{2}}{a}
+\end{align*}
+
+\begin{align*}
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\mathbb{E}_{t-1}\left[\frac{a^{2}y_{t}^{2}}{\mu_{t}^{4}}\right]+\mathbb{E}_{t-1}\left[\frac{a^{2}}{\mu_{t}^{2}}\right]-\mathbb{E}_{t-1}\left[2\cdot\frac{a^{2}y_{t}}{\mu_{t}^{3}}\right]\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =a^{2}\mathbb{E}_{t-1}\left[\frac{y_{t}^{2}}{\mu_{t}^{4}}\right]+a^{2}\mathbb{E}_{t-1}\left[\frac{1}{\mu_{t}^{2}}\right]-2a^{2}\mathbb{E}_{t-1}\left[\frac{y_{t}}{\mu_{t}^{3}}\right]
+\end{align*}
+
+We know that all information contained in $\mu_{t}$ is observable
+given information at time $\left(t-1\right)$ namely
+\[
+\mathbb{E}\left[Y_{t}\rvert\mathcal{F}_{t-1}\right]=\mu_{t}
+\]
+
+whereas we can take it outside the expectations operator, thus yielding
+\begin{align*}
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\frac{a^{2}}{\mu_{t}^{4}}\mathbb{E}_{t-1}\left[y_{t}^{2}\right]+\frac{a^{2}}{\mu_{t}^{2}}-\frac{2a^{2}}{\mu_{t}^{3}}\mathbb{E}_{t-1}\left[y_{t}\right]\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =a^{2}\left(\frac{1}{\mu_{t}^{4}}\mathbb{E}_{t-1}\left[y_{t}^{2}\right]+\frac{1}{\mu_{t}^{2}}-\frac{2}{\mu_{t}^{3}}\mathbb{E}_{t-1}\left[y_{t}\right]\right)\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =a^{2}\left(\frac{1}{\mu_{t}^{4}}\frac{\mu_{t}^{2}(1+a)}{a}+\frac{1}{\mu_{t}^{2}}-\frac{2}{\mu_{t}^{3}}\mu_{t}^{2}\right)\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =a^{2}\left(\frac{1}{\mu_{t}^{4}}\frac{\mu_{t}^{2}(1+a)}{a}+\frac{1}{\mu_{t}^{2}}-2\frac{1}{\mu_{t}^{2}}\right)\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =a^{2}\left(\frac{(1+a)}{\mu_{t}^{2}a}-\frac{1}{\mu_{t}^{2}}\right)\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\frac{a^{2}+a^{3}}{\mu_{t}^{2}a}-\frac{a^{2}}{\mu_{t}^{2}}\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\frac{a+a^{2}}{\mu_{t}^{2}}-\frac{a^{2}}{\mu_{t}^{2}}\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\frac{a}{\mu_{t}^{2}}\cancel{+\frac{a^{2}}{\mu_{t}^{2}}-\frac{a^{2}}{\mu_{t}^{2}}}\\
+\mathcal{I}_{t}\left(\mu_{t}\right) & =\frac{a}{\mu_{t}^{2}}
+\end{align*}
+
+We are given $d=1/2$ whereas we have inverse square root scaling
+- thus we can now write up an expression for $u_{t}$
+\begin{align*}
+u_{t} & =\mathcal{I}_{t}^{-1/2}\nabla_{t}\\
+u_{t} & =\left(\frac{a}{\mu_{t}^{2}}\right)^{-1/2}\left(\frac{ay_{t}}{\mu_{t}^{2}}-\frac{a}{\mu_{t}}\right)\\
+u_{t} & =\left(\frac{\mu_{t}^{2}}{a}\right)^{1/2}\left(\frac{ay_{t}}{\mu_{t}^{2}}-\frac{a}{\mu_{t}}\right)\\
+u_{t} & =\frac{\mu_{t}}{\sqrt{a}}\left(\frac{ay_{t}}{\mu_{t}^{2}}-\frac{a}{\mu_{t}}\right)\\
+u_{t} & =\frac{a}{\sqrt{a}}\left(\frac{\mu_{t}y_{t}}{\mu_{t}^{2}}-\frac{\mu_{t}1}{\mu_{t}}\right)\\
+u_{t} & =\sqrt{a}\left(\frac{y_{t}}{\mu_{t}}-1\right)
+\end{align*}
+
+We know from slides (Lecture 9 slide 22) that for $d=1/2$ we have
+$\widetilde{u}_{t}=u_{t}$. We introduce an exponential link function
+as $y_{t}$ (VIX index) only can take on positive values, thus we
+have
+\[
+\mu_{t}=\exp\left(\widetilde{\mu}_{t}\right)
+\]
+
+Thus we can derive the Gamma GAS updating equation as the following
+and thus we have the requested GAS model for $\mu_{t}$.
+\begin{align*}
+\widetilde{\mu}_{t} & =\omega+\alpha\widetilde{u}_{t-1}+\beta\widetilde{\mu}_{t-1}\\
+\widetilde{\mu}_{t} & =\omega+\alpha\left[\sqrt{a}\left(\frac{y_{t-1}}{\mu_{t-1}}-1\right)\right]+\beta\widetilde{\mu}_{t-1}\\
+\widetilde{\mu}_{t} & =\omega+\alpha\left[\sqrt{a}\left(\frac{y_{t-1}}{\exp\left(\widetilde{\mu}_{t-1}\right)}-1\right)\right]+\beta\widetilde{\mu}_{t-1}
+\end{align*}
+
+
+\subsection{Point b) Derive a GAS model for $\mu_{t}$}
+
+We know from point a) that the individual likelihood contributions
+can be written as
+\[
+\ln\left[p\left(y_{t}\mid\mathbf{y}_{t:t-1},\mu_{t},a\right)\right]=-\ln\left(\Gamma\left(a\right)\right)+a\ln\left(a\right)+\left(a-1\right)\ln\left(y_{t}\right)-a\ln\left(\mu_{t}\right)-a\frac{y_{t}}{\mu_{t}}
+\]
+
+We take the sum (log-product) to derive the full log-likelihood function
+\begin{align*}
+\ln\left[L\left(y_{t}\mid\mathbf{y}_{t:t-1},\mu_{t},a\right)\right] & =\sum_{t=1}^{T}-\ln\left(\Gamma\left(a\right)\right)+a\ln\left(a\right)+\left(a-1\right)\ln\left(y_{t}\right)-a\ln\left(\mu_{t}\right)-a\frac{y_{t}}{\mu_{t}}\\
+\ln\left[L\left(y_{t}\mid\mathbf{y}_{t:t-1},\mu_{t},a\right)\right] & =T\left[-\ln\left(\Gamma\left(a\right)\right)+a\ln\left(a\right)\right]+\sum_{t=1}^{T}\left[\left(a-1\right)\ln\left(y_{t}\right)-a\ln\left(\mu_{t}\right)-a\frac{y_{t}}{\mu_{t}}\right]
+\end{align*}
+
+
+\section{Question 1 - Computational Part}
+
+\subsection{Point a) }
+
+Write a function to estimate the GAMMA-GAS model of the previous point
+using the Maximum Likelihood estimator. The function should accept
+a vector of observations and return the estimated parameters, the
+filtered means $\mu_{t}$, for $t=1,\ldots,T$, and the $\log$ likelihood
+evaluated at its maximum value. Assume that $\omega,\alpha$, and
+$\beta$ are the intercept, score coefficient and autoregressive coefficient
+of the GAS process. Impose the following constraints during the optimization:
+$\omega\in[-0.5,0.5],\alpha\in[0.001,1.5],\beta\in[0.01,0.999]$,
+$a\in[0.1,300].$
+
+.
+
+.
+
+.
+
+To estimate the Gamma GAS model using Maximum Likelihood I first derive
+the unconditional value of $\mu_{t}$ for initializing the model
+\begin{align*}
+\widetilde{\mu}_{t} & =\omega+\alpha\widetilde{u}_{t-1}+\beta\widetilde{\mu}_{t-1}\\
+\underset{\text{Recursive substitution}}{\Longrightarrow}\quad\widetilde{\mu}_{t} & =\omega+\alpha\widetilde{u}_{t-1}+\beta\left(\omega+\alpha\widetilde{u}_{t-2}+\beta\widetilde{\mu}_{t-2}\right)\\
+\widetilde{\mu}_{t} & =\omega+\alpha\widetilde{u}_{t-1}+\beta\left(\omega+\alpha\widetilde{u}_{t-2}+\beta\left[\omega+\alpha\widetilde{u}_{t-3}+\beta\widetilde{\mu}_{t-3}\right]\right)\\
+\widetilde{\mu}_{t} & =\omega+\alpha\widetilde{u}_{t-1}+\left(\beta\omega+\beta\alpha\widetilde{u}_{t-2}+\beta^{2}\omega+\beta^{2}\alpha\widetilde{u}_{t-3}+\beta^{3}\widetilde{\mu}_{t-3}\right)\\
+\widetilde{\mu}_{t} & =\omega+\beta\omega+\beta^{2}\omega+\alpha\left(\widetilde{u}_{t-1}+\beta\widetilde{u}_{t-2}+\beta^{2}\widetilde{u}_{t-3}\right)+\beta^{3}\widetilde{\mu}_{t-3}\\
+\widetilde{\mu}_{t} & =\omega+\beta\omega+\beta^{2}\omega+\alpha\left(\widetilde{u}_{t-1}+\beta\widetilde{u}_{t-2}+\beta^{2}\widetilde{u}_{t-3}\right)+\beta^{3}\widetilde{\mu}_{t-3}\\
+\widetilde{\mu}_{t} & =\omega\left(1+\beta+\beta^{2}\right)+\alpha\left(\widetilde{u}_{t-1}+\beta\widetilde{u}_{t-2}+\beta^{2}\widetilde{u}_{t-3}\right)+\beta^{3}\widetilde{\mu}_{t-3}
+\end{align*}
+
+\textbf{Intermezzo, geometric series
+\[
+a+ar+ar^{2}+ar^{3}+ar^{4}+\cdots=\sum_{k=0}^{\infty}ar^{k}=\frac{a}{1-r},\text{ for }|r|<1\tag{Geo 1}
+\]
+}
+
+Thus we can use Equation (Geo 1) to reduce the first part, as $\rvert\beta\rvert<1$
+by construction
+\[
+\widetilde{\mu}_{t}=\frac{\omega}{1-\beta}+\alpha\left(\widetilde{u}_{t-1}+\beta\widetilde{u}_{t-2}+\beta^{2}\widetilde{u}_{t-3}\right)+\beta^{3}\widetilde{\mu}_{t-3}
+\]
+
+As $t\rightarrow\infty$ the part $\left[\beta^{3}\widetilde{\mu}_{t-3}\right]$
+goes becomes infinitesimal and thus can be ignored.
+
+\begin{align*}
+\widetilde{\mu}_{t} & =\frac{\omega}{1-\beta}+\alpha\left(\widetilde{u}_{t-1}+\beta\widetilde{u}_{t-2}+\beta^{2}\widetilde{u}_{t-3}\right)+\underbrace{\beta^{3}\widetilde{\mu}_{t-3}}_{=0,\text{ as }t\rightarrow\infty}\\
+\widetilde{\mu}_{t} & =\frac{\omega}{1-\beta}+\alpha\left(\widetilde{u}_{t-1}+\beta\widetilde{u}_{t-2}+\beta^{2}\widetilde{u}_{t-3}\right)\\
+\widetilde{\mu}_{t} & =\frac{\omega}{1-\beta}+\alpha\sum_{s=0}^{\infty}\beta^{s}\widetilde{u}_{t-1-s}
+\end{align*}
+
+The sum can be interpreted as,
+\begin{align*}
+s & =0\quad\Longrightarrow\quad\widetilde{u}_{t-1}\\
+s & =1\quad\Longrightarrow\quad\beta\widetilde{u}_{t-2}\\
+s & =2\quad\Longrightarrow\quad\beta^{2}\widetilde{u}_{t-3}\\
+ & \vdots
+\end{align*}
+
+Now we can take the unconditional expectation
+\begin{align*}
+\mathbb{E}\left[\widetilde{\mu}_{t}\right] & =\mathbb{E}\left[\frac{\omega}{1-\beta}+\alpha\sum_{s=0}^{\infty}\beta^{s}\widetilde{u}_{t-1-s}\right]\\
+\mathbb{E}\left[\widetilde{\mu}_{t}\right] & =\mathbb{E}\left[\frac{\omega}{1-\beta}\right]+\mathbb{E}\left[\alpha\sum_{s=0}^{\infty}\beta^{s}\widetilde{u}_{t-1-s}\right]
+\end{align*}
+
+We know from slide 18 of Lecture 9 that the forcing variable $u_{t}$
+has zero expectation. Thus we now have an expression for the unconditional
+expectation
+\begin{align*}
+\mathbb{E}\left[\widetilde{\mu}_{t}\right] & =\mathbb{E}\left[\frac{\omega}{1-\beta}\right]+\underbrace{\mathbb{E}\left[\alpha\sum_{s=0}^{\infty}\beta^{s}\widetilde{u}_{t-1-s}\right]}_{=0}\\
+\mathbb{E}\left[\widetilde{\mu}_{t}\right] & =\frac{\omega}{1-\beta}
+\end{align*}
+
+
+\section{Question 1 - Empirical Analysis}
+
+\subsection{Point d) }
+
+Engle and Gallo (2006) introduced a series of Multiplicative Error
+Models to model positive valued series like the VIX. In their simpler
+specification, they assume that: 
+\[
+Y_{t}\mid\mathcal{F}_{t-1}\sim\mathcal{G}a\left(\mu_{t},a\right)
+\]
+ and 
+\[
+\mu_{t}=\kappa+\eta y_{t-1}+\phi\mu_{t-1}
+\]
+
+\begin{itemize}
+\item Write a function to estimate the MEM model of Engle and Gallo (2006).
+Impose these constraints on the parameters of the MEM model: $\kappa\in[0.1,10],\eta\in[0.01,0.99],\phi\in[0.01,0.99]$,
+and $a\in[0.1,300]$.
+\end{itemize}
+.
+
+.
+
+.
+
+.
+
+.
+
+To estimate this model using the Maximum Likelihood estimator I need
+to derive the unconditional mean of the model following the procedure
+in Point a) of Computational part.
+\begin{align*}
+\mu_{t} & =\kappa+\eta y_{t-1}+\phi\mu_{t-1}\\
+\underset{\text{Recursive substitution}}{\Longrightarrow}\quad\mu_{t} & =\kappa+\eta y_{t-1}+\phi\left[\kappa+\eta y_{t-2}+\phi\mu_{t-2}\right]\\
+\mu_{t} & =\kappa+\eta y_{t-1}+\phi\left[\kappa+\eta y_{t-2}+\phi\left(\kappa+\eta y_{t-3}+\phi\mu_{t-3}\right)\right]\\
+\mu_{t} & =\kappa+\eta y_{t-1}+\phi\left[\kappa+\eta y_{t-2}+\phi\kappa+\phi\eta y_{t-3}+\phi^{2}\mu_{t-3}\right]\\
+\mu_{t} & =\kappa+\eta y_{t-1}+\phi\kappa+\phi\eta y_{t-2}+\phi^{2}\kappa+\phi^{2}\eta y_{t-3}+\phi^{3}\mu_{t-3}\\
+\underset{\text{Re-arrange}}{\Longrightarrow}\quad\mu_{t} & =\kappa+\phi\kappa+\phi^{2}\kappa+\eta\left[y_{t-1}+\phi y_{t-2}+\phi^{2}y_{t-3}\right]+\phi^{3}\mu_{t-3}\\
+\mu_{t} & =\kappa\left(1+\phi+\phi^{2}\right)+\eta\left[y_{t-1}+\phi y_{t-2}+\phi^{2}y_{t-3}\right]+\phi^{3}\mu_{t-3}\\
+\mu_{t} & =\underbrace{\frac{\kappa}{1-\phi}}_{\text{Using Geo 1}}+\eta\left[y_{t-1}+\phi y_{t-2}+\phi^{2}y_{t-3}\right]+\phi^{3}\mu_{t-3}\\
+\mu_{t} & =\frac{\kappa}{1-\phi}+\eta\left[y_{t-1}+\phi y_{t-2}+\phi^{2}y_{t-3}\right]+\underbrace{\phi^{3}\mu_{t-3}}_{=0,\text{ as }t\rightarrow\infty}\\
+\mu_{t} & =\frac{\kappa}{1-\phi}+\eta\left[y_{t-1}+\phi y_{t-2}+\phi^{2}y_{t-3}\right]\\
+\mu_{t} & =\frac{\kappa}{1-\phi}+\eta\sum_{s=0}^{\infty}\phi^{s}y_{t-s-1}
+\end{align*}
+
+Now we take the unconditional expectation
+\begin{align*}
+\mathbb{E}\left[\mu_{t}\right] & =\mathbb{E}\left[\frac{\kappa}{1-\phi}+\eta\sum_{s=0}^{\infty}\phi^{s}y_{t-s-1}\right]\\
+\mathbb{E}\left[\mu_{t}\right] & =\mathbb{E}\left[\frac{\kappa}{1-\phi}\right]+\mathbb{E}\left[\eta\sum_{s=0}^{\infty}\phi^{s}y_{t-s-1}\right]\\
+\mathbb{E}\left[\mu_{t}\right] & =\frac{\kappa}{1-\phi}+\mathbb{E}\left[\eta\sum_{s=0}^{\infty}\phi^{s}y_{t-s-1}\right]\\
+\mathbb{E}\left[\mu_{t}\right] & =\frac{\kappa}{1-\phi}+\mathbb{E}\left[\eta\sum_{s=0}^{\infty}\phi^{s}y_{t-s-1}\right]\\
+\mathbb{E}\left[\mu_{t}\right] & =\frac{\kappa}{1-\phi}+\mathbb{E}\left[\eta\sum_{s=0}^{\infty}\phi^{s}\underbrace{y_{t-s-1}}_{\mathbb{E}\left[y_{t-s-1}\right]=\mathbb{E}\left[\mu_{t}\right]\text{ uncon.}}\right]\\
+\mathbb{E}\left[\mu_{t}\right] & =\frac{\kappa}{1-\phi}+\eta\sum_{s=0}^{\infty}\phi^{s}\mathbb{E}\left[\mu_{t}\right]\\
+\mathbb{E}\left[\mu_{t}\right] & =\frac{\kappa}{1-\phi}+\underbrace{\frac{\eta}{1-\phi}\mathbb{E}\left[\mu_{t}\right]}_{\text{Geo. series}}\\
+\mathbb{E}\left[\mu_{t}\right]-\frac{\eta}{1-\phi}\mathbb{E}\left[\mu_{t}\right] & =\frac{\kappa}{1-\phi}\\
+\mathbb{E}\left[\mu_{t}\right]\left(1-\frac{\eta}{1-\phi}\right) & =\frac{\kappa}{1-\phi}\\
+\mathbb{E}\left[\mu_{t}\right] & =\frac{\frac{\kappa}{1-\phi}}{\left(1-\frac{\eta}{1-\phi}\right)}\\
+\underset{\text{substitute }\frac{\left(1-\phi\right)}{\left(1-\phi\right)}=1}{\Longrightarrow}\quad\mathbb{E}\left[\mu_{t}\right] & =\frac{\frac{\kappa}{1-\phi}}{\left(\frac{\left(1-\phi\right)}{\left(1-\phi\right)}-\frac{\eta}{1-\phi}\right)}\\
+\mathbb{E}\left[\mu_{t}\right] & =\frac{\frac{\kappa}{1-\phi}}{\frac{1-\phi-\eta}{1-\phi}}\\
+\mathbb{E}\left[\mu_{t}\right] & =\frac{\kappa}{1-\phi-\eta}
+\end{align*}
+
+
+\section{Question 2 - Methodology}
+
+\subsection{Point a)}
+
+Consider the bivariate random vector $\mathbf{Y}_{t}=\left(Y_{1,t},Y_{2,t}\right)^{\prime}$,
+where $Y_{1,t}$ and $Y_{2,t}$ are the GSPC and DJI returns at time
+$t$, respectively. 
+\begin{itemize}
+\item Assume that $\mathbf{Y}_{t}\mid\mathcal{F}_{t-1}$ is bivariate Gaussian
+with mean $\mathbf{0}$ and variance covariance matrix $\boldsymbol{\Sigma}_{t}$ 
+\begin{itemize}
+\item Derive a DCC model for $\boldsymbol{\Sigma}_{t}$ assuming that each
+marginal process is $\text{GARCH}\left(1,1\right)$. 
+\item Clearly state the constraints of the model. 
+\item Detail how the likelihood factorizes and what this implies for the
+estimation of the model parameters.
+\item Obtain the Constant correlation model (CCC) as a special case of the
+DCC
+\end{itemize}
+\end{itemize}
+.
+
+.
+
+.
+
+.
+
+\subsection{Point a, 1) Derive the DCC model}
+
+We have that $\mathbf{Y}_{t}\mid\mathcal{F}_{t-1}$ follows
+\[
+\mathbf{Y}_{t}\mid\mathcal{F}_{t-1}\sim\mathcal{N}\left(\mathbf{0},\boldsymbol{\Sigma}_{t}\right)
+\]
+
+We can write up the standardized returns as 
+\[
+\boldsymbol{\eta}_{t}=\mathbf{D}_{t}^{-1/2}\mathbf{y}_{t}
+\]
+
+Where $\mathbf{D}_{t}$ is a diagonal matrix with elements modeled
+from univariate GARCH processes (variances)
+\[
+\mathbf{D}_{t}=\text{diag}\left(\text{Var}_{t-1}\left(y_{1,t}\right),\dots,\text{Var}_{t-1}\left(y_{N,t}\right)\right)
+\]
+
+We know that we can write the conditional GARCH process as 
+\begin{align*}
+\mathbf{Y}_{t} & =\left(y_{1,t},\dots y_{N,t}\right)\\
+y_{i,t} & =\sigma_{i,t}\varepsilon_{t}\\
+\sigma_{i,t}^{2} & =\omega+\alpha_{i}y_{i,t-1}^{2}+\beta\sigma_{i,t-1}^{2}
+\end{align*}
+
+Thus we can also write the diagonal matrix more explicitly as
+\[
+\mathbf{D}_{t}=\text{diag}\left(\sigma_{i,t}^{2},\dots,\sigma_{i,N}^{2}\right)
+\]
+
+We know that in the DCC framework we can write
+\[
+\boldsymbol{\Sigma}_{t}=\mathbf{D}_{t}^{1/2}\mathbf{R}_{t}\mathbf{D}_{t}^{1/2}
+\]
+
+Where $\mathbf{R}_{t}$ is an evaluation matrix with elements $\left\{ \rho_{ij,t}\right\} $.
+We can write this as
+\[
+E_{t-1}\left(\boldsymbol{\eta}_{t}\boldsymbol{\eta}_{t}^{\prime}\right)=\mathbf{D}_{t}^{-1/2}\mathbf{H}_{t}\mathbf{D}_{t}^{-1/2}=\mathbf{R}_{t}=\left\{ \rho_{ij,t}\right\} 
+\]
+
+We require that $\mathbf{R}_{t}$ is positively defined we can employ
+following transformation
+\[
+\mathbf{R}_{t}=\widetilde{\mathbf{Q}}_{t}^{-1/2}\mathbf{Q}_{t}\widetilde{\mathbf{Q}}_{t}^{-1/2}
+\]
+
+where $\widetilde{\mathbf{Q}}_{t}$ is a diagonal matrix with elements
+$\tilde{q}_{ii,t}=q_{ii,t}$. This implies that the conditional correlations
+are
+\[
+\rho_{ij,t}=\frac{q_{ij,t}}{\sqrt{\widetilde{q}_{ii,t}\widetilde{q}_{jj,t}}}
+\]
+ Where $q_{ij,t}$ are assumed to follow a $\text{GARCH}(1,1)$ model
+
+\[
+\boldsymbol{Q}_{t}=\overline{\boldsymbol{Q}}(1-a-b)+a\left(\boldsymbol{\eta}_{t-1}\boldsymbol{\eta}_{t-1}^{\prime}\right)+b\left(\boldsymbol{Q}_{t-1}\right)
+\]
+$\overline{\boldsymbol{Q}}$ is fixed to the emperical evaluation
+of $\boldsymbol{\eta}_{t}\overline{\boldsymbol{Q}}_{t}=\overline{\boldsymbol{R}}_{t}=\text{cor}\left(z_{t}\right)$
+used in the CCC model
+
+.
+
+To derive the log-likelihood we need to compute the density of $\mathbf{Y}_{t}\mid\mathcal{F}_{t-1}$.
+This bivariate form of normal distribution comes from wiki. 
+\begin{align*}
+p\left(\mathbf{Y}_{t}\mid\mathcal{F}_{t-1}\right) & =\frac{1}{2\pi\sqrt{|\boldsymbol{\Sigma}_{t}|}}\exp\left\{ -\frac{1}{2}\left[\left(\mathbf{Y}_{t}-\mu\right)^{\prime}\boldsymbol{\Sigma}_{t}^{-1}\left(\mathbf{Y}_{t}-\mu\right)\right]\right\} \\
+\underset{\mu=0}{\Longrightarrow}\quad p\left(\mathbf{Y}_{t}\mid\mathcal{F}_{t-1}\right) & =\frac{1}{2\pi\sqrt{|\boldsymbol{\Sigma}_{t}|}}\exp\left\{ -\frac{1}{2}\left[\left(\mathbf{Y}_{t}\right)^{\prime}\boldsymbol{\Sigma}_{t}^{-1}\left(\mathbf{Y}_{t}\right)\right]\right\} 
+\end{align*}
+
+Writing up the likelihood function and taking the log
+\begin{align*}
+\mathcal{L} & =\prod_{t=1}^{T}\frac{1}{2\pi\sqrt{|\boldsymbol{\Sigma}_{t}|}}\exp\left\{ -\frac{1}{2}\left[\left(\mathbf{Y}_{t}\right)^{\prime}\boldsymbol{\Sigma}_{t}^{-1}\left(\mathbf{Y}_{t}\right)\right]\right\} \\
+\ln\left\{ \mathcal{L}\right\}  & =\sum_{t=1}^{T}-\ln\left(2\pi\right)-\frac{1}{2}\ln\left(|\boldsymbol{\Sigma}_{t}|\right)-\frac{1}{2}\left(\mathbf{Y}_{t}\right)^{\prime}\boldsymbol{\Sigma}_{t}^{-1}\left(\mathbf{Y}_{t}\right)\\
+\ln\left\{ \mathcal{L}\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}2\ln\left(2\pi\right)+\ln\left(|\boldsymbol{\Sigma}_{t}|\right)+\left(\mathbf{Y}_{t}\right)^{\prime}\boldsymbol{\Sigma}_{t}^{-1}\left(\mathbf{Y}_{t}\right)
+\end{align*}
+
+Now we want to factorize the model
+\begin{align*}
+\ln\left\{ \mathcal{L}\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}2\ln\left(2\pi\right)+\ln\left(|\underbrace{\boldsymbol{\Sigma}_{t}}_{\mathbf{D}_{t}^{1/2}\mathbf{R}_{t}\mathbf{D}_{t}^{1/2}}|\right)+\left(\mathbf{Y}_{t}\right)^{\prime}\boldsymbol{\Sigma}_{t}^{-1}\left(\mathbf{Y}_{t}\right)\\
+\ln\left\{ \mathcal{L}\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}2\ln\left(2\pi\right)+\ln\left(\left\rvert\mathbf{D}_{t}^{1/2}\mathbf{R}_{t}\mathbf{D}_{t}^{1/2}\right\rvert\right)+\left(\mathbf{Y}_{t}\right)^{\prime}\mathbf{D}_{t}^{-1/2}\mathbf{R}_{t}^{-1}\mathbf{D}_{t}^{-1/2}\left(\mathbf{Y}_{t}\right)\\
+\ln\left\{ \mathcal{L}\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}2\ln\left(2\pi\right)+\frac{1}{2}\ln\left(\left\rvert \mathbf{D}_{t}\right\rvert \right)+\ln\left(\left\rvert \mathbf{R}_{t}\right\rvert \right)+\frac{1}{2}\ln\left(\left\rvert \mathbf{D}_{t}\right\rvert \right)+\underbrace{\left(\mathbf{Y}_{t}\right)^{\prime}\mathbf{D}_{t}^{-1/2}}_{=\boldsymbol{\eta}_{t}^{\prime}}\mathbf{R}_{t}^{-1}\underbrace{\mathbf{D}_{t}^{-1/2}\left(\mathbf{Y}_{t}\right)}_{=\boldsymbol{\eta}_{t}}\\
+\ln\left\{ \mathcal{L}\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}2\ln\left(2\pi\right)+\ln\left(\left\rvert \mathbf{D}_{t}\right\rvert \right)+\ln\left(\left\rvert \mathbf{R}_{t}\right\rvert \right)+\boldsymbol{\eta}_{t}^{\prime}\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}
+\end{align*}
+
+Adding and subtracting 
+\[
+\left(\mathbf{Y}_{t}\right)^{\prime}\mathbf{D}_{t}^{-1/2}\mathbf{D}_{t}^{-1/2}\left(\mathbf{Y}_{t}\right)=\boldsymbol{\eta}_{t}^{\prime}\boldsymbol{\eta}_{t}
+\]
+
+Thus yielding
+\begin{align*}
+\ln\left\{ \mathcal{L}\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}2\ln\left(2\pi\right)+\ln\left(\left\rvert \mathbf{D}_{t}\right\rvert \right)+\left(\mathbf{Y}_{t}\right)^{\prime}\mathbf{D}_{t}^{-1/2}\mathbf{D}_{t}^{-1/2}\left(\mathbf{Y}_{t}\right)-\boldsymbol{\eta}_{t}^{\prime}\boldsymbol{\eta}_{t}+\ln\left(\left\rvert \mathbf{R}_{t}\right\rvert \right)+\boldsymbol{\eta}_{t}^{\prime}\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}\\
+\ln\left\{ \mathcal{L}\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}2\ln\left(2\pi\right)+\ln\left(\left\rvert \mathbf{D}_{t}\right\rvert \right)+\left(\mathbf{Y}_{t}\right)^{\prime}\mathbf{D}_{t}^{-1}\left(\mathbf{Y}_{t}\right)-\boldsymbol{\eta}_{t}^{\prime}\boldsymbol{\eta}_{t}+\ln\left(\left\rvert \mathbf{R}_{t}\right\rvert \right)+\boldsymbol{\eta}_{t}^{\prime}\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}\\
+\ln\left\{ \mathcal{L}\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}\left\{ 2\ln\left(2\pi\right)+\ln\left(\left\rvert \mathbf{D}_{t}\right\rvert \right)+\left(\mathbf{Y}_{t}\right)^{\prime}\mathbf{D}_{t}^{-1}\left(\mathbf{Y}_{t}\right)\right\} -\frac{1}{2}\sum_{t=1}^{T}\left\{ \boldsymbol{\eta}_{t}^{\prime}\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}-\boldsymbol{\eta}_{t}^{\prime}\boldsymbol{\eta}_{t}+\ln\left(\left\rvert \mathbf{R}_{t}\right\rvert \right)\right\} 
+\end{align*}
+
+Now we can decompose this into a Volatility component and a Correlation
+component
+\begin{align*}
+\ln\left\{ \mathcal{L}_{V}\left(\theta\right)\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}\left\{ 2\ln\left(2\pi\right)+\ln\left(\left\rvert \mathbf{D}_{t}\right\rvert \right)+\left(\mathbf{Y}_{t}\right)^{\prime}\mathbf{D}_{t}^{-1}\left(\mathbf{Y}_{t}\right)\right\} \\
+\ln\left\{ \mathcal{L}_{C}\left(\theta,\phi\right)\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}\left\{ \boldsymbol{\eta}_{t}^{\prime}\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}-\boldsymbol{\eta}_{t}^{\prime}\boldsymbol{\eta}_{t}+\ln\left(\left\rvert \mathbf{R}_{t}\right\rvert \right)\right\} 
+\end{align*}
+
+Where $\theta$ denotes the parameters in $\mathbf{D}_{t}$ and $\phi$
+the parameters in $\mathbf{R}_{t}$
+
+\subsection{Point a, 2) Clearly state the constraints of the model}
+
+We require $\boldsymbol{Q}_{t}$ to be positive-definite. This ensures
+that when mapping to $\mathbf{R}_{t}$ this will also be positive
+definite.\\
+
+\textbf{TODO: }Er alpha + beta \textless{} 1 en condition her?
+
+\subsection{Point a, 3) Detail how the likelihood factorizes and what this implies
+for the estimation of the model parameters.}
+
+We can factorize the likelihood function into a volatility and correlation
+component. This implies that we can estimate $\theta$ and $\phi$
+in a two step process.
+
+\begin{align*}
+\ln\left\{ \mathcal{L}_{V}\left(\theta\right)\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}\left\{ 2\ln\left(2\pi\right)+\ln\left(\left\rvert \mathbf{D}_{t}\right\rvert \right)+\left(\mathbf{Y}_{t}\right)^{\prime}\mathbf{D}_{t}^{-1}\left(\mathbf{Y}_{t}\right)\right\} \\
+\ln\left\{ \mathcal{L}_{C}\left(\theta,\phi\right)\right\}  & =-\frac{1}{2}\sum_{t=1}^{T}\left\{ \boldsymbol{\eta}_{t}^{\prime}\mathbf{R}_{t}^{-1}\boldsymbol{\eta}_{t}-\boldsymbol{\eta}_{t}^{\prime}\boldsymbol{\eta}_{t}+\ln\left(\left\rvert \mathbf{R}_{t}\right\rvert \right)\right\} 
+\end{align*}
+
+
+\subsection{Point a, 4) Obtain the Constant correlation model (CCC) as a special
+case of the DCC}
+
+We know that $\mathbf{R}_{t}$ is constant $\mathbf{R}_{t}=\mathbf{R}$
+in the CCC model. Thus we can just generalize the DCC model to account
+for a constant $\mathbf{R}$.
+\end{document}
