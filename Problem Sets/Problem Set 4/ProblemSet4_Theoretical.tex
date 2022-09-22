@@ -1,0 +1,119 @@
+\documentclass{article}
+
+%----------------------------------------------------------------------------------------
+%	FONTS AND ENCODINGS
+%----------------------------------------------------------------------------------------
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage[english]{babel} % language pack..
+\usepackage{amsmath} % math symbols
+\usepackage{lastpage}
+\usepackage{amssymb} % math symbols
+\usepackage{cmbright} % font
+\usepackage{pifont}
+\usepackage{graphicx,float} % for pictures etc.
+\usepackage{subcaption}
+\usepackage{tcolorbox}
+\usepackage{ulem}
+\usepackage{cancel}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{slashed}
+\usepackage{multirow}
+\usepackage{wasysym}
+\usepackage{minted}
+\usepackage[hidelinks]{hyperref}
+\usepackage{subfiles}
+
+%----------------------------------------------------------------------------------------
+%	PAGE LAYOUT
+%----------------------------------------------------------------------------------------
+\setlength{\parindent}{0bp} % No paragraph indentation
+\usepackage{fancyhdr} % Headings/footers
+
+\usepackage{geometry} % Required for adjusting page dimensions and margins
+\geometry{
+	paper=a4paper, % Paper size, change to letterpaper for US letter size
+	top=2cm, % Top margin
+	bottom=2cm, % Bottom margin
+	left=3cm, % Left margin
+	right=3cm, % Right margin
+	inner=2cm,
+	outer=2cm,
+	headheight=2cm, % Header height
+	footskip=1cm, % Space from the bottom margin to the baseline of the footer
+	headsep=0.75cm, % Space from the top margin to the baseline of the header
+}
+
+\fancyhead{} % Clear all headers
+\fancyfoot{} % Clear all footers
+\fancyfoot[R]{\footnotesize \thepage\ / \pageref{LastPage}}
+\fancyhead[L]{} %Left
+\fancyhead[C]{} %Center
+\fancyhead[R]{} %Right
+
+\renewcommand{\headrulewidth}{0pt} % Remove header rule
+\renewcommand{\footrulewidth}{0pt} % Remove footer rule
+\pagestyle{fancy} % Set page style to "fancy"
+
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\section{Problem Set 4 - Problem 1, point 1)}
+
+\subsection{Derivation of density for weights}
+In SV model:
+$$
+y_{t}=\exp \left(\frac{\alpha_{t}}{2}\right) \eta
+$$
+Factorize joint density:
+$$
+p\left(Y_{1: t} \mid \alpha_{1: t}\right)=\prod_{s=1}^{t} p\left(y_{t} \mid \alpha_{t}\right)
+$$
+$\alpha_{t}$ is only dependent on the previosly value of $\alpha_{t-1}$.
+The $y$ 's are only dependent through the values of $\alpha$.
+$$
+p\left(Y_{1: t} \mid \alpha_{1: t}\right)=\prod_{s=1}^{t} \exp \left(-\frac{\alpha_{t}}{2}\right) p\left(y_{t} \exp \left(\frac{\alpha_{t}}{2}\right)\right)
+$$
+When coding this in $\mathrm{R}$, then it is a matter of foreloops, evaluating normal densities and taking their products. Slide 12:
+Choice of function $x_{t}$ :
+$$
+x_{t}\left(\alpha_{1: t}\right)=\exp \left(\frac{\alpha_{t}}{2}\right)
+$$
+
+
+\section{Problem Set 4 - Problem 1, point 3)}
+
+\subsection{Derive unconditional mean:}
+
+\begin{align*}
+\alpha_{t} & =\omega+\phi\alpha_{t-1}+\tau\eta_{t}\\
+\underset{\text{Unconditional mean}}{\Longrightarrow}\quad\mathbb{E}\left[\alpha_{t}\right] & =\mathbb{E}\left[\omega+\phi\alpha_{t-1}+\tau\eta_{t}\right]\\
+\mathbb{E}\left[\alpha\right] & =\mathbb{E}\left[\omega+\phi\alpha+\tau\eta_{t}\right]\\
+\mathbb{E}\left[\alpha\right] & =\mathbb{E}\left[\omega\right]+\mathbb{E}\left[\phi\alpha\right]+\mathbb{E}\left[\tau\eta_{t}\right]\\
+\mathbb{E}\left[\alpha\right] & =\mathbb{E}\left[\omega\right]+\mathbb{E}\left[\phi\alpha\right]+\underbrace{\mathbb{E}\left[\tau\eta_{t}\right]}_{=0}\\
+\mathbb{E}\left[\alpha\right] & =\omega+\phi\mathbb{E}\left[\alpha\right]\\
+\mathbb{E}\left[\alpha\right]-\phi\mathbb{E}\left[\alpha\right] & =\omega\\
+\mathbb{E}\left[\alpha\right]\left(1-\phi\right) & =\omega\\
+\mathbb{E}\left[\alpha\right] & =\frac{\omega}{\left(1-\phi\right)}
+\end{align*}
+
+
+\subsection{Derive unconditional variance:}
+
+\begin{align*}
+\alpha_{t} & =\omega+\phi\alpha_{t-1}+\tau\eta_{t}\\
+V\left[\alpha_{t}\right] & =V\left[\omega+\phi\alpha_{t-1}+\tau\eta_{t}\right]\\
+\underset{\text{Unconditional variance}}{\Longrightarrow}\quad V\left[\alpha\right] & =V\left[\omega+\phi\alpha+\tau\eta_{t}\right]\\
+V\left[\alpha\right] & =V\left[\omega\right]+\phi^{2}V\left[\alpha\right]+\tau^{2}V\left[\eta_{t}\right]\\
+V\left[\alpha\right] & =V\left[\omega\right]+\phi^{2}V\left[\alpha\right]+\tau^{2}\underbrace{V\left[\eta_{t}\right]}_{=1\text{, by assump.}}\\
+V\left[\alpha\right]-\phi^{2}V\left[\alpha\right] & =V\left[\omega\right]+\tau^{2}\\
+V\left[\alpha\right]\left(1-\phi^{2}\right) & =\underbrace{V\left[\omega\right]}_{=0,\text{ constant}}+\tau^{2}\\
+V\left[\alpha\right] & =\frac{\tau^{2}}{\left(1-\phi^{2}\right)}
+\end{align*}
+
+\end{document}

@@ -1,0 +1,2065 @@
+#LyX 2.3 created this file. For more info see http://www.lyx.org/
+\lyxformat 544
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\maintain_unincluded_children false
+\language english
+\language_package default
+\inputencoding auto
+\fontencoding global
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\paperfontsize default
+\use_hyperref false
+\papersize default
+\use_geometry false
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine basic
+\cite_engine_type default
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_minted 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tracking_changes false
+\output_changes false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\end_header
+
+\begin_body
+
+\begin_layout Section
+Theoretical part
+\end_layout
+
+\begin_layout Subsection
+Problem 1)
+\end_layout
+
+\begin_layout Standard
+Show that 
+\begin_inset Formula $_{u}\sigma_{t}^{2}$
+\end_inset
+
+ admits the following representation: 
+\begin_inset Formula 
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+We apply recursive substitution from the volatility process in Equation
+ 
+\series bold
+(REF)
+\series default
+.
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\sigma_{t}^{2}\\
+\underset{t-1}{\Longrightarrow}\quad\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\left(\omega+\sigma_{t-1}^{2}\left(\beta+\alpha g\left(\varepsilon_{t-1}\right)\right)\right)\\
+\underset{t-2}{\Longrightarrow}\quad\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\left(\omega+\left(\omega+\sigma_{t-2}^{2}\left(\beta+\alpha g\left(\varepsilon_{t-2}\right)\right)\right)\left(\beta+\alpha g\left(\varepsilon_{t-1}\right)\right)\right)\\
+\underset{\text{define}}{\Longrightarrow}\quad\sigma_{t+1}^{2} & =\omega+\underbrace{\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)}_{\phi_{t}}\left(\omega+\left(\omega+\sigma_{t-2}^{2}\left(\beta+\alpha g\left(\varepsilon_{t-2}\right)\right)\right)\left(\beta+\alpha g\left(\varepsilon_{t-1}\right)\right)\right)\\
+\sigma_{t+1}^{2} & =\omega+\phi_{t}\left(\omega+\left(\omega+\sigma_{t-2}^{2}\phi_{t-2}\right)\phi_{t-1}\right)\\
+\sigma_{t+1}^{2} & =\omega+\phi_{t}\omega+\phi_{t}\phi_{t-1}\left(\omega+\sigma_{t-2}^{2}\phi_{t-2}\right)\\
+\sigma_{t+1}^{2} & =\omega+\phi_{t}\omega+\phi_{t}\phi_{t-1}\omega+\phi_{t}\phi_{t-1}\phi_{t-2}\sigma_{t-2}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We know that there is 
+\begin_inset Formula $\omega$
+\end_inset
+
+ contained in 
+\begin_inset Formula $\sigma_{t}^{2}\;\forall t$
+\end_inset
+
+ thus I am able to factorize 
+\begin_inset Formula $\omega$
+\end_inset
+
+ in the expression above.
+ We're conditioning on all past observations in this case and employ the
+ unconditional notation.
+\begin_inset Formula 
+\begin{align*}
+\underset{\text{factorize }\omega\text{ and continue till }-\infty}{\Longrightarrow}\quad{}_{u}\sigma_{t+1}^{2} & =\omega\left[1+\phi_{t}+\phi_{t}\phi_{t-1}+\phi_{t}\phi_{t-1}\phi_{t-2}+\phi_{t}\phi_{t-1}\phi_{t-2}\phi_{t-3}+\dots\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+As we're interested in the unconditional process 
+\begin_inset Formula $_{u}\sigma_{t}^{2}$
+\end_inset
+
+ at period 
+\begin_inset Formula $t$
+\end_inset
+
+, I lag the entire process one period
+\begin_inset Formula 
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\phi_{t-1}\phi_{t-2}\phi_{t-3}\phi_{t-4}+\dots\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We notice a pattern in this expression and start by writing out the products
+\begin_inset Formula 
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\phi_{t-1}\phi_{t-2}\phi_{t-3}\phi_{t-4}+\dots\right]\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we're getting close - we just need to recognize the sums.
+ We're summing each product for a varying product limit.
+ This limit should be defined by the sum operator.
+ Thus we're able to write
+\begin_inset Formula 
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots\right]\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+\underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad{}_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\quad\square
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsection
+Problem 2)
+\end_layout
+
+\begin_layout Standard
+Show that 
+\begin_inset Formula $\sigma_{t}^{2}$
+\end_inset
+
+ admits the following representation: 
+\begin_inset Formula 
+\[
+\sigma_{t}^{2}=\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+We're no longer conditioning on all infinite past observations, thus there
+ is a limit for 
+\begin_inset Formula $t$
+\end_inset
+
+ to the result derived in Problem 
+\series bold
+(REF)
+\series default
+ thus we can write 
+\emph on
+(copying from before and keeping definition of 
+\begin_inset Formula $\phi_{t}$
+\end_inset
+
+)
+\emph default
+
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\sigma_{t}^{2}\\
+ & \vdots\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We know that 
+\begin_inset Formula $\sigma_{t}^{2}$
+\end_inset
+
+ is initialized at time 
+\begin_inset Formula $t=0$
+\end_inset
+
+ where we have some positive value for 
+\begin_inset Formula $\sigma_{0}^{2}>0$
+\end_inset
+
+.
+ Thus we're able to write the results from Problem 
+\series bold
+(REF)
+\series default
+ as we know that the process starts at 
+\begin_inset Formula $t=0$
+\end_inset
+
+ and not infinite past
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots+\prod_{i=1}^{t-1}\phi_{t-i}\right]+\sigma_{0}^{2}\prod_{i=1}^{t}\phi_{t-i}\\
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\phi_{t-i}+\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots+\prod_{i=1}^{t-1}\phi_{t-i}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we're writing out the sums again
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\phi_{t-i}+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+\underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right],\quad\square
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsection
+Problem 3)
+\end_layout
+
+\begin_layout Standard
+Derive sufficient conditions on 
+\begin_inset Formula $\left(\omega,\alpha,\beta\right)$
+\end_inset
+
+ such that 
+\begin_inset Formula $_{u}\sigma_{t}^{2}>0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+We know that 
+\begin_inset Formula $_{u}\sigma_{t}^{2}$
+\end_inset
+
+ is defined as,
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Investigating this expression for 
+\begin_inset Formula $_{u}\sigma_{t}^{2}$
+\end_inset
+
+ we see that for 
+\begin_inset Formula $_{u}\sigma_{t}^{2}>0$
+\end_inset
+
+ we can easily constrain 
+\begin_inset Formula $\omega\neq0$
+\end_inset
+
+.
+ We cannot say anything about 
+\begin_inset Formula $\omega<0$
+\end_inset
+
+ before investigating conditions on 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta$
+\end_inset
+
+ more thoroughly.
+\end_layout
+
+\begin_layout Standard
+We moreover 
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsection
+Problem 4)
+\end_layout
+
+\begin_layout Standard
+Derive the lower and the upper bound of the process 
+\begin_inset Formula $\left\{ _{u}\sigma_{t}^{2}\right\} _{t\in\mathbb{Z}}$
+\end_inset
+
+, i.e.
+ show that 
+\begin_inset Formula $_{u}\sigma_{t}^{2}\in[l,u]$
+\end_inset
+
+ where 
+\begin_inset Formula $l<u$
+\end_inset
+
+.
+ Derive 
+\begin_inset Formula $l$
+\end_inset
+
+ and 
+\begin_inset Formula $u$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+We know from Lecture 4 Slide 16, that 
+\backslash
+CITE{nelson1990}  shows that for 
+\begin_inset Formula $\omega>0$
+\end_inset
+
+ we almost surely have 
+\begin_inset Formula $\sigma_{t}^{2}<\infty$
+\end_inset
+
+.
+ And that the joint process 
+\begin_inset Formula $\left\{ y_{t},\sigma_{t}^{2}\right\} $
+\end_inset
+
+ is strictly stationary iff.
+ 
+\begin_inset Formula $\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]<0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+In the following we need to apply the following assumptions, 
+\begin_inset Formula 
+\begin{align*}
+\omega & >0\\
+\alpha & >0\\
+\beta & \geq0\\
+\alpha+\beta & <1\\
+\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right] & <0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The second assumption implies that 
+\begin_inset Formula $0<\beta+\alpha g\left(\varepsilon_{t}\right)<1$
+\end_inset
+
+ as 
+\begin_inset Formula $\ln\left(x\right)<0$
+\end_inset
+
+ iff.
+ 
+\begin_inset Formula $0<x<1$
+\end_inset
+
+.
+\begin_inset Newline newline
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We remember that 
+\begin_inset Formula $_{u}\sigma_{t}^{2}$
+\end_inset
+
+ is defined as
+\begin_inset Formula 
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+I start by finding the lower bound, realizing 
+\begin_inset Formula 
+\[
+\min\left[g\left(\varepsilon_{t-i}\right)\right]=\underline{m}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+inserting this into the expression for 
+\begin_inset Formula $_{u}\sigma_{t}^{2}$
+\end_inset
+
+ yields
+\begin_inset Formula 
+\begin{align*}
+l & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\underline{m}\right)\right]\\
+l & =\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\underline{m}\right)^{k}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We remember
+\begin_inset Formula 
+\[
+a+ar+ar^{2}+ar^{3}+ar^{4}+\cdots=\sum_{k=0}^{\infty}ar^{k}=\frac{a}{1-r},\text{ for }|r|<1\tag{Geo 1}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus we can write 
+\begin_inset Formula $l$
+\end_inset
+
+ as
+\begin_inset Formula 
+\[
+l=\frac{\omega}{1-\left(\beta+\alpha\underline{m}\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Analogously we can write the upper bound using the same steps
+\begin_inset Formula 
+\[
+\max\left[g\left(\varepsilon_{t-i}\right)\right]=\overline{m}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+inserting this into the expression for 
+\begin_inset Formula $_{u}\sigma_{t}^{2}$
+\end_inset
+
+ yields
+\begin_inset Formula 
+\begin{align*}
+u & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\overline{m}\right)\right]\\
+u & =\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\overline{m}\right)^{k}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus we can write 
+\begin_inset Formula $u$
+\end_inset
+
+ as
+\begin_inset Formula 
+\[
+u=\frac{\omega}{1-\left(\beta+\alpha\overline{m}\right)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus we have 
+\begin_inset Formula 
+\[
+_{u}\sigma_{t}^{2}\in\left[l,u\right]=\begin{cases}
+l & =\frac{\omega}{1-\left(\beta+\alpha\underline{m}\right)}\\
+u & =\frac{\omega}{1-\left(\beta+\alpha\overline{m}\right)}
+\end{cases}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsection
+Problem 5)
+\end_layout
+
+\begin_layout Standard
+Show that if 
+\begin_inset Formula $\omega=0$
+\end_inset
+
+ : 
+\end_layout
+
+\begin_layout Subsubsection
+Problem 5.a 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $_{u}\sigma_{t}^{2}=0$
+\end_inset
+
+ for all 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+_{u}\sigma_{t}^{2} & =\underbrace{\omega}_{=0}\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+_{u}\sigma_{t}^{2} & =0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsubsection
+Problem 5.b
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\sigma_{t}^{2}\rightarrow\infty$
+\end_inset
+
+ as 
+\begin_inset Formula $t\rightarrow\infty$
+\end_inset
+
+ if 
+\begin_inset Formula $E\left[\log\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+We remember that 
+\begin_inset Formula $\omega=0$
+\end_inset
+
+ and thus we can write our process for 
+\begin_inset Formula $\sigma_{t}^{2}$
+\end_inset
+
+ as 
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\underbrace{\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]}_{=0}\\
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\\
+\underset{\text{log transform}}{\Longrightarrow}\quad\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\underbrace{\ln\left[\beta+\alpha g\left(\varepsilon_{t-i}\right)\right]}_{\phi_{t-i}}\\
+\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\phi_{t-i}\\
+\underset{+/-\;\mathbb{E}\left(\phi_{t-i}\right)}{\Longrightarrow}\quad\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\left\{ \underbrace{\phi_{t-i}-\mathbb{E}\left(\phi_{t-i}\right)}_{\widetilde{\phi}_{t-i}}+\mathbb{E}\left(\phi_{t-i}\right)\right\} \\
+\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+t\cdot\mathbb{E}\left(\phi_{t}\right)+\sum_{i=1}^{t}\widetilde{\phi}_{t-i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We recognize this as a random walk with a drift.
+ We remember that the value of a random walk with a drift either diverges
+ to 
+\begin_inset Formula $+\infty$
+\end_inset
+
+ or 
+\begin_inset Formula $-\infty$
+\end_inset
+
+ depending on the value of the drift.
+ Thus we can easily see that as 
+\begin_inset Formula $t\rightarrow\infty$
+\end_inset
+
+ then 
+\begin_inset Formula $\ln\left[\sigma_{t}^{2}\right]\rightarrow\infty$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{t}^{2}\rightarrow\infty$
+\end_inset
+
+ for all 
+\begin_inset Formula $\mathbb{E}\left(\phi_{t}\right)=\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsubsection
+Problem 5.c
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\sigma_{t}^{2}\rightarrow0$
+\end_inset
+
+ as 
+\begin_inset Formula $t\rightarrow\infty$
+\end_inset
+
+ if 
+\begin_inset Formula $E\left[\log\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]<0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+Here we see that we have a similar case as in the former problem however
+ the inequality is turned.
+ However similar arguments can be applied.
+ We recognize again a random walk with a drift.
+ We remember that the value of a random walk with a drift either diverges
+ to 
+\begin_inset Formula $+\infty$
+\end_inset
+
+ or 
+\begin_inset Formula $-\infty$
+\end_inset
+
+ depending on the value of the drift.
+ Thus we can easily see that as 
+\begin_inset Formula $t\rightarrow\infty$
+\end_inset
+
+ then 
+\begin_inset Formula $\ln\left[\sigma_{t}^{2}\right]\rightarrow-\infty$
+\end_inset
+
+ and 
+\begin_inset Formula $\sigma_{t}^{2}\rightarrow0$
+\end_inset
+
+ for all 
+\begin_inset Formula $\mathbb{E}\left(\phi_{t}\right)=\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]<0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsection
+Problem 6)
+\end_layout
+
+\begin_layout Standard
+Show that if 
+\begin_inset Formula $\omega>0$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbb{E}\left[\log\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$
+\end_inset
+
+ :
+\end_layout
+
+\begin_layout Subsubsection
+Problem 6.a
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $\sigma_{t}^{2}\rightarrow\infty$
+\end_inset
+
+ as 
+\begin_inset Formula $t\rightarrow\infty$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+We remember our definition of 
+\begin_inset Formula $\sigma_{t}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We recognize that 
+\begin_inset Formula 
+\[
+\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\geq\omega\sup_{1\leq k\leq t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+taking logs yields
+\begin_inset Formula 
+\[
+\ln\left(\sigma_{t}^{2}\right)\geq\ln\left(\omega\right)+\sup_{1\leq k\leq t-1}\sum_{i=1}^{k}\ln\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using the results from Theorem 1 in 
+\backslash
+CITE{nelson1990} the right term above diverges to 
+\begin_inset Formula $+\infty$
+\end_inset
+
+ when 
+\begin_inset Formula $t\rightarrow\infty$
+\end_inset
+
+ if 
+\begin_inset Formula $\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$
+\end_inset
+
+.
+ If this expression is smaller than equal to 
+\begin_inset Formula $\ln\left(\sigma_{t}^{2}\right)$
+\end_inset
+
+ this expression must also approach 
+\begin_inset Formula $\infty$
+\end_inset
+
+ as 
+\begin_inset Formula $t\rightarrow\infty$
+\end_inset
+
+ thus yielding
+\begin_inset Formula 
+\[
+\sigma_{t}^{2}\rightarrow\infty\quad\text{if}\quad\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsubsection
+Problem 6.b
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula $_{u}\sigma_{t}^{2}\rightarrow\infty$
+\end_inset
+
+ for all 
+\begin_inset Formula $t$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+Remembering we can write 
+\begin_inset Formula $_{u}\sigma_{t}^{2}$
+\end_inset
+
+ as 
+\begin_inset Formula 
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Again we recognize that
+\begin_inset Formula 
+\[
+\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\geq\omega\sup_{1\leq k\leq\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using similar arguments as in REF problem 6.a we see that the right side
+ diverges to 
+\begin_inset Formula $+\infty$
+\end_inset
+
+ for all 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsection
+Problem 7)
+\end_layout
+
+\begin_layout Standard
+Consider the GARCH case where 
+\begin_inset Formula $g\left(\varepsilon_{t}\right)=\varepsilon_{t}^{2}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection
+Problem 7.a, i)
+\end_layout
+
+\begin_layout Standard
+Discuss the necessary conditions on 
+\begin_inset Formula $\left(\omega,\alpha,\beta\right)$
+\end_inset
+
+ such that: i) 
+\begin_inset Formula $\left\{ y_{t}\right\} $
+\end_inset
+
+ is weakly stationary, 
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+To have weak stationarity of 
+\begin_inset Formula $y_{t}$
+\end_inset
+
+ we require 
+\begin_inset Formula $\mathbb{E}\left[\sigma_{t}^{2}\right]=\sigma^{2}<\infty$
+\end_inset
+
+ for all 
+\begin_inset Formula $t$
+\end_inset
+
+.
+ Substituting for 
+\begin_inset Formula $g\left(\varepsilon_{t}\right)=\varepsilon_{t}^{2}$
+\end_inset
+
+, rewriting, recursively substituting and taking the unconditional expectation
+ of the process to check for this condition.
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t+1}^{2} & =\omega+\sigma_{t}^{2}\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\\
+\sigma_{t+1}^{2} & =\omega+\sigma_{t}^{2}\left(\beta+\alpha\varepsilon_{t}^{2}\right)\\
+\underset{\text{lag 1 period}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\omega+\sigma_{t-1}^{2}\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recursive substitution
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t}^{2} & =\omega+\sigma_{t-1}^{2}\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)\\
+\sigma_{t}^{2} & =\omega+\left(\omega+\sigma_{t-2}^{2}\left(\beta+\alpha\varepsilon_{t-2}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)\\
+\sigma_{t}^{2} & =\omega+\left(\omega+\left(\omega+\sigma_{t-3}^{2}\left(\beta+\alpha\varepsilon_{t-3}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-2}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)\\
+\underset{\text{defining }\phi_{t}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\omega+\left(\omega+\left(\omega+\sigma_{t-3}^{2}\left(\beta+\alpha\varepsilon_{t-3}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-2}^{2}\right)\right)\underbrace{\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)}_{\phi_{t-1}}\\
+\sigma_{t}^{2} & =\omega+\left(\omega+\left(\omega+\sigma_{t-3}^{2}\left(\phi_{t-3}\right)\right)\left(\phi_{t-2}\right)\right)\phi_{t-1}\\
+\sigma_{t}^{2} & =\omega+\omega\phi_{t-1}+\phi_{t-1}\phi_{t-2}\omega+\phi_{t-1}\phi_{t-2}\phi_{t-3}\sigma_{t-3}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recognizing the same pattern as earlier and continueing till 
+\begin_inset Formula $\infty$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t}^{2} & =\omega+\phi_{t-1}\omega+\phi_{t-1}\phi_{t-2}\omega+\phi_{t-1}\phi_{t-2}\phi_{t-3}\omega+\dots\\
+\sigma_{t}^{2} & =\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\dots\right]\\
+\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\dots\right]\\
+\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+\underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Taking the conditional expectation
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\mathbb{E}\left[\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]\right]\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[1+\sum_{k=1}^{\infty}\mathbb{E}\left[\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]\right]\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[1+\sum_{k=1}^{\infty}\mathbb{E}\left[\prod_{i=1}^{k}\underbrace{\beta+\alpha\varepsilon_{t-i}^{2}}_{b_{t-i}}\right]\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We first show 
+\begin_inset Formula $\mathbb{E}\left[b_{t}\right]$
+\end_inset
+
+ and then substitute back into 
+\begin_inset Formula $\mathbb{E}\left[\sigma_{t}^{2}\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\mathbb{E}\left[b_{t}\right]=\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]=\beta+\alpha\underbrace{\mathbb{E}\left[\varepsilon_{t}^{2}\right]}_{=1}=\beta+\alpha
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Now we can derive the unconditional expectation
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\right)\right]\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\underbrace{\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\right)^{k}\right]}_{\text{removing 1 with sum}}\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\right)^{k}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Applying the following geometric series
+\begin_inset Formula 
+\[
+\sum_{k=0}^{\infty}ar^{k}=\frac{a}{1-r},\quad\text{for }\rvert r\rvert<1\tag{Geo 2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We know that we can only apply 
+\series bold
+REF
+\series default
+ Geo 2, if 
+\begin_inset Formula $\rvert\beta+\alpha\rvert<1$
+\end_inset
+
+.
+ Thus we are left with
+\begin_inset Formula 
+\[
+\mathbb{E}\left[\sigma_{t}^{2}\right]=\sigma^{2}=\frac{\omega}{1-\alpha-\beta}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We know 
+\begin_inset Formula $\sigma^{2}>0$
+\end_inset
+
+ thus we're left with the following conditions for weak stationarity
+\begin_inset Formula 
+\begin{align*}
+\alpha+\beta & <1\Longrightarrow\alpha<1,\beta<1\\
+\omega & >0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsubsection
+Problem 7.a ii)
+\end_layout
+
+\begin_layout Standard
+ii) 
+\begin_inset Formula $\left\{ y_{t}\right\} $
+\end_inset
+
+ is strongly stationary.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+We know from Lecture 4 Slide 16, that 
+\backslash
+CITE{nelson1990}  shows that for 
+\begin_inset Formula $\omega>0$
+\end_inset
+
+ we almost surely have 
+\begin_inset Formula $\sigma_{t}^{2}<\infty$
+\end_inset
+
+.
+ And that the joint process 
+\begin_inset Formula $\left\{ y_{t},\sigma_{t}^{2}\right\} $
+\end_inset
+
+ is strictly stationary iff.
+ 
+\begin_inset Formula $\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]<0$
+\end_inset
+
+.
+ If we apply Jensen's equality we get
+\begin_inset Formula 
+\[
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]<\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We can reduce 
+\begin_inset Formula 
+\begin{align*}
+\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right) & =\ln\left(\mathbb{E}\left[\beta\right]+\alpha\underbrace{\mathbb{E}\left[\varepsilon_{t}^{2}\right]}_{=1}\right)\\
+\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right) & =\ln\left(\beta+\alpha\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Inserting
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right)\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(\beta+\alpha\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We know we have weak stationarity for 
+\begin_inset Formula $\beta+\alpha<1$
+\end_inset
+
+.
+ However for the expression above we know that 
+\begin_inset Formula $\alpha+\beta=1$
+\end_inset
+
+ satisfies the condition for strong stationarity as we have
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(\beta+\alpha\right)\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(1\right)\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <0
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus we know that for 
+\begin_inset Formula $\alpha+\beta=1$
+\end_inset
+
+ we have strong, but not weak stationarity.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsubsection
+Problem 7.b
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\omega=0.1,\alpha=0.041,\beta=0.96$
+\end_inset
+
+, and assume that 
+\begin_inset Formula $\varepsilon_{t}$
+\end_inset
+
+ is iid standard Gaussian, i.e.
+ 
+\begin_inset Formula $\varepsilon_{t}\stackrel{iid}{\sim}N(0,1)$
+\end_inset
+
+.
+ Discuss whether 
+\begin_inset Formula $\left\{ y_{t}\right\} $
+\end_inset
+
+ is weakly stationary and/or strongly stationary.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+Investigating whether 
+\begin_inset Formula $\left\{ y_{t}\right\} $
+\end_inset
+
+ is weakly stationary is relatively straightforward.
+ As we have previously shown, the condition for weak stationarity can be
+ stated as 
+\begin_inset Formula $\alpha+\beta<1$
+\end_inset
+
+.
+ This condition is violated in this case as 
+\begin_inset Formula $0.041+0.96=1.001>1$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+To study whether we have strong stationarity, I use direct Monte Carlo simulatio
+n following example R-code from lectures, filename Code04112021.R.
+ Here I simulate 1e7 draws from the standard Gaussian distribution and then
+ compute the moment condition.
+ For set.seed(123) I get 
+\begin_inset Formula 
+\[
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]=-0.00053<0,\quad\text{(rounded)}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Thus the condition for strong stationarity is fulfilled and 
+\begin_inset Formula $\left\{ y_{t}\right\} $
+\end_inset
+
+ is strongly stationary.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Subsubsection
+Problem 7.c
+\end_layout
+
+\begin_layout Standard
+Let 
+\begin_inset Formula $\omega=0.1,\alpha=0.06,\beta=0.96$
+\end_inset
+
+, and assume that 
+\begin_inset Formula $\varepsilon_{t}$
+\end_inset
+
+ is iid standard Student's 
+\begin_inset Formula $t$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $\varepsilon_{t}\stackrel{iid}{\sim}T(0,1,\nu)$
+\end_inset
+
+, with density 
+\begin_inset Formula 
+\[
+p\left(\varepsilon_{t}\right)=\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\Gamma\left(\frac{\nu}{2}\right)\sqrt{(\nu-2)\pi}}\left[1+\frac{\varepsilon_{t}^{2}}{\nu-2}\right]^{-\frac{\nu+1}{2}}
+\]
+
+\end_inset
+
+ Discuss whether 
+\begin_inset Formula $\left\{ y_{t}\right\} $
+\end_inset
+
+ is weakly stationary and/or strongly stationary in the cases 
+\begin_inset Formula $\nu=2.5$
+\end_inset
+
+ and 
+\begin_inset Formula $\nu=20$
+\end_inset
+
+.
+ What do you observe here?
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+Investigating whether 
+\begin_inset Formula $\left\{ y_{t}\right\} $
+\end_inset
+
+ is weakly stationary is relatively straightforward.
+ As we have previously shown, the condition for weak stationarity can be
+ stated as 
+\begin_inset Formula $\alpha+\beta<1$
+\end_inset
+
+.
+ This condition is violated in this case as 
+\begin_inset Formula $0.06+0.96=1.02>1$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+FIX THIS: https://stats.stackexchange.com/questions/8466/standardized-students-t-d
+istribution
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+p\left(\varepsilon_{t}\right) & =\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\Gamma\left(\frac{\nu}{2}\right)\sqrt{(\nu-2)\pi}}\left[1+\frac{\varepsilon_{t}^{2}}{\nu-2}\right]^{-\frac{\nu+1}{2}}\\
+\frac{\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\Gamma\left(\frac{\nu}{2}\right)\sqrt{\nu\pi}}\left(1+\frac{\varepsilon_{t}^{2}}{\nu}\right)^{-\frac{\nu+1}{2}}}{\sqrt{\frac{\nu}{\nu-2}}} & =\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\Gamma\left(\frac{\nu}{2}\right)\sqrt{(\nu-2)\pi}}\left[1+\frac{\varepsilon_{t}^{2}}{\nu-2}\right]^{-\frac{\nu+1}{2}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]_{\nu=2.5} & =-0.00384<0,\quad\text{(rounded)}\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]_{\nu=20} & =0.01638>0,\quad\text{(rounded)}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+l & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\underline{m}\right)\right]\\
+\underset{\text{Product of a constant}}{\Longrightarrow}\quad l & =\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\underline{m}\right)^{k}\right]\\
+\underset{\text{change sum, remove 1}}{\Longrightarrow}\quad l & =\omega\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\underline{m}\right)^{k}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+u & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\overline{m}\right)\right]\\
+\underset{\text{Product of a constant}}{\Longrightarrow}\quad u & =\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\overline{m}\right)^{k}\right]\\
+\underset{\text{change sum, remove 1}}{\Longrightarrow}\quad u & =\omega\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\overline{m}\right)^{k}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\underbrace{\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]}_{=0}\\
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\\
+\underset{\text{log transform}}{\Longrightarrow}\quad\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\underbrace{\ln\left[\beta+\alpha g\left(\varepsilon_{t-i}\right)\right]}_{\phi_{t-i}}\\
+\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\phi_{t-i}\\
+\underset{+/-\;\mathbb{E}\left(\phi_{t-i}\right)}{\Longrightarrow}\quad\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\left\{ \underbrace{\phi_{t-i}-\mathbb{E}\left(\phi_{t-i}\right)}_{\widetilde{\phi}_{t-i}}+\mathbb{E}\left(\phi_{t-i}\right)\right\} \\
+\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\underbrace{t\cdot\mathbb{E}\left(\phi_{t}\right)}_{\text{drift-term }>0}+\sum_{i=1}^{t}\widetilde{\phi}_{t-i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega+\phi_{t-1}\omega+\phi_{t-1}\phi_{t-2}\omega+\phi_{t-1}\phi_{t-2}\phi_{t-3}\omega+\dots\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\dots\right]\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\dots\right]\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+\underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad{}_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\inf\left[g\left(\left\{ \varepsilon_{t}\right\} _{t\in\mathbb{Z}}\right)\right] & =\underline{m}\\
+\sup\left[g\left(\left\{ \varepsilon_{t}\right\} _{t\in\mathbb{Z}}\right)\right] & =\overline{m}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+l & =\inf\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+l & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\underline{m}\right)\right]\\
+\underset{\text{Product of a constant}}{\Longrightarrow}\quad l & =\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\underline{m}\right)^{k}\right]\\
+\underset{\text{simplify}}{\Longrightarrow}\quad l & =\omega\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\underline{m}\right)^{k}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+u & =\sup\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+u & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\overline{m}\right)\right]\\
+\underset{\text{Product of a constant}}{\Longrightarrow}\quad u & =\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\overline{m}\right)^{k}\right]\\
+\underset{\text{simplify}}{\Longrightarrow}\quad u & =\omega\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\overline{m}\right)^{k}\right]
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+l & =\begin{cases}
+\frac{\omega}{1-\left(\beta+\alpha\underline{m}\right)} & \text{if }\left(\beta+\alpha\underline{m}\right)<1\\
+x & \text{if }\left(\beta+\alpha\underline{m}\right)>1\text{ where }\underline{m}<x<u
+\end{cases}\\
+u & =\begin{cases}
+\frac{\omega}{1-\left(\beta+\alpha\overline{m}\right)} & \text{if }\left(\beta+\alpha\overline{m}\right)<1\\
++\infty & \text{if }\left(\beta+\alpha\overline{m}\right)>1
+\end{cases}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\underset{\text{volatility component}}{\Longrightarrow}\quad\mathcal{L}_{V}(\theta) & \equiv\log L_{V,T}(\theta)=-\frac{1}{2}\sum_{t=1}^{T}\left(N\log(2\pi)+\log\left|\mathbf{D}_{t}\right|+\mathbf{y}_{t}^{\prime}\mathbf{D}_{t}^{-1}\mathbf{y}_{t}\right)\\
+\underset{\text{correlation component}}{\Longrightarrow}\quad\mathcal{L}_{C}(\theta,\phi) & \equiv\log L_{C,T}(\theta,\phi)=-\frac{1}{2}\sum_{t=1}^{T}\left(\eta_{t}^{\prime}\mathbf{R}_{t}^{-1}\eta_{t}-\eta_{t}^{\prime}\eta_{t}+\log\left|\mathbf{R}_{t}\right|\right)\\
+\underset{\text{total likelihood}}{\Longrightarrow}\quad\mathcal{L}_{T} & =\mathcal{L}_{V}(\theta)+\mathcal{L}_{C}(\theta,\phi)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document

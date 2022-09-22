@@ -1,0 +1,151 @@
+\documentclass{article}
+
+%----------------------------------------------------------------------------------------
+%	FONTS AND ENCODINGS
+%----------------------------------------------------------------------------------------
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage[english]{babel} % language pack..
+\usepackage{amsmath} % math symbols
+\usepackage{lastpage}
+\usepackage{amssymb} % math symbols
+\usepackage{cmbright} % font
+\usepackage{pifont}
+\usepackage{graphicx,float} % for pictures etc.
+\usepackage{subcaption}
+\usepackage{tcolorbox}
+\usepackage{ulem}
+\usepackage{cancel}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{slashed}
+\usepackage{multirow}
+\usepackage{wasysym}
+\usepackage{minted}
+\usepackage[hidelinks]{hyperref}
+\usepackage{subfiles}
+
+%----------------------------------------------------------------------------------------
+%	PAGE LAYOUT
+%----------------------------------------------------------------------------------------
+\setlength{\parindent}{0bp} % No paragraph indentation
+\usepackage{fancyhdr} % Headings/footers
+
+\usepackage{geometry} % Required for adjusting page dimensions and margins
+\geometry{
+	paper=a4paper, % Paper size, change to letterpaper for US letter size
+	top=2cm, % Top margin
+	bottom=2cm, % Bottom margin
+	left=3cm, % Left margin
+	right=3cm, % Right margin
+	inner=2cm,
+	outer=2cm,
+	headheight=2cm, % Header height
+	footskip=1cm, % Space from the bottom margin to the baseline of the footer
+	headsep=0.75cm, % Space from the top margin to the baseline of the header
+}
+
+\fancyhead{} % Clear all headers
+\fancyfoot{} % Clear all footers
+\fancyfoot[R]{\footnotesize \thepage\ / \pageref{LastPage}}
+\fancyhead[L]{} %Left
+\fancyhead[C]{} %Center
+\fancyhead[R]{} %Right
+
+\renewcommand{\headrulewidth}{0pt} % Remove header rule
+\renewcommand{\footrulewidth}{0pt} % Remove footer rule
+\pagestyle{fancy} % Set page style to "fancy"
+
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+
+\section{Problem Set 3 - Problem 1}
+
+Consider the SV model reported in slide 31 of Lecture 7 and the SV
+model reported in slide 18 of Lecture 6 . Note that the two models
+are parameterized in a different way. In the one of Lecture 7 the
+$\log$ volatility follows a zero mean autoregression and you have
+a parameter $\sigma$ in the measurement equation. In the one of Lecture
+6 you have that the volatility follows a first order autoregression
+with mean $\omega/(1-\phi)$. Find the mapping between the two parameterizations,
+i.e. find a way to represent the model in Lecture 6 as the model in
+Lecture 7 , and viceversa.
+
+\bigskip
+
+\textbf{A) From slide 31, lecture 7}
+
+\begin{align*}
+y_{t} & =\sigma\exp\left(\frac{w_{t}}{2}\right)z_{t}\\
+w_{t} & =\rho w_{t-1}+\eta_{t},\quad\eta_{t}\overset{iid}{\sim}\mathcal{N}\left(0,\sigma_{\eta}^{2}\right)
+\end{align*}
+
+\textbf{B) From slide 18, lecture 6 }
+
+\begin{align*}
+y_{t} & =\exp\left(\frac{w_{t}}{2}\right)u_{t}\\
+w_{t} & =\omega+\phi w_{t-1}+\eta_{t},\quad\eta_{t}\overset{iid}{\sim}\mathcal{N}\left(0,\sigma_{\eta}^{2}\right)
+\end{align*}
+
+Let $\theta_{A}=\left(\sigma,\rho,\sigma_{\eta}^{2}\right)^{\prime}$
+and $\theta_{B}=\left(\omega,\phi,\sigma_{\eta}^{2}\right)^{\prime}$
+
+
+\subsection{From (A) to (B)}
+
+\begin{align*}
+y_{t} & =\sigma\exp\left(\frac{w_{t}}{2}\right)z_{t}\\
+\underset{\ln\left(x^{2}\right)=2\ln\left(x\right),\;\exp\left[\ln\left(x\right)\right]=x}{\Longrightarrow}\quad y_{t} & =\exp\left[\frac{1}{2}\ln\left\{ \sigma^{2}\right\} \right]\exp\left(\frac{w_{t}}{2}\right)z_{t}\\
+y_{t} & =e^{\frac{1}{2}\ln\left\{ \sigma^{2}\right\} }e^{\frac{w_{t}}{2}}z_{t}\\
+y_{t} & =e^{\frac{1}{2}\ln\left\{ \sigma^{2}\right\} +\frac{w_{t}}{2}}z_{t}\\
+y_{t} & =\exp\left[\frac{1}{2}\ln\left\{ \sigma^{2}\right\} +\frac{w_{t}}{2}\right]z_{t}\\
+y_{t} & =\exp\left[\frac{1}{2}\underbrace{\left(\ln\left\{ \sigma^{2}\right\} +w_{t}\right)}_{w_{t}^{\star}}\right]z_{t}\\
+y_{t} & =\exp\left(\frac{w_{t}^{\star}}{2}\right)z_{t}
+\end{align*}
+
+Note that $w_{t}^{\star}$ is the solution of an $AR\left(1\right)$
+process of the kind
+\[
+w_{t}^{\star}=\ln\left(\sigma^{2}\right)\left(1-\rho\right)+\rho w_{t-1}^{\star}+\eta_{t}
+\]
+
+Thus we get the mappings
+\[
+\theta_{A}\rightarrow\theta_{B}=\begin{cases}
+\omega & =\ln\left(\sigma^{2}\right)\left(1-\rho\right)\\
+\phi & =\rho\\
+\sigma_{\eta}^{2} & =\sigma_{\eta}^{2}
+\end{cases}
+\]
+
+\subsection{From (B) to (A)}
+
+\textbf{TODO: make this derivation thoroughly.}
+
+\bigskip
+
+Thus we get the mappings
+\[
+\theta_{B}\rightarrow\theta_{A}=\begin{cases}
+\sigma & =\exp\left\{ \frac{\omega}{2\left(1-\rho\right)}\right\} \\
+\phi & =\rho\\
+\sigma_{\eta}^{2} & =\sigma_{\eta}^{2}
+\end{cases}
+\]
+
+Note that, 
+\begin{align*}
+\sigma & =\exp\left\{ \frac{\omega}{2\left(1-\rho\right)}\right\} \\
+\ln\left(\sigma\right) & =\frac{\omega}{2\left(1-\rho\right)}\\
+\omega & =\left(1-\rho\right)\cdot\ln\left(\sigma^{2}\right)
+\end{align*}
+
+i.e. the mapping is bijective.
+
+
+\end{document}

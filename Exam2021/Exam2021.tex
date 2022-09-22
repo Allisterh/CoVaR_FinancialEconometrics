@@ -1,0 +1,667 @@
+%% LyX 2.3.6.2 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[latin9]{inputenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{babel}
+\begin{document}
+
+\section{Theoretical part}
+
+\subsection{Problem 1)}
+
+Show that $_{u}\sigma_{t}^{2}$ admits the following representation:
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\end{align*}
+
+.
+
+.
+
+.
+
+We apply recursive substitution from the volatility process in Equation
+\textbf{(REF)}.
+\begin{align*}
+\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\sigma_{t}^{2}\\
+\underset{t-1}{\Longrightarrow}\quad\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\left(\omega+\sigma_{t-1}^{2}\left(\beta+\alpha g\left(\varepsilon_{t-1}\right)\right)\right)\\
+\underset{t-2}{\Longrightarrow}\quad\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\left(\omega+\left(\omega+\sigma_{t-2}^{2}\left(\beta+\alpha g\left(\varepsilon_{t-2}\right)\right)\right)\left(\beta+\alpha g\left(\varepsilon_{t-1}\right)\right)\right)\\
+\underset{\text{define}}{\Longrightarrow}\quad\sigma_{t+1}^{2} & =\omega+\underbrace{\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)}_{\phi_{t}}\left(\omega+\left(\omega+\sigma_{t-2}^{2}\left(\beta+\alpha g\left(\varepsilon_{t-2}\right)\right)\right)\left(\beta+\alpha g\left(\varepsilon_{t-1}\right)\right)\right)\\
+\sigma_{t+1}^{2} & =\omega+\phi_{t}\left(\omega+\left(\omega+\sigma_{t-2}^{2}\phi_{t-2}\right)\phi_{t-1}\right)\\
+\sigma_{t+1}^{2} & =\omega+\phi_{t}\omega+\phi_{t}\phi_{t-1}\left(\omega+\sigma_{t-2}^{2}\phi_{t-2}\right)\\
+\sigma_{t+1}^{2} & =\omega+\phi_{t}\omega+\phi_{t}\phi_{t-1}\omega+\phi_{t}\phi_{t-1}\phi_{t-2}\sigma_{t-2}^{2}
+\end{align*}
+
+We know that there is $\omega$ contained in $\sigma_{t}^{2}\;\forall t$
+thus I am able to factorize $\omega$ in the expression above. We're
+conditioning on all past observations in this case and employ the
+unconditional notation.
+\begin{align*}
+\underset{\text{factorize }\omega\text{ and continue till }-\infty}{\Longrightarrow}\quad{}_{u}\sigma_{t+1}^{2} & =\omega\left[1+\phi_{t}+\phi_{t}\phi_{t-1}+\phi_{t}\phi_{t-1}\phi_{t-2}+\phi_{t}\phi_{t-1}\phi_{t-2}\phi_{t-3}+\dots\right]
+\end{align*}
+
+As we're interested in the unconditional process $_{u}\sigma_{t}^{2}$
+at period $t$, I lag the entire process one period
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\phi_{t-1}\phi_{t-2}\phi_{t-3}\phi_{t-4}+\dots\right]
+\]
+
+We notice a pattern in this expression and start by writing out the
+products
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\phi_{t-1}\phi_{t-2}\phi_{t-3}\phi_{t-4}+\dots\right]\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots\right]
+\end{align*}
+
+Now we're getting close - we just need to recognize the sums. We're
+summing each product for a varying product limit. This limit should
+be defined by the sum operator. Thus we're able to write
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots\right]\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+\underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad{}_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\quad\square
+\end{align*}
+
+.
+
+.
+
+.
+
+.
+
+.
+
+\subsection{Problem 2)}
+
+Show that $\sigma_{t}^{2}$ admits the following representation: 
+\[
+\sigma_{t}^{2}=\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+.
+
+.
+
+.
+
+.
+
+We're no longer conditioning on all infinite past observations, thus
+there is a limit for $t$ to the result derived in Problem \textbf{(REF)}
+thus we can write \emph{(copying from before and keeping definition
+of $\phi_{t}$)}
+\begin{align*}
+\sigma_{t+1}^{2} & =\omega+\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\sigma_{t}^{2}\\
+ & \vdots\\
+_{u}\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots\right]
+\end{align*}
+
+We know that $\sigma_{t}^{2}$ is initialized at time $t=0$ where
+we have some positive value for $\sigma_{0}^{2}>0$. Thus we're able
+to write the results from Problem \textbf{(REF)} as we know that the
+process starts at $t=0$ and not infinite past
+\begin{align*}
+\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots+\prod_{i=1}^{t-1}\phi_{t-i}\right]+\sigma_{0}^{2}\prod_{i=1}^{t}\phi_{t-i}\\
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\phi_{t-i}+\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\prod_{i=1}^{4}\phi_{t-i}+\dots+\prod_{i=1}^{t-1}\phi_{t-i}\right]
+\end{align*}
+
+Now we're writing out the sums again
+\begin{align*}
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\phi_{t-i}+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+\underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right],\quad\square
+\end{align*}
+
+.
+
+.
+
+.
+
+.
+
+.
+
+\subsection{Problem 3)}
+
+Derive sufficient conditions on $\left(\omega,\alpha,\beta\right)$
+such that $_{u}\sigma_{t}^{2}>0$.
+
+.
+
+.
+
+.
+
+.
+
+We know that $_{u}\sigma_{t}^{2}$ is defined as,
+
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+Investigating this expression for $_{u}\sigma_{t}^{2}$ we see that
+for $_{u}\sigma_{t}^{2}>0$ we can easily constrain $\omega\neq0$.
+We cannot say anything about $\omega<0$ before investigating conditions
+on $\alpha$ and $\beta$ more thoroughly.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+\subsection{Problem 4)}
+
+Derive the lower and the upper bound of the process $\left\{ _{u}\sigma_{t}^{2}\right\} _{t\in\mathbb{Z}}$,
+i.e. show that $_{u}\sigma_{t}^{2}\in[l,u]$ where $l<u$. Derive
+$l$ and $u$.
+
+.
+
+.
+
+.
+
+.
+
+.
+
+We know from Lecture 4 Slide 16, that \textbackslash CITE\{nelson1990\}
+ shows that for $\omega>0$ we almost surely have $\sigma_{t}^{2}<\infty$.
+And that the joint process $\left\{ y_{t},\sigma_{t}^{2}\right\} $
+is strictly stationary iff. $\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]<0$
+
+.
+
+In the following we need to apply the following assumptions, 
+\begin{align*}
+\omega & >0\\
+\alpha & >0\\
+\beta & \geq0\\
+\alpha+\beta & <1\\
+\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right] & <0
+\end{align*}
+
+The second assumption implies that $0<\beta+\alpha g\left(\varepsilon_{t}\right)<1$
+as $\ln\left(x\right)<0$ iff. $0<x<1$.\\
+
+We remember that $_{u}\sigma_{t}^{2}$ is defined as
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+I start by finding the lower bound, realizing 
+\[
+\min\left[g\left(\varepsilon_{t-i}\right)\right]=\underline{m}
+\]
+
+inserting this into the expression for $_{u}\sigma_{t}^{2}$ yields
+\begin{align*}
+l & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\underline{m}\right)\right]\\
+l & =\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\underline{m}\right)^{k}\right]
+\end{align*}
+
+We remember
+\[
+a+ar+ar^{2}+ar^{3}+ar^{4}+\cdots=\sum_{k=0}^{\infty}ar^{k}=\frac{a}{1-r},\text{ for }|r|<1\tag{Geo 1}
+\]
+
+Thus we can write $l$ as
+\[
+l=\frac{\omega}{1-\left(\beta+\alpha\underline{m}\right)}
+\]
+
+Analogously we can write the upper bound using the same steps
+\[
+\max\left[g\left(\varepsilon_{t-i}\right)\right]=\overline{m}
+\]
+
+inserting this into the expression for $_{u}\sigma_{t}^{2}$ yields
+\begin{align*}
+u & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\overline{m}\right)\right]\\
+u & =\omega\left[1+\sum_{k=1}^{\infty}\left(\beta+\alpha\overline{m}\right)^{k}\right]
+\end{align*}
+
+Thus we can write $u$ as
+\[
+u=\frac{\omega}{1-\left(\beta+\alpha\overline{m}\right)}
+\]
+
+Thus we have 
+\[
+_{u}\sigma_{t}^{2}\in\left[l,u\right]=\begin{cases}
+l & =\frac{\omega}{1-\left(\beta+\alpha\underline{m}\right)}\\
+u & =\frac{\omega}{1-\left(\beta+\alpha\overline{m}\right)}
+\end{cases}
+\]
+
+.
+
+.
+
+.
+
+.
+
+.
+
+\subsection{Problem 5)}
+
+Show that if $\omega=0$ : 
+
+\subsubsection{Problem 5.a }
+
+$_{u}\sigma_{t}^{2}=0$ for all $t$. 
+
+.
+
+.
+
+.
+
+.
+
+\begin{align*}
+_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+_{u}\sigma_{t}^{2} & =\underbrace{\omega}_{=0}\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+_{u}\sigma_{t}^{2} & =0
+\end{align*}
+
+.
+
+.
+
+.
+
+.
+
+\subsubsection{Problem 5.b}
+
+$\sigma_{t}^{2}\rightarrow\infty$ as $t\rightarrow\infty$ if $E\left[\log\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$.
+
+.
+
+.
+
+.
+
+.
+
+We remember that $\omega=0$ and thus we can write our process for
+$\sigma_{t}^{2}$ as 
+\begin{align*}
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\underbrace{\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]}_{=0}\\
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\\
+\underset{\text{log transform}}{\Longrightarrow}\quad\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\\
+\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\underbrace{\ln\left[\beta+\alpha g\left(\varepsilon_{t-i}\right)\right]}_{\phi_{t-i}}\\
+\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\phi_{t-i}\\
+\underset{+/-\;\mathbb{E}\left(\phi_{t-i}\right)}{\Longrightarrow}\quad\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+\sum_{i=1}^{t}\left\{ \underbrace{\phi_{t-i}-\mathbb{E}\left(\phi_{t-i}\right)}_{\widetilde{\phi}_{t-i}}+\mathbb{E}\left(\phi_{t-i}\right)\right\} \\
+\ln\left[\sigma_{t}^{2}\right] & =\ln\left[\sigma_{0}^{2}\right]+t\cdot\mathbb{E}\left(\phi_{t}\right)+\sum_{i=1}^{t}\widetilde{\phi}_{t-i}
+\end{align*}
+
+We recognize this as a random walk with a drift. We remember that
+the value of a random walk with a drift either diverges to $+\infty$
+or $-\infty$ depending on the value of the drift. Thus we can easily
+see that as $t\rightarrow\infty$ then $\ln\left[\sigma_{t}^{2}\right]\rightarrow\infty$
+and $\sigma_{t}^{2}\rightarrow\infty$ for all $\mathbb{E}\left(\phi_{t}\right)=\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$.
+
+.
+
+.
+
+.
+
+.
+
+\subsubsection{Problem 5.c}
+
+$\sigma_{t}^{2}\rightarrow0$ as $t\rightarrow\infty$ if $E\left[\log\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]<0$.
+
+.
+
+.
+
+.
+
+.
+
+Here we see that we have a similar case as in the former problem however
+the inequality is turned. However similar arguments can be applied.
+We recognize again a random walk with a drift. We remember that the
+value of a random walk with a drift either diverges to $+\infty$
+or $-\infty$ depending on the value of the drift. Thus we can easily
+see that as $t\rightarrow\infty$ then $\ln\left[\sigma_{t}^{2}\right]\rightarrow-\infty$
+and $\sigma_{t}^{2}\rightarrow0$ for all $\mathbb{E}\left(\phi_{t}\right)=\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]<0$.
+
+.
+
+.
+
+.
+
+.
+
+\subsection{Problem 6)}
+
+Show that if $\omega>0$ and $\mathbb{E}\left[\log\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$
+:
+
+\subsubsection{Problem 6.a}
+
+$\sigma_{t}^{2}\rightarrow\infty$ as $t\rightarrow\infty$
+
+.
+
+.
+
+.
+
+.
+
+We remember our definition of $\sigma_{t}^{2}$
+
+\begin{align*}
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\end{align*}
+
+We recognize that 
+\[
+\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)+\omega\left[1+\sum_{k=1}^{t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\geq\omega\sup_{1\leq k\leq t-1}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)
+\]
+
+taking logs yields
+\[
+\ln\left(\sigma_{t}^{2}\right)\geq\ln\left(\omega\right)+\sup_{1\leq k\leq t-1}\sum_{i=1}^{k}\ln\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)
+\]
+
+Using the results from Theorem 1 in \textbackslash CITE\{nelson1990\}
+the right term above diverges to $+\infty$ when $t\rightarrow\infty$
+if $\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0$.
+If this expression is smaller than equal to $\ln\left(\sigma_{t}^{2}\right)$
+this expression must also approach $\infty$ as $t\rightarrow\infty$
+thus yielding
+\[
+\sigma_{t}^{2}\rightarrow\infty\quad\text{if}\quad\mathbb{E}\left[\ln\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\right]>0
+\]
+
+.
+
+.
+
+.
+
+.
+
+\subsubsection{Problem 6.b}
+
+$_{u}\sigma_{t}^{2}\rightarrow\infty$ for all $t$
+
+.
+
+.
+
+.
+
+.
+
+Remembering we can write $_{u}\sigma_{t}^{2}$ as 
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]
+\]
+
+Again we recognize that
+\[
+\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)\right]\geq\omega\sup_{1\leq k\leq\infty}\prod_{i=1}^{k}\left(\beta+\alpha g\left(\varepsilon_{t-i}\right)\right)
+\]
+
+Using similar arguments as in REF problem 6.a we see that the right
+side diverges to $+\infty$ for all $t$.
+
+.
+
+.
+
+.
+
+.
+
+\subsection{Problem 7)}
+
+Consider the GARCH case where $g\left(\varepsilon_{t}\right)=\varepsilon_{t}^{2}$.
+
+\subsubsection{Problem 7.a, i)}
+
+Discuss the necessary conditions on $\left(\omega,\alpha,\beta\right)$
+such that: i) $\left\{ y_{t}\right\} $ is weakly stationary, 
+
+.
+
+.
+
+.
+
+.
+
+To have weak stationarity of $y_{t}$ we require $\mathbb{E}\left[\sigma_{t}^{2}\right]=\sigma^{2}<\infty$
+for all $t$. Substituting for $g\left(\varepsilon_{t}\right)=\varepsilon_{t}^{2}$,
+rewriting, recursively substituting and taking the unconditional expectation
+of the process to check for this condition.
+\begin{align*}
+\sigma_{t+1}^{2} & =\omega+\sigma_{t}^{2}\left(\beta+\alpha g\left(\varepsilon_{t}\right)\right)\\
+\sigma_{t+1}^{2} & =\omega+\sigma_{t}^{2}\left(\beta+\alpha\varepsilon_{t}^{2}\right)\\
+\underset{\text{lag 1 period}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\omega+\sigma_{t-1}^{2}\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)
+\end{align*}
+
+Recursive substitution
+
+\begin{align*}
+\sigma_{t}^{2} & =\omega+\sigma_{t-1}^{2}\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)\\
+\sigma_{t}^{2} & =\omega+\left(\omega+\sigma_{t-2}^{2}\left(\beta+\alpha\varepsilon_{t-2}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)\\
+\sigma_{t}^{2} & =\omega+\left(\omega+\left(\omega+\sigma_{t-3}^{2}\left(\beta+\alpha\varepsilon_{t-3}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-2}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)\\
+\underset{\text{defining }\phi_{t}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\omega+\left(\omega+\left(\omega+\sigma_{t-3}^{2}\left(\beta+\alpha\varepsilon_{t-3}^{2}\right)\right)\left(\beta+\alpha\varepsilon_{t-2}^{2}\right)\right)\underbrace{\left(\beta+\alpha\varepsilon_{t-1}^{2}\right)}_{\phi_{t-1}}\\
+\sigma_{t}^{2} & =\omega+\left(\omega+\left(\omega+\sigma_{t-3}^{2}\left(\phi_{t-3}\right)\right)\left(\phi_{t-2}\right)\right)\phi_{t-1}\\
+\sigma_{t}^{2} & =\omega+\omega\phi_{t-1}+\phi_{t-1}\phi_{t-2}\omega+\phi_{t-1}\phi_{t-2}\phi_{t-3}\sigma_{t-3}^{2}
+\end{align*}
+
+Recognizing the same pattern as earlier and continueing till $\infty$
+
+\begin{align*}
+\sigma_{t}^{2} & =\omega+\phi_{t-1}\omega+\phi_{t-1}\phi_{t-2}\omega+\phi_{t-1}\phi_{t-2}\phi_{t-3}\omega+\dots\\
+\sigma_{t}^{2} & =\omega\left[1+\phi_{t-1}+\phi_{t-1}\phi_{t-2}+\phi_{t-1}\phi_{t-2}\phi_{t-3}+\dots\right]\\
+\sigma_{t}^{2} & =\omega\left[1+\prod_{i=1}^{1}\phi_{t-i}+\prod_{i=1}^{2}\phi_{t-i}+\prod_{i=1}^{3}\phi_{t-i}+\dots\right]\\
+\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\phi_{t-i}\right]\\
+\underset{\text{substitute }\phi_{t}}{\Longrightarrow}\quad\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]
+\end{align*}
+
+Taking the conditional expectation
+\begin{align*}
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\mathbb{E}\left[\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]\right]\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[1+\sum_{k=1}^{\infty}\mathbb{E}\left[\prod_{i=1}^{k}\beta+\alpha\varepsilon_{t-i}^{2}\right]\right]\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[1+\sum_{k=1}^{\infty}\mathbb{E}\left[\prod_{i=1}^{k}\underbrace{\beta+\alpha\varepsilon_{t-i}^{2}}_{b_{t-i}}\right]\right]
+\end{align*}
+
+We first show $\mathbb{E}\left[b_{t}\right]$ and then substitute
+back into $\mathbb{E}\left[\sigma_{t}^{2}\right]$
+
+\[
+\mathbb{E}\left[b_{t}\right]=\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]=\beta+\alpha\underbrace{\mathbb{E}\left[\varepsilon_{t}^{2}\right]}_{=1}=\beta+\alpha
+\]
+
+Now we can derive the unconditional expectation
+\begin{align*}
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha\right)\right]\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\underbrace{\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\right)^{k}\right]}_{\text{removing 1 with sum}}\\
+\mathbb{E}\left[\sigma_{t}^{2}\right] & =\omega\left[\sum_{k=0}^{\infty}\left(\beta+\alpha\right)^{k}\right]
+\end{align*}
+
+Applying the following geometric series
+\[
+\sum_{k=0}^{\infty}ar^{k}=\frac{a}{1-r},\quad\text{for }\rvert r\rvert<1\tag{Geo 2}
+\]
+
+We know that we can only apply \textbf{REF} Geo 2, if $\rvert\beta+\alpha\rvert<1$.
+Thus we are left with
+\[
+\mathbb{E}\left[\sigma_{t}^{2}\right]=\sigma^{2}=\frac{\omega}{1-\alpha-\beta}
+\]
+
+We know $\sigma^{2}>0$ thus we're left with the following conditions
+for weak stationarity
+\begin{align*}
+\alpha+\beta & <1\Longrightarrow\alpha<1,\beta<1\\
+\omega & >0
+\end{align*}
+
+.
+
+.
+
+.
+
+.
+
+\subsubsection{Problem 7.a ii)}
+
+ii) $\left\{ y_{t}\right\} $ is strongly stationary.
+
+.
+
+.
+
+.
+
+.
+
+We know from Lecture 4 Slide 16, that \textbackslash CITE\{nelson1990\}
+ shows that for $\omega>0$ we almost surely have $\sigma_{t}^{2}<\infty$.
+And that the joint process $\left\{ y_{t},\sigma_{t}^{2}\right\} $
+is strictly stationary iff. $\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]<0$.
+If we apply Jensen's equality we get
+\[
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]<\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right)
+\]
+
+We can reduce 
+\begin{align*}
+\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right) & =\ln\left(\mathbb{E}\left[\beta\right]+\alpha\underbrace{\mathbb{E}\left[\varepsilon_{t}^{2}\right]}_{=1}\right)\\
+\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right) & =\ln\left(\beta+\alpha\right)
+\end{align*}
+
+Inserting
+\begin{align*}
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(\mathbb{E}\left[\beta+\alpha\varepsilon_{t}^{2}\right]\right)\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(\beta+\alpha\right)
+\end{align*}
+
+We know we have weak stationarity for $\beta+\alpha<1$. However for
+the expression above we know that $\alpha+\beta=1$ satisfies the
+condition for strong stationarity as we have
+\begin{align*}
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(\beta+\alpha\right)\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <\ln\left(1\right)\\
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right] & <0
+\end{align*}
+
+Thus we know that for $\alpha+\beta=1$ we have strong, but not weak
+stationarity.
+
+.
+
+.
+
+.
+
+.
+
+\subsubsection{Problem 7.b}
+
+.
+
+.
+
+.
+
+.
+
+Let $\omega=0.1,\alpha=0.041,\beta=0.96$, and assume that $\varepsilon_{t}$
+is iid standard Gaussian, i.e. $\varepsilon_{t}\stackrel{iid}{\sim}N(0,1)$.
+Discuss whether $\left\{ y_{t}\right\} $ is weakly stationary and/or
+strongly stationary.
+
+.
+
+.
+
+.
+
+.
+
+Investigating whether $\left\{ y_{t}\right\} $ is weakly stationary
+is relatively straightforward. As we have previously shown, the condition
+for weak stationarity can be stated as $\alpha+\beta<1$. This condition
+is violated in this case as $0.041+0.96=1.001>1$. 
+
+.
+
+To study whether we have strong stationarity, I use direct Monte Carlo
+simulation following example R-code from lectures, filename Code04112021.R.
+Here I simulate 1e7 draws from the standard Gaussian distribution
+and then compute the moment condition. For set.seed(123) I get 
+\[
+\mathbb{E}\left[\ln\left(\beta+\alpha\varepsilon_{t}^{2}\right)\right]=-0.00053<0,\quad\text{(rounded)}
+\]
+
+Thus the condition for strong stationarity is fulfilled and $\left\{ y_{t}\right\} $
+is strongly stationary.
+
+.
+
+.
+
+.
+
+.
+
+\subsubsection{Problem 7.c}
+
+Let $\omega=0.1,\alpha=0.06,\beta=0.96$, and assume that $\varepsilon_{t}$
+is iid standard Student's $t$, i.e. $\varepsilon_{t}\stackrel{iid}{\sim}T(0,1,\nu)$,
+with density 
+\[
+p\left(\varepsilon_{t}\right)=\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\Gamma\left(\frac{\nu}{2}\right)\sqrt{(\nu-2)\pi}}\left[1+\frac{\varepsilon_{t}^{2}}{\nu-2}\right]^{-\frac{\nu+1}{2}}
+\]
+ Discuss whether $\left\{ y_{t}\right\} $ is weakly stationary and/or
+strongly stationary in the cases $\nu=2.5$ and $\nu=20$. What do
+you observe here?
+
+.
+
+.
+
+.
+
+.
+
+Investigating whether $\left\{ y_{t}\right\} $ is weakly stationary
+is relatively straightforward. As we have previously shown, the condition
+for weak stationarity can be stated as $\alpha+\beta<1$. This condition
+is violated in this case as $0.06+0.96=1.02>1$. 
+
+.
+
+FIX THIS: https://stats.stackexchange.com/questions/8466/standardized-students-t-distribution
+
+\begin{align*}
+p\left(\varepsilon_{t}\right) & =\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\Gamma\left(\frac{\nu}{2}\right)\sqrt{(\nu-2)\pi}}\left[1+\frac{\varepsilon_{t}^{2}}{\nu-2}\right]^{-\frac{\nu+1}{2}}\\
+\frac{\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\Gamma\left(\frac{\nu}{2}\right)\sqrt{\nu\pi}}\left(1+\frac{\varepsilon_{t}^{2}}{\nu}\right)^{-\frac{\nu+1}{2}}}{\sqrt{\frac{\nu}{\nu-2}}} & =\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\Gamma\left(\frac{\nu}{2}\right)\sqrt{(\nu-2)\pi}}\left[1+\frac{\varepsilon_{t}^{2}}{\nu-2}\right]^{-\frac{\nu+1}{2}}
+\end{align*}
+
+\end{document}

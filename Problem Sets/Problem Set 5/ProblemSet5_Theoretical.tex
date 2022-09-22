@@ -1,0 +1,222 @@
+\documentclass{article}
+
+%----------------------------------------------------------------------------------------
+%	FONTS AND ENCODINGS
+%----------------------------------------------------------------------------------------
+\usepackage[utf8]{inputenc} % Required for inputting international characters
+\usepackage[T1]{fontenc} % Output font encoding for international characters
+\usepackage[english]{babel} % language pack..
+\usepackage{amsmath} % math symbols
+\usepackage{lastpage}
+\usepackage{amssymb} % math symbols
+\usepackage{cmbright} % font
+\usepackage{pifont}
+\usepackage{graphicx,float} % for pictures etc.
+\usepackage{subcaption}
+\usepackage{tcolorbox}
+\usepackage{ulem}
+\usepackage{cancel}
+\usepackage{array}
+\usepackage{xcolor}
+\usepackage{slashed}
+\usepackage{multirow}
+\usepackage{wasysym}
+\usepackage{minted}
+\usepackage[hidelinks]{hyperref}
+\usepackage{subfiles}
+
+%----------------------------------------------------------------------------------------
+%	PAGE LAYOUT
+%----------------------------------------------------------------------------------------
+\setlength{\parindent}{0bp} % No paragraph indentation
+\usepackage{fancyhdr} % Headings/footers
+
+\usepackage{geometry} % Required for adjusting page dimensions and margins
+\geometry{
+	paper=a4paper, % Paper size, change to letterpaper for US letter size
+	top=2cm, % Top margin
+	bottom=2cm, % Bottom margin
+	left=3cm, % Left margin
+	right=3cm, % Right margin
+	inner=2cm,
+	outer=2cm,
+	headheight=2cm, % Header height
+	footskip=1cm, % Space from the bottom margin to the baseline of the footer
+	headsep=0.75cm, % Space from the top margin to the baseline of the header
+}
+
+\fancyhead{} % Clear all headers
+\fancyfoot{} % Clear all footers
+\fancyfoot[R]{\footnotesize \thepage\ / \pageref{LastPage}}
+\fancyhead[L]{} %Left
+\fancyhead[C]{} %Center
+\fancyhead[R]{} %Right
+
+\renewcommand{\headrulewidth}{0pt} % Remove header rule
+\renewcommand{\footrulewidth}{0pt} % Remove footer rule
+\pagestyle{fancy} % Set page style to "fancy"
+
+
+%----------------------------------------------------------------------------------------
+%	DOCUMENT
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\section{Problem Set 5 - Problem 1)}
+
+\subsection{Derive GAS model}
+
+We have,
+\[
+Y_{t}\rvert\mathcal{F}_{t-1}\sim\mathcal{T}\left(0,\phi,\nu\right)
+\]
+
+where the mean is $0$, $\phi$ is the scale parameter and $\nu$
+is degrees of freedom. Remembering that the $\mathcal{T}$ distribution
+is defined not by std. deviation but by scale. However the following
+relation is true
+\[
+\sigma_{t}^{2}=\phi_{t}^{2}\nu\left(\nu-2\right),\quad\text{for }\nu>2
+\]
+
+The conditional density of $Y_{t}\rvert\mathcal{F}_{t-1}$ is given
+by
+\[
+p\left(y_{t}\rvert\mathcal{F}_{t-1}\right)=\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\pi\nu}\Gamma\left(\frac{\nu}{2}\right)\phi_{t}}\left[1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}\right]^{-\frac{\nu+1}{2}}
+\]
+
+Derive a GAS model with identity scaling $d=0$ for the scale parameter
+$\phi_{t}$. Use an exponential link function to ensure $\phi_{t}>0$
+for all $t$.
+
+.
+
+Taking the log of
+\begin{align*}
+p\left(y_{t}\rvert\mathcal{F}_{t-1}\right) & =\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\pi\nu}\Gamma\left(\frac{\nu}{2}\right)\phi_{t}}\left[1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}\right]^{-\frac{\nu+1}{2}}\\
+\ln\left[p\left(y_{t}\rvert\mathcal{F}_{t-1}\right)\right] & =\ln\left[\frac{\Gamma\left(\frac{\nu+1}{2}\right)}{\sqrt{\pi\nu}\Gamma\left(\frac{\nu}{2}\right)\phi_{t}}\left[1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}\right]^{-\frac{\nu+1}{2}}\right]
+\end{align*}
+
+We know this log density is proportional to. This is due to the fact
+that the $\Gamma$, $\nu$ and $\pi$ can be decomposed into constants.
+Thus they will not have an effect on the functional form but only
+on the level of the process. 
+\[
+\ln\left[p\left(y_{t}\rvert\mathcal{F}_{t-1}\right)\right]\propto-\ln\left[\phi_{t}\right]-\frac{\nu+1}{2}\ln\left[1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}\right]
+\]
+
+The score with respect to $\phi_{t}$ is
+\begin{align*}
+\ln\left[p\left(y_{t}\rvert\mathcal{F}_{t-1}\right)\right] & =-\ln\left[\phi_{t}\right]-\frac{\nu+1}{2}\ln\left[1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}\right]\\
+\nabla_{t}\equiv\frac{\partial\nabla_{t}}{\partial\phi_{t}} & =-\ln\left[\phi_{t}\right]-\frac{\nu+1}{2}\ln\left[1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}\right]\\
+\nabla_{t} & =-\frac{1}{\phi_{t}}-\underbrace{\frac{\nu+1}{2}\frac{1}{1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}}\cdot\left(-\frac{2y_{t}^{2}}{\nu\phi_{t}^{3}}\right)}_{\text{chain rule}}\\
+\nabla_{t} & =-\frac{1}{\phi_{t}}+\frac{\nu+1}{\cancel{2}\left(1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}\right)}\cdot\frac{\cancel{2}y_{t}^{2}}{\nu\phi_{t}^{3}}\\
+\nabla_{t} & =-\frac{1}{\phi_{t}}+\frac{\left(\nu+1\right)\frac{y_{t}^{2}}{\nu\phi_{t}^{3}}}{1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}}\\
+\nabla_{t} & =-\frac{1}{\phi_{t}}+\frac{\left(\nu+1\right)y_{t}^{2}}{\left(1+\frac{y_{t}^{2}}{\nu\phi_{t}^{2}}\right)\nu\phi_{t}^{3}}\\
+\nabla_{t} & =-\frac{1}{\phi_{t}}+\frac{\left(\nu+1\right)y_{t}^{2}}{\left(\nu\phi_{t}^{3}+\frac{\nu\phi_{t}^{3}y_{t}^{2}}{\nu\phi_{t}^{2}}\right)}\\
+\nabla_{t} & =-\frac{1}{\phi_{t}}+\frac{\left(\nu+1\right)y_{t}^{2}}{\left(\nu\phi_{t}^{3}+\phi_{t}y_{t}^{2}\right)}
+\end{align*}
+
+Replicating from Leo's solution
+\begin{align*}
+\underset{\text{multiplying }\frac{2}{2}}{\Longrightarrow}\quad\nabla_{t} & =-\frac{1}{\phi_{t}}+\frac{\left(\nu+1\right)}{2}\frac{2y_{t}^{2}}{\left(\nu\phi_{t}^{3}+\phi_{t}y_{t}^{2}\right)}\\
+\nabla_{t} & =-\frac{1}{\phi_{t}}+\frac{\left(\nu+1\right)}{2}\frac{2\frac{y_{t}^{2}}{\phi_{t}^{2}}}{\phi_{t}\left(\nu+\frac{y_{t}^{2}}{\phi_{t}^{2}}\right)}\\
+\underset{\text{defining}}{\Longrightarrow}\quad z_{t} & \equiv\frac{y_{t}}{\phi_{t}}\\
+\nabla_{t} & =-\frac{1}{\phi_{t}}+\frac{\left(\nu+1\right)}{2}\frac{2z_{t}^{2}}{\phi_{t}\left(\nu+z_{t}^{2}\right)}\\
+\nabla_{t} & =-\frac{1}{\phi_{t}}+\frac{\left(\nu+1\right)z_{t}^{2}}{\phi_{t}\left(\nu+z_{t}^{2}\right)}\\
+\nabla_{t} & =\frac{\left(\nu+1\right)z_{t}^{2}}{\phi_{t}\left(\nu+z_{t}^{2}\right)}-\frac{1}{\phi_{t}}\\
+\underset{\text{factorize}}{\Longrightarrow}\quad\nabla_{t} & =\frac{1}{\phi_{t}}\left[\frac{\left(\nu+1\right)z_{t}^{2}}{\nu+z_{t}^{2}}-1\right]
+\end{align*}
+
+We remember that we are to derive a GAS model with identity scaling
+$d=0$. Thus we know that
+\[
+d=0\quad\rightarrow\quad\widetilde{u}_{t}=\frac{\partial\phi_{t}}{\partial\widetilde{\phi}_{t}}\nabla_{t}
+\]
+
+The GAS model for $\phi_{t}$ is
+\begin{align*}
+\phi_{t} & =\lambda\left(\widetilde{\phi}_{t}\right)\quad\underset{\text{exponential link function}}{\Longrightarrow}\quad\phi_{t}=\exp\left(\widetilde{\phi}_{t}\right)\\
+\widetilde{\phi}_{t} & =\omega+\alpha\widetilde{u}_{t-1}+\beta\widetilde{\phi}_{t-1}
+\end{align*}
+
+Then deriving
+\begin{align*}
+\widetilde{u}_{t} & =\frac{\partial\phi_{t}}{\partial\widetilde{\phi}_{t}}\nabla_{t}\\
+\widetilde{u}_{t} & =\frac{\partial}{\partial\widetilde{\phi}_{t}}\left(\exp\left(\widetilde{\phi}_{t}\right)\right)\frac{1}{\phi_{t}}\left[\frac{\left(\nu+1\right)z_{t}^{2}}{\nu+z_{t}^{2}}-1\right]\\
+\widetilde{u}_{t} & =\underbrace{\exp\left(\widetilde{\phi}_{t}\right)}_{=\phi_{t}}\frac{1}{\phi_{t}}\left[\frac{\left(\nu+1\right)z_{t}^{2}}{\nu+z_{t}^{2}}-1\right]\\
+\widetilde{u}_{t} & =\frac{\left(\nu+1\right)z_{t}^{2}}{\nu+z_{t}^{2}}-1
+\end{align*}
+
+Now we can write up the process and we have the model
+\[
+\widetilde{\phi}_{t}=\omega+\alpha\left[\frac{\left(\nu+1\right)z_{t-1}^{2}}{\nu+z_{t-1}^{2}}-1\right]+\beta\widetilde{\phi}_{t-1}\quad\square
+\]
+
+
+\section{Problem Set 5 - Problem 2)}
+
+\subsection{Derive unconditional mean to initialize $\phi$}
+
+We keep the process for $\widetilde{\phi}_{t}$ in mind
+\[
+\widetilde{\phi}_{t}=\omega+\alpha\underbrace{\left[\frac{\left(\nu+1\right)z_{t-1}^{2}}{\nu+z_{t-1}^{2}}-1\right]}_{\tilde{u}_{t-1}}+\beta\widetilde{\phi}_{t-1}
+\]
+
+Using recursive substitution and unfolding the process of $\widetilde{\phi}_{t}$
+we obtain: 
+\begin{align*}
+\widetilde{\phi}_{t} & =\frac{\omega}{1-\beta}+\alpha\sum_{s=0}^{\infty}\beta^{s}u_{t-s-1}\\
+\mathbb{E}\left[\widetilde{\phi}_{t}\right] & =\mathbb{E}\left[\frac{\omega}{1-\beta}+\alpha\sum_{s=0}^{\infty}\beta^{s}u_{t-s-1}\right]\\
+\mathbb{E}\left[\widetilde{\phi}_{t}\right] & =\frac{\omega}{1-\beta}+\underbrace{\mathbb{E}\left[\alpha\sum_{s=0}^{\infty}\beta^{s}u_{t-s-1}\right]}_{=0,\text{ dont know why...}}\\
+\mathbb{E}\left[\widetilde{\phi}_{t}\right] & =\frac{\omega}{1-\beta}
+\end{align*}
+
+This is the \textbf{unconditional mean}. We know that we have an exponential
+link function, whereas 
+\[
+\phi_{t}=\exp\left(\widetilde{\phi}_{t}\right)
+\]
+
+Now we can use these values to initialize our GAS log-likelihood function.
+
+
+\subsection{Derive starting parameters}
+
+A way of initializing $\theta=\left(\omega,\ \alpha,\ \beta,\ \nu\right)$
+
+We can compute: 
+\begin{align*}
+\hat{\sigma}^{2} & =Var\left(y_{t}\right)\\
+ & =\frac{1}{T}\sum_{t}y_{t}^{2}
+\end{align*}
+
+\begin{align*}
+\sigma_{t}^{2} & =\frac{\phi_{t}^{2}\nu}{\nu-2}\\
+E\left(\sigma_{t}^{2}\right) & =\frac{\nu}{\nu-2}E\left(\exp\left(2\hat{\phi}_{t}\right)\right)
+\end{align*}
+
+This expectation can be derived analytically, but this is very technical.
+Therefore we use an approximation. 
+\begin{align*}
+E\left(\sigma_{t}^{2}\right) & =\frac{\nu}{\nu-2}E\left(\exp\left(2\hat{\phi}_{t}\right)\right)\\
+ & \approx\frac{\nu}{\nu-2}\exp\left(2E\left(\hat{\phi}_{t}\right)\right)\\
+ & =\frac{\nu}{\nu-2}\exp\left(\frac{2\omega}{1-\beta}\right)
+\end{align*}
+
+We initialize $\omega$: 
+\begin{align*}
+\sigma^{2}\frac{\left(\nu-2\right)}{\nu} & =\exp\left(\frac{2\omega}{1-\beta}\right)\\
+\ln\left(\sigma^{2}\frac{\left(\nu-2\right)}{\nu}\right)\frac{1}{2}\left(1-\beta\right) & =\omega
+\end{align*}
+
+(Note that $\sigma^{2}$ is here the variance of $Y$)
+
+So 
+\[
+\omega^{\text{initialized}}=\ln\left(\hat{\sigma}^{2}\frac{\left(\nu-2\right)}{\nu}\right)\frac{1}{2}\left(1-\beta\right)
+\]
+
+
+\end{document}
