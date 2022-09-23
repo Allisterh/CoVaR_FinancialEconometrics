@@ -61,10 +61,13 @@ pct_log_returns <- function(level_returns) {
   )
 }
 
-mData <- pct_log_returns(mData)
+mReturns <- pct_log_returns(mData)
 # Plot the returns of all tickers 
-plot(mData, type = 'l', lwd = 0.75)
+plot(mReturns, type = 'l', lwd = 0.75)
 # This looks very cool!
+
+rm(vReturns)
+rm(sTicker)
 
 ################################################################################
 ### Problem 3                                                                ###
@@ -80,12 +83,12 @@ DescStat = matrix(NA,
 )
 
 # function to calculate acf
-autocorrelation <- function(returns, exponent = 1) {
+autocorrelation <- function(vReturns, exponent = 1) {
   #' returns the autocorrelation coefficient for lag = 1
   # `[2]` due to acf calculates both lag=0 and lag=1
   return(
     acf(
-      returns^exponent,
+      vReturns^exponent,
       lag = 1,
       na.action = na.pass,
       plot = FALSE
@@ -95,13 +98,55 @@ autocorrelation <- function(returns, exponent = 1) {
 
 library(moments)
 
-DescStat[, "mean"] <- colMeans(mData, na.rm = TRUE)
-DescStat[, "median"] <- apply(mData, 2, median, na.rm = TRUE)
-DescStat[, "variance"] <- apply(mData, 2, var, na.rm = TRUE)
-DescStat[, "kurtosis"] <- apply(mData, 2, kurtosis, na.rm = TRUE)
-DescStat[, "skewness"] <- apply(mData, 2, skewness, na.rm = TRUE)
-DescStat[, "rho"] <- apply(mData, 2, autocorrelation)
-DescStat[, "rho2"] <- apply(mData, 2, autocorrelation, exponent = 2)
+DescStat[, "mean"] <- colMeans(mReturns, na.rm = TRUE)
+DescStat[, "median"] <- apply(mReturns, 2, median, na.rm = TRUE)
+DescStat[, "variance"] <- apply(mReturns, 2, var, na.rm = TRUE)
+DescStat[, "kurtosis"] <- apply(mReturns, 2, kurtosis, na.rm = TRUE)
+DescStat[, "skewness"] <- apply(mReturns, 2, skewness, na.rm = TRUE)
+DescStat[, "rho"] <- apply(mReturns, 2, autocorrelation)
+DescStat[, "rho2"] <- apply(mReturns, 2, autocorrelation, exponent = 2)
 
 # print descriptive statistics
 DescStat
+
+################################################################################
+### Problem 4                                                                ###
+################################################################################
+
+
+vSP <- getSymbols(
+  Symbols = "^GSPC",
+  from = date_min,
+  to = date_max,
+  src = "yahoo",
+  auto.assign = FALSE
+)[, "GSPC.Adjusted"]
+
+# Change the column name
+names(vSP)[1] <- "S&P500"
+
+# Calculate log returns
+vSP_ret <- pct_log_returns(vSP)
+
+fit_capm <- function(asset, factor) {
+  # Remove NA
+  asset <- asset[!is.na(asset)]
+  factor <- factor[!is.na(factor)]
+  
+  # estimate OLS
+  model_fit <- lm(asset ~ factor)
+  
+  # return matrix of coefficents
+  mCAPM <- matrix(nrow = 3, ncol = 1)
+  mCAPM[1,] <- model_fit$coefficients[1]
+  mCAPM[2,] <- model_fit$coefficients[2]
+  mCAPM[3,] <- (summary(model_fit)$sigma)^2
+  
+  return(mCAPM)
+}
+
+# calculate CAPM estimates
+mCAPM <- t(apply(mReturns, 2, fit_capm, factor = vSP_ret))
+colnames(mCAPM) <- c("alpha", "beta", "mse")
+
+mCAPM
