@@ -364,3 +364,107 @@ lines(density(aCoef[, "1000", "alpha", "Misspecified"]), col = "purple", lwd = 1
 abline(v = 0.1)
 
 
+################################################################################
+### Problem 8                                                                ###
+################################################################################
+
+
+# Load list of tickers
+vTickers <- read.csv("DJITicker.csv", sep = ";")
+
+# Remove delisted tickers
+vTickers <- vTickers[!(vTickers$Symbol == "UTX" | vTickers$Symbol == "DWDP"), ]
+
+library(quantmod)
+
+date_min <- "2021-09-16"
+date_max <- "2022-09-16"
+
+lPrices = list()
+
+for (sTicker in vTickers[, "Symbol"]) {
+  ## download the price series of the ticker 
+  ## Symbols = sTicker
+  ## auto.assign = FALSE indicates that the result should be put in lPrices
+  lPrices[[sTicker]] = getSymbols(
+                                  Symbols = c(sTicker),
+                                  from = date_min,
+                                  to = date_max,
+                                  src = "yahoo",
+                                  symbol.lookup = TRUE,
+                                  auto.assign = FALSE)
+}
+
+lRet = list()
+
+pct_log_returns <- function(level_returns) {
+  #' calculates % log returns and returns object of same shape as input
+  #' Mathematical reasoning: r_{t}=(\ln(p_{t})-\ln(p_{t-1}))\cdot 100
+  return(
+    diff(log(level_returns)) * 100
+  )
+}
+
+for (sTicker in vTickers[, "Symbol"]) {
+  lRet[[sTicker]] = as.numeric(pct_log_returns(na.omit(lPrices[[sTicker]][, 6])))[-1]
+}
+
+
+
+## We store all the Bayesian Information Criteria in a matrix
+mBIC = matrix(NA, length(lRet), 4, 
+              dimnames = list(names(lRet), c("ARCH", "GARCH", "EGARCH", "GJRGARCH")))
+
+
+## Estimate ARCH and store the BIC
+for (sTicker in vTickers[, "Symbol"]) {
+  ## Fir ARCH
+  Fit = EstimateARCH(lRet[[sTicker]])
+  ## store the BIC
+  mBIC[sTicker, "ARCH"] = Fit$BIC
+}
+
+
+## install the rugarch package
+# install.packages("rugarch")
+
+#load the rugarch package
+library(rugarch)
+
+## Specify the three GARCH models
+#GARCH
+GARCHSpec = ugarchspec(variance.model = list(model = "sGARCH"), 
+                       mean.model = list(armaOrder = c(0, 0), include.mean = FALSE))
+#EGARCH
+EGARCHSpec = ugarchspec(variance.model = list(model = "eGARCH"), 
+                        mean.model = list(armaOrder = c(0, 0), include.mean = FALSE))
+#GJRGARCH
+GJRGARCHSpec = ugarchspec(variance.model = list(model = "gjrGARCH"), 
+                          mean.model = list(armaOrder = c(0, 0), include.mean = FALSE))
+
+## Estimate the models and store the BIC
+for (sTicker in vTickers[, "Symbol"]) {
+  ## GARCH
+  Fit_GARCH = ugarchfit(GARCHSpec, lRet[[sTicker]])
+  ## EGARCH
+  Fit_EGARCH = ugarchfit(EGARCHSpec, lRet[[sTicker]])
+  ## GJRGARCH
+  Fit_GJRGARCH = ugarchfit(GJRGARCHSpec, lRet[[sTicker]])
+  
+  ## extract the BIC
+  mBIC[sTicker, "GARCH"] = infocriteria(Fit_GARCH)[2]
+  mBIC[sTicker, "EGARCH"] = infocriteria(Fit_EGARCH)[2]
+  mBIC[sTicker, "GJRGARCH"] = infocriteria(Fit_GJRGARCH)[2]
+  
+}
+
+# Select the best model for each asset
+
+vBest = apply(mBIC, 1, which.min)
+
+vBest[] = colnames(mBIC)[vBest]
+
+Selection = as.data.frame(vBest)
+Selection
+
+
