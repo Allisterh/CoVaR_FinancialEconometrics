@@ -1,7 +1,5 @@
 rm(list=ls()) 
-setwd("/Users/tobiasbrammer/Library/Mobile Documents/
-      com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/
-      FinancialEconometrics/Problem Sets/Problem Set 1")
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 1")
 
 ################################################################################
 ### Problem 1                                                                ###
@@ -250,7 +248,9 @@ EstimateARCH <- function(vY, ...) {
   dOmega = var(vY) * (1.0 - dAlpha)
   
   # Precision constants (lower and upper)
+  ## positivity condition
   pre_l <- 1e-4 # 0.0001
+  ## upper conditions: 0 < (alpha, beta) < 1
   pre_u <- 1 - pre_l # 0.9999
   
   ## vector of starting parameters
@@ -258,8 +258,7 @@ EstimateARCH <- function(vY, ...) {
   
   ##optimization step
   optimizer = optim(vPar, fn = ObjectiveFunction, method = "L-BFGS-B", vY = vY,
-                    ## note that we set suitable constraints on the model parameters
-                    lower = c(0.00001, 0.0001), upper = c(10.0, 0.999)) 
+                    lower = c(pre_l, pre_l), upper = c(10, pre_u)) 
   
   ## extract estimated parameters
   vPar = optimizer$par
@@ -368,6 +367,8 @@ abline(v = 0.1)
 ### Problem 8                                                                ###
 ################################################################################
 
+## If only running code from Problem 8, the functions from Problem 6 must be
+## as well. 
 
 # Load list of tickers
 vTickers <- read.csv("DJITicker.csv", sep = ";")
@@ -383,9 +384,6 @@ date_max <- "2022-09-16"
 lPrices = list()
 
 for (sTicker in vTickers[, "Symbol"]) {
-  ## download the price series of the ticker 
-  ## Symbols = sTicker
-  ## auto.assign = FALSE indicates that the result should be put in lPrices
   lPrices[[sTicker]] = getSymbols(
                                   Symbols = c(sTicker),
                                   from = date_min,
@@ -409,20 +407,19 @@ for (sTicker in vTickers[, "Symbol"]) {
   lRet[[sTicker]] = as.numeric(pct_log_returns(na.omit(lPrices[[sTicker]][, 6])))[-1]
 }
 
-
-
 ## We store all the Bayesian Information Criteria in a matrix
 mBIC = matrix(NA, length(lRet), 4, 
               dimnames = list(names(lRet), c("ARCH", "GARCH", "EGARCH", "GJRGARCH")))
 
 
-## Estimate ARCH and store the BIC
-for (sTicker in vTickers[, "Symbol"]) {
-  ## Fit ARCH
-  Fit = EstimateARCH(lRet[[sTicker]])
-  ## store the BIC
-  mBIC[sTicker, "ARCH"] = Fit$BIC
-}
+
+## Manual estimate ARCH and store the BIC. This is done by the package later.
+#    for (sTicker in vTickers[, "Symbol"]) {
+#      ## Fit ARCH
+#      Fit = EstimateARCH(lRet[[sTicker]])
+#      ## store the BIC
+#      mBIC[sTicker, "ARCH"] = Fit$BIC
+#    }
 
 
 ## install the rugarch package
@@ -431,23 +428,40 @@ for (sTicker in vTickers[, "Symbol"]) {
 #load the rugarch package
 library(rugarch)
 
-## Specify the three GARCH models:
+## Specify the GARCH models:
+# ARCH
+ARCHSpec = ugarchspec(
+  variance.model = list(model = "sGARCH", garchOrder = c(1, 0)),
+  mean.model = list(armaOrder = c(0, 0), include.mean = FALSE),
+  distribution.model = "norm"
+)
 # GARCH
 ## The standard GARCH model from Bollerslev (1986)
-GARCHSpec = ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(1, 1)), 
-                       mean.model = list(armaOrder = c(1, 1), include.mean = FALSE))
+GARCHSpec = ugarchspec(
+                  variance.model = list(model = "sGARCH", garchOrder = c(1, 1)),
+                  mean.model = list(armaOrder = c(0, 0), include.mean = FALSE),
+                  distribution.model = "norm"
+)
 # EGARCH - The exponential GARCH model
 ## Allows for asymmetric effects between positive and negative asset returns.
-EGARCHSpec = ugarchspec(variance.model = list(model = "eGARCH", garchOrder = c(1, 1)), 
-                        mean.model = list(armaOrder = c(1, 1), include.mean = FALSE))
+EGARCHSpec = ugarchspec(
+  variance.model = list(model = "eGARCH", garchOrder = c(1, 1)),
+  mean.model = list(armaOrder = c(0, 0), include.mean = FALSE),
+  distribution.model = "norm"
+)
 # GJRGARCH - The GJR-GARCH model
 ## Models positive and negative shocks on the conditional variance
 ## asymmetrically via the use of the indicator function I.
-GJRGARCHSpec = ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(1, 1)), 
-                          mean.model = list(armaOrder = c(1, 1), include.mean = FALSE))
+GJRGARCHSpec = ugarchspec(
+  variance.model = list(model = "gjrGARCH", garchOrder = c(1, 1)),
+  mean.model = list(armaOrder = c(0, 0), include.mean = FALSE),
+  distribution.model = "norm"
+)
 
 ## Estimate the models and store the BIC
 for (sTicker in vTickers[, "Symbol"]) {
+  ## GARCH
+  Fit_ARCH = ugarchfit(ARCHSpec, lRet[[sTicker]])
   ## GARCH
   Fit_GARCH = ugarchfit(GARCHSpec, lRet[[sTicker]])
   ## EGARCH
@@ -456,6 +470,7 @@ for (sTicker in vTickers[, "Symbol"]) {
   Fit_GJRGARCH = ugarchfit(GJRGARCHSpec, lRet[[sTicker]])
   
   ## extract the BIC
+  mBIC[sTicker, "ARCH"] = infocriteria(Fit_ARCH)[2]
   mBIC[sTicker, "GARCH"] = infocriteria(Fit_GARCH)[2]
   mBIC[sTicker, "EGARCH"] = infocriteria(Fit_EGARCH)[2]
   mBIC[sTicker, "GJRGARCH"] = infocriteria(Fit_GJRGARCH)[2]
@@ -470,5 +485,4 @@ vBest[] = colnames(mBIC)[vBest]
 
 Selection = as.data.frame(vBest)
 Selection
-
 
