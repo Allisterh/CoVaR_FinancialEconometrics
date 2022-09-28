@@ -418,7 +418,7 @@ mBIC = matrix(NA, length(lRet), 4,
 
 ## Estimate ARCH and store the BIC
 for (sTicker in vTickers[, "Symbol"]) {
-  ## Fir ARCH
+  ## Fit ARCH
   Fit = EstimateARCH(lRet[[sTicker]])
   ## store the BIC
   mBIC[sTicker, "ARCH"] = Fit$BIC
@@ -431,16 +431,20 @@ for (sTicker in vTickers[, "Symbol"]) {
 #load the rugarch package
 library(rugarch)
 
-## Specify the three GARCH models
-#GARCH
-GARCHSpec = ugarchspec(variance.model = list(model = "sGARCH"), 
-                       mean.model = list(armaOrder = c(0, 0), include.mean = FALSE))
-#EGARCH
-EGARCHSpec = ugarchspec(variance.model = list(model = "eGARCH"), 
-                        mean.model = list(armaOrder = c(0, 0), include.mean = FALSE))
-#GJRGARCH
-GJRGARCHSpec = ugarchspec(variance.model = list(model = "gjrGARCH"), 
-                          mean.model = list(armaOrder = c(0, 0), include.mean = FALSE))
+## Specify the three GARCH models:
+# GARCH
+## The standard GARCH model from Bollerslev (1986)
+GARCHSpec = ugarchspec(variance.model = list(model = "sGARCH", garchOrder = c(1, 1)), 
+                       mean.model = list(armaOrder = c(1, 1), include.mean = FALSE))
+# EGARCH - The exponential GARCH model
+## Allows for asymmetric effects between positive and negative asset returns.
+EGARCHSpec = ugarchspec(variance.model = list(model = "eGARCH", garchOrder = c(1, 1)), 
+                        mean.model = list(armaOrder = c(1, 1), include.mean = FALSE))
+# GJRGARCH - The GJR-GARCH model
+## Models positive and negative shocks on the conditional variance
+## asymmetrically via the use of the indicator function I.
+GJRGARCHSpec = ugarchspec(variance.model = list(model = "gjrGARCH", garchOrder = c(1, 1)), 
+                          mean.model = list(armaOrder = c(1, 1), include.mean = FALSE))
 
 ## Estimate the models and store the BIC
 for (sTicker in vTickers[, "Symbol"]) {
