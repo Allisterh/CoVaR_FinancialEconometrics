@@ -1,7 +1,7 @@
 library(rugarch)
 library(Rsolnp)
 
-# reproducability
+# replicability
 set.seed(69)
 
 
@@ -9,48 +9,49 @@ set.seed(69)
 ### Simulate from a GARCH(1, 1) process                                      ###
 ################################################################################
 
-simulate_garch <- function(obs, omega, alpha, beta) {
-    #' Simulates `obs` number of GARCH(1,1) observations
+f_SimGarch <- function(iT, dOmega, dAlpha, dBeta) {
+    ## Simulates `iT` number of GARCH(1,1) observation
 
     # placeholder for running variables
-    y <- numeric(obs)
-    sigma_2 <- numeric(obs)
+    vY <- numeric(iT)
+    vSigma2 <- numeric(iT)
+    vZ <- rnorm(iT)
 
     # variance initialized at unconditional value
-    sigma_2[1] <- omega / (1.0 - alpha - beta)
+    vSigma2[1] <- dOmega / (1.0 - dAlpha - dBeta)
 
     # sample first observation
-    y[1] <- sqrt(sigma_2[1]) * rnorm(1, mean = 0, sd = 1)
+    vY[1] <- sqrt(vSigma2[1]) * rnorm(1, mean = 0, sd = 1)
 
-    for (t in seq(2, obs)) {
+    for (t in 2:iT) {
         # sample volatility
-        sigma_2[t] <- omega + alpha * y[t - 1]^2 + beta * sigma_2[t - 1]
+        vSigma2[t] <- dOmega + dAlpha * vY[t - 1]^2 + dBeta * vSigma2[t - 1]
 
         # sample new observation
-        y[t] <- sqrt(sigma_2[t]) * rnorm(1, mean = 0, sd = 1)
+        vY[t] <- sqrt(vSigma2[t]) * vZ[t]
     }
 
     # return simulated series
     return(
         list(
-            "returns" = y,
-            "sigma_2" = sigma_2
+            "returns" = vY,
+            "vSigma2" = vSigma2
         )
     )
 }
 
 
-garch_sim <- simulate_garch(
-    obs = 10000, omega = 0.1, alpha = 0.05, beta = 0.94
+lGARCH_SIM <- f_SimGarch(
+    iT = 10000, dOmega = 0.1, dAlpha = 0.05, dBeta = 0.94
 )
 
 # plot simulated series
 plot(
-    garch_sim$sigma_2,
+    lGARCH_SIM$vSigma2,
     type = "l", ylab = "Conditional variance", xlab = "Time"
 )
 plot(
-    garch_sim$returns,
+    lGARCH_SIM$returns,
     type = "l", ylab = "Log returns", xlab = "Time"
 )
 
@@ -63,35 +64,35 @@ garch_log_likelihood <- function(params, returns, ...) {
     #' Calculates log-likelihood of an GARCH(1,1) model
     #'
     #' @param params vector. Vector of parameters to use for estimation
-    #' contains omega, alpha and beta.
+    #' contains dOmega, dAlpha and dBeta.
     #' @param returns vector. Vector of returns of an asset.
 
     # "unpack" parameter vector
-    omega <- params[1]
-    alpha <- params[2]
-    beta <- params[3]
+    dOmega <- params[1]
+    dAlpha <- params[2]
+    dBeta <- params[3]
 
-    # number of observations
-    obs <- length(returns)
+    # number of iTervations
+    iT <- length(returns)
 
     # placeholder for variance
-    sigma_2 <- numeric(obs)
+    vSigma2 <- numeric(iT)
 
     # variance initialized at unconditional value
-    sigma_2[1] <- omega / (1.0 - alpha - beta)
+    vSigma2[1] <- dOmega / (1.0 - dAlpha - dBeta)
 
     # initialize first log-likelihood value
-    ll <- dnorm(returns[1], sd = sqrt(sigma_2[1]), log = TRUE)
+    ll <- dnorm(returns[1], sd = sqrt(vSigma2[1]), log = TRUE)
 
-    for (t in seq(2, obs)) {
-        sigma_2[t] <- omega + alpha * returns[t - 1]^2 + beta * sigma_2[t - 1]
-        ll <- ll + dnorm(returns[t], sd = sqrt(sigma_2[t]), log = TRUE)
+    for (t in seq(2, iT)) {
+        vSigma2[t] <- dOmega + dAlpha * returns[t - 1]^2 + dBeta * vSigma2[t - 1]
+        ll <- ll + dnorm(returns[t], sd = sqrt(vSigma2[t]), log = TRUE)
     }
 
     # return negative log-likelihood
     return(
         list(
-            sigma_2 = sigma_2,
+            vSigma2 = vSigma2,
             neg_ll = -ll,
             ll = ll
         )
@@ -115,18 +116,18 @@ estimate_garch <- function(series, ...) {
     pre_l <- 1e-4 # 0.0001
     pre_u <- 1 - pre_l # 0.9999
 
-    # Set start value for alpha = 0.1, beta = 0.8, and chose omega to target
+    # Set start value for dAlpha = 0.1, dBeta = 0.8, and chose dOmega to target
     # the empirical variance by targeting the unconditional variance of the
     # GARCH model
-    alpha <- 0.1
-    beta <- 0.8
-    omega <- var(series) * (1.0 - alpha - beta)
+    dAlpha <- 0.1
+    dBeta <- 0.8
+    dOmega <- var(series) * (1.0 - dAlpha - dBeta)
 
     # "pack" parameters in vector
     params <- c(
-        omega = omega,
-        alpha = alpha,
-        beta = beta
+        dOmega = dOmega,
+        dAlpha = dAlpha,
+        dBeta = dBeta
     )
 
     # find optimal parameters using solnp solver
@@ -137,7 +138,7 @@ estimate_garch <- function(series, ...) {
             return(garch_log_likelihood(...)$neg_ll)
         },
 
-        # weak stationarity condition: alpha + beta < 1
+        # weak stationarity condition: dAlpha + dBeta < 1
         ineqfun = function(params, ...) {
             return(params[2] + params[3])
         }, ineqLB = pre_l, ineqUB = pre_u,
@@ -145,7 +146,7 @@ estimate_garch <- function(series, ...) {
         # positivity condition
         LB = c(pre_l, pre_l, pre_l),
 
-        # upper conditions: 0 < (alpha, beta) < 1
+        # upper conditions: 0 < (dAlpha, dBeta) < 1
         UB = c(10, pre_u, pre_u),
 
         # supress output (run quietly)
@@ -174,7 +175,7 @@ estimate_garch <- function(series, ...) {
 
     return(
         list(
-            "sigma_2" = optimal_fit$sigma_2,
+            "vSigma2" = optimal_fit$vSigma2,
             "ll" = optimal_fit$ll,
             "bic" = bic,
             "params" = optimal_params
@@ -182,7 +183,7 @@ estimate_garch <- function(series, ...) {
     )
 }
 
-estimate_garch(garch_sim$returns)
+estimate_garch(lGARCH_SIM$returns)
 
 
 ################################################################################
@@ -197,4 +198,4 @@ garch_spec <- ugarchspec(
 )
 
 # fit model
-ugarchfit(garch_spec, garch_sim$returns)
+ugarchfit(garch_spec, lGARCH_SIM$returns)

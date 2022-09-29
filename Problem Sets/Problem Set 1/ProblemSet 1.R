@@ -286,7 +286,7 @@ EstimateARCH(mGarchSim$Returns)
 ################################################################################
 
 # Set the seed to ensure replicability
-set.seed(123)
+set.seed(420)
 
 ## Number of replications (B = 500)
 iB = 500
@@ -295,7 +295,8 @@ vT = c(200, 500, 1000)
 
 ## We all estimated results in an array
 aCoef = array(NA, dim = c(iB, length(vT), 2, 2),
-              dimnames = list(NULL, vT, c("omega", "alpha"), c("Correct", "Misspecified")))
+              dimnames = list(NULL, vT, c("omega", "alpha"),
+                                        c("Correct", "Misspecified")))
 
 ## correctly specified model
 for (iT in vT) { # Loop over the sample sized
@@ -331,7 +332,8 @@ for (iT in vT) { # Loop over the sample sized
 par(mfrow = c(2, 2))
 
 ## plot omega in the correctly specified case
-plot(density(aCoef[, "200", "omega", "Correct"]), col = "blue", main = "Omega - Correct Spec",
+plot(density(aCoef[, "200", "omega", "Correct"]), col = "blue", 
+     main = "Omega - Correct Spec",
      xlab = "", ylab = "", lwd = 1.5, ylim = c(0, 20))
 lines(density(aCoef[, "500", "omega", "Correct"]), col = "red", lwd = 1.5)
 lines(density(aCoef[, "1000", "omega", "Correct"]), col = "purple", lwd = 1.5)
@@ -339,7 +341,8 @@ lines(density(aCoef[, "1000", "omega", "Correct"]), col = "purple", lwd = 1.5)
 abline(v = 0.3)
 
 ## plot alpha in the correctly specified case
-plot(density(aCoef[, "200", "alpha", "Correct"]), col = "blue", main = "Alpha - Correct Spec",
+plot(density(aCoef[, "200", "alpha", "Correct"]), col = "blue", 
+     main = "Alpha - Correct Spec",
      xlab = "", ylab = "", lwd = 1.5, ylim = c(0, 10))
 lines(density(aCoef[, "500", "alpha", "Correct"]), col = "red", lwd = 1.5)
 lines(density(aCoef[, "1000", "alpha", "Correct"]), col = "purple", lwd = 1.5)
@@ -347,18 +350,22 @@ lines(density(aCoef[, "1000", "alpha", "Correct"]), col = "purple", lwd = 1.5)
 abline(v = 0.7)
 
 ## plot omega in the misspecified case
-plot(density(aCoef[, "200", "omega", "Misspecified"]), col = "blue", main = "Omega - Misspecified Spec",
+plot(density(aCoef[, "200", "omega", "Misspecified"]), col = "blue", 
+     main = "Omega - Misspecified Spec",
      xlab = "", ylab = "", lwd = 1.5, ylim = c(0, 5), xlim = c())
 lines(density(aCoef[, "500", "omega", "Misspecified"]), col = "red", lwd = 1.5)
-lines(density(aCoef[, "1000", "omega", "Misspecified"]), col = "purple", lwd = 1.5)
+lines(density(aCoef[, "1000", "omega", "Misspecified"]), col = "purple", 
+      lwd = 1.5)
 ## add the true value
 abline(v = 0.3)
 
 ## plot alpha in the misspecified specified case
-plot(density(aCoef[, "200", "alpha", "Misspecified"]), col = "blue", main = "Alpha - Misspecified Spec",
+plot(density(aCoef[, "200", "alpha", "Misspecified"]), col = "blue", 
+     main = "Alpha - Misspecified Spec",
      xlab = "", ylab = "", lwd = 1.5, ylim = c(0, 10))
 lines(density(aCoef[, "500", "alpha", "Misspecified"]), col = "red", lwd = 1.5)
-lines(density(aCoef[, "1000", "alpha", "Misspecified"]), col = "purple", lwd = 1.5)
+lines(density(aCoef[, "1000", "alpha", "Misspecified"]), col = "purple", 
+      lwd = 1.5)
 ## add the true value
 abline(v = 0.1)
 
@@ -409,7 +416,10 @@ for (sTicker in vTickers[, "Symbol"]) {
 
 ## We store all the Bayesian Information Criteria in a matrix
 mBIC = matrix(NA, length(lRet), 4, 
-              dimnames = list(names(lRet), c("ARCH", "GARCH", "EGARCH", "GJRGARCH")))
+              dimnames = list(names(lRet), c("ARCH", 
+                                             "GARCH", 
+                                             "EGARCH", 
+                                             "GJRGARCH")))
 
 
 
