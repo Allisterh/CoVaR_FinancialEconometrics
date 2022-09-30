@@ -579,7 +579,7 @@ Proof where
 \begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
-\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha z_{t-i}^{2}\right)+\underbrace{\omega\left[1+\sum_{k=1}^{\infty}\left[\prod_{i=1}^{k}\left(\beta+\alpha\mathbb{E}\left(z_{t-i}^{2}\right)\right)\right]\right]}_{=0}\\
+\sigma_{t}^{2} & =\sigma_{0}^{2}\prod_{i=1}^{t}\left(\beta+\alpha z_{t-i}^{2}\right)+\underbrace{\omega\left[1+\sum_{k=1}^{t-1}\left[\prod_{i=1}^{k}\left(\beta+\alpha\mathbb{E}\left(z_{t-i}^{2}\right)\right)\right]\right]}_{=0}\\
 \ln\sigma_{t}^{2} & =\ln\sigma_{0}^{2}+\sum_{i=1}^{t}\ln\left(\beta+\alpha z_{t-i}^{2}\right)
 \end{align*}
 
@@ -665,10 +665,207 @@ If
 \end_layout
 
 \begin_layout Subsubsection*
-Proof of Theorem 2 (b) on slide 19
+Proof of Theorem 2 (c) on slide 19: Lower bound 
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula $\frac{\omega}{1-\beta}≤{}_{u}\sigma_{t}^{2}<\infty$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Note that
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+_{u}\sigma_{t}^{2}=\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta+\alpha z_{t-i}^{2}\right)\right]
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and its infimum is achieved for 
+\begin_inset Formula $z_{t-1}^{2}=0$
+\end_inset
+
+ for all 
+\begin_inset Formula $t$
+\end_inset
+
+, such that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\inf\;{}_{u}\sigma_{t}^{2} & =\omega\left[1+\sum_{k=1}^{\infty}\prod_{i=1}^{k}\left(\beta\right)\right]\\
+ & =\omega\left[1+\sum_{k=1}^{\infty}\beta^{k}\right]\\
+ & =\omega\sum_{k=0}^{\infty}\beta^{k}\\
+ & =\frac{\omega}{1-\beta}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+
+\series bold
+Slide 24
+\end_layout
+
+\begin_layout Standard
+We observe up to time 
+\begin_inset Formula $t$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\ensuremath{\sigma_{t+1}^{2}=\omega+\alpha_{1}r_{t}^{2}+\beta_{1}\sigma_{t}^{2}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+is easily computed.
+\end_layout
+
+\begin_layout Standard
+With 
+\begin_inset Formula $k=2$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\ensuremath{\sigma_{t+2}^{2}} & =\omega+\alpha r_{t+1}^{2}+\beta\sigma_{t+1}^{2}\\
+ & =\omega+\alpha r_{t+1}^{2}+\beta\left(\omega+\alpha_{1}r_{t}^{2}+\beta_{1}\sigma_{t}^{2}\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+but 
+\begin_inset Formula $r_{t+1}^{2}$
+\end_inset
+
+ is unknown.
+ We substitute by the definition: 
+\begin_inset Formula $r_{t+1}=\omega+\alpha\sigma_{t+1}^{2}z_{t+1}+\beta\sigma_{t+1}^{2}$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\ensuremath{\sigma_{t+2}^{2}} & =\omega+\alpha r_{t+1}^{2}+\beta\left(\omega+\alpha_{1}r_{t}^{2}+\beta_{1}\sigma_{t}^{2}\right)\\
+ & =\omega+\alpha\left(\omega+\alpha\sigma_{t+1}^{2}z_{t+1}+\beta\sigma_{t+1}^{2}\right)^{2}+\beta\left(\omega+\alpha_{1}r_{t}^{2}+\beta_{1}\sigma_{t}^{2}\right)\\
+\mathbb{E}\left[\sigma_{t+2}^{2}\mid\mathcal{F}_{t}\right] & =\mathbb{E}_{t}\left[\sigma_{t+2}^{2}\right]\\
+ & =\omega+\sigma_{t+1}^{2}\left(\alpha+\beta\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Then for 
+\begin_inset Formula $k=3$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}_{t}\left[\sigma_{t+3}^{2}\right] & =\omega+\alpha\mathbb{E}_{t}\left[r_{t+2}^{2}\right]+\beta\left(\omega+\sigma_{t+1}^{2}\left(\alpha+\beta\right)\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Using the fact that 
+\begin_inset Formula $z_{t}\sim^{iid}N\left(0,1\right)$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[r_{t+2}^{2}\mid\mathcal{F}_{t}\right] & =\mathbb{E}\left[\sigma_{t+2}^{2}z_{t+2}^{2}\mid\mathcal{F}_{t}\right]\\
+ & =\mathbb{E}\left[\sigma_{t+2}^{2}z_{t+2}^{2}\mid\mathcal{F}_{t}\right]\\
+ & =\mathbb{E}\left[\sigma_{t+2}^{2}\mid\mathcal{F}_{t}\right]\mathbb{E}\left[z_{t+2}^{2}\mid\mathcal{F}_{t}\right]\\
+ & =\mathbb{E}\left[\sigma_{t+2}^{2}\mid\mathcal{F}_{t}\right]\underbrace{\mathbb{E}\left[z_{t+2}^{2}\right]}_{=1}\\
+ & =\omega+\sigma_{t+1}^{2}\left(\alpha+\beta\right)
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+or using 
+\begin_inset Formula $\mathbb{E}\left[z_{t}^{2}\mid\mathcal{F}_{t-1}\right]=1$
+\end_inset
+
+ and 
+\begin_inset Formula $\mathbb{E}\left[z_{t}\mid\mathcal{F}_{t-1}\right]=0$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Use the Law of Iterated Expectations: 
+\begin_inset Formula $\mathbb{E}\left[X\mid W\right]=\mathbb{E}\left[\mathbb{E}\left[X\mid W,Y\right]\mid W\right]$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[r_{t+2}^{2}\mid\mathcal{F}_{t}\right] & =\mathbb{E}\left[\mathbb{E}\left[\sigma_{t+2}^{2}z_{t+2}^{2}\mid\mathcal{F}_{t},r_{t+1}\right]\mid\mathcal{F}_{t}\right]\\
+ & =\mathbb{E}\left[\mathbb{E}\left[\sigma_{t+2}^{2}z_{t+2}^{2}\mid\mathcal{F}_{t+1}\right]\mid\mathcal{F}_{t}\right]\\
+ & =\mathbb{E}\left[\sigma_{t+2}^{2}\mathbb{E}\left[z_{t+2}^{2}\mid\mathcal{F}_{t+1}\right]\mid\mathcal{F}_{t}\right]\\
+ & =\mathbb{E}\left[\sigma_{t+2}^{2}\underbrace{\mathbb{E}\left[z_{t+2}^{2}\mid\mathcal{F}_{t+1}\right]}_{=1}\mid\mathcal{F}_{t}\right]\\
+ & =\mathbb{E}\left[\sigma_{t+2}^{2}\mid\mathcal{F}_{t}\right]
+\end{align*}
+
+\end_inset
+
 
 \end_layout
 

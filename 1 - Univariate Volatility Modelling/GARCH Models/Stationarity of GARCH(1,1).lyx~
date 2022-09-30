@@ -541,14 +541,14 @@ then
 .
 \end_layout
 
-\begin_layout Standard
-Proof of (b) on slide 18
+\begin_layout Subsubsection*
+Proof of Theorem 1 (b) on slide 18
 \end_layout
 
 \begin_layout Standard
 \begin_inset Formula 
 \[
-\sigma_{t}^{2}\rightarrow0\text{ a.s. iff }\mathbb{E}\left[\ln\left(\beta+\alpha<z_{t}^{2}\right)\right]>0
+\sigma_{t}^{2}\rightarrow0\text{ a.s. iff }\mathbb{E}\left[\ln\left(\beta+\alpha z_{t}^{2}\right)\right]>0
 \]
 
 \end_inset
@@ -649,6 +649,23 @@ x_{t}=\mu+x_{t-1}+\tilde{x}_{t-1}
 \end_inset
 
 
+\end_layout
+
+\begin_layout Standard
+If 
+\begin_inset Formula $\mu=\mathbb{E}\left[x_{i}\right]=\mathbb{E}\left[\ln\left(\beta+\alpha z_{t-i}^{2}\right)\right]\neq0$
+\end_inset
+
+ the positive drift causes the series to diverge and explode.
+ Thus we must NEVER have 
+\begin_inset Formula $\omega=0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+Proof of Theorem 2 (b) on slide 19
 \end_layout
 
 \begin_layout Standard

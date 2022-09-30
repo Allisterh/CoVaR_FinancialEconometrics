@@ -59,8 +59,95 @@ dBeta = 0.955
 
 ComputeElog(dAlpha = dAlpha, dBeta = dBeta)
 
+par(mfrow = c(4, 1))
+
 iT <- 1e4
 
 lSim = f_SimGarch(iT = iT, dOmega = 0.0, dAlpha = dAlpha, dBeta = dBeta)
-plot.ts(lSim$vSigma2)
+plot(lSim$vSigma2, main = "dOmega = 0", type = 'l')
+
+
+## dOmega > 0
+
+dAlpha = 0.05
+dBeta = 0.955
+
+ComputeElog(dAlpha = dAlpha, dBeta = dBeta)
+
+iT <- 1e4
+
+lSim = f_SimGarch(iT = iT, dOmega = 0.1, dAlpha = dAlpha, dBeta = dBeta)
+plot(lSim$vSigma2, main = "dOmega > 0,a + b > 1",
+     type = 'l')
+
+## Moment condition is satisfied
+# dAlpha + dBeta = 1
+dAlpha = 0.05
+dBeta = 0.95
+
+ComputeElog(dAlpha = dAlpha, dBeta = dBeta)
+
+iT <- 1e4
+
+lSim = f_SimGarch(iT = iT, dOmega = 0.1, dAlpha = dAlpha, dBeta = dBeta)
+plot(lSim$vSigma2, main = "Moment Condition Satisfied, a + b = 1", type = 'l')
+
+# dAlpha + dBeta < 1
+dAlpha = 0.0499
+dBeta = 0.95
+
+ComputeElog(dAlpha = dAlpha, dBeta = dBeta)
+
+iT <- 1e4
+
+lSim = f_SimGarch(iT = iT, dOmega = 0.1, dAlpha = dAlpha, dBeta = dBeta)
+plot(lSim$vSigma2, main = "Moment Condition Satisfied, a + b < 1", type = 'l',)
+
+
+################################# Theorem 2.d ##################################
+par(mfrow = c(1, 1))
+dOmega = 0.1
+dBeta = 0.9
+dAlpha = 0.04
+iT <- 1e3
+lSimTrue = f_SimGarch(iT = iT, dOmega = dOmega, dAlpha = dAlpha, dBeta = dBeta)
+plot(lSimTrue$vSigma2, main = "True Process",
+     type = 'l',)
+
+
+f_FilterGarch <- function(vY, dOmega, dAlpha, dBeta, dSigma0) {
+  ## Simulates `iT` number of GARCH(1,1) observation
+  
+  # placeholder for running variables
+  vSigma2 <- numeric(iT)
+  
+  # variance initialized at unconditional value
+  vSigma2[1] <- dSigma0
+  # sample first observation
+  vY[1] <- sqrt(vSigma2[1]) * vZ[1]
+  
+  for (t in 2:iT) {
+    # sample volatility
+    vSigma2[t] <- dOmega + dAlpha * vY[t - 1]^2 + dBeta * vSigma2[t - 1]
+  }
+  
+  # return simulated series
+  return(
+    list(
+      "vSigma2" = vSigma2
+    )
+  )
+}
+
+iN <- 10
+
+mSigma2 <- matrix(NA,iT,iN)
+vSigma0 <- seq(1.5,3,length.out = iN)
+
+for (n in 1:iN) {
+  mSigma2[, n] = f_FilterGarch(vY = lSimTrue$returns, dOmega = dOmega,
+                               dBeta = dBeta, dAlpha = dAlpha, dSigma0[n])
+  
+}
+
 
