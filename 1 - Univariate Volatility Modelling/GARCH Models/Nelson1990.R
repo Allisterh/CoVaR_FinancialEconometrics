@@ -151,3 +151,118 @@ for (n in 1:iN) {
 }
 
 
+
+
+
+
+### 
+# Leopoldo's code
+# This function simulates iT observations from a GARCH(1,1) model
+# defined as
+# y_t = sigma_t z_t, z_t ~ iid N(0,1)
+# sigma_t^2 = dOmega + dAlpha y_{t-1}^2 + dBeta * sigma_{t-1}^2
+SimGARCH <- function(iT, dOmega, dAlpha, dBeta) {
+  
+  # empty vectors of conditional variances and returns 
+  vSigma2 = numeric(iT)
+  vY = numeric(iT)
+  
+  # iid N(0,1) shocks
+  vZ = rnorm(iT)
+  
+  #initialization at an arbitrary value
+  # when the process is weakly stationary
+  # a more adequate initialization is 
+  # E[sigma_t^2] = dOmega/(1- dAlpha - dBeta)
+  vSigma2[1] = 1
+  
+  # initialization of vY
+  vY[1] = sqrt(vSigma2[1]) * vZ[1]
+  
+  # main loop
+  for (t in 2:iT) {
+    #update the variance process
+    vSigma2[t] = dOmega + dAlpha*vY[t-1]^2 + dBeta*vSigma2[t-1]
+    #compute returns
+    vY[t] = sqrt(vSigma2[t]) * vZ[t]
+  }
+  
+  lOut = list()
+  lOut[["vY"]] = vY
+  lOut[["vSigma2"]] = vSigma2
+  
+  return(lOut)
+}
+
+# This function computes the moment condition E[log(beta + alpha*eps_t^2)]
+# for eps_t ~ N(0,1) using numerical integration.
+ComputeElog <- function(dAlpha, dBeta) {
+  
+  int = integrate(function(dZ, dAlpha, dBeta) {
+    
+    log(dBeta + dAlpha*dZ^2)*dnorm(dZ)
+    
+  }, lower = -7, upper = 7,
+  #lower and upper bounds are arbitrary,
+  #always check robustness of your choices.
+  dAlpha = dAlpha, dBeta = dBeta)
+  
+  dOut = int$value
+  
+  return(dOut)
+  
+}
+
+#Examples
+set.seed(420)
+iT = 1000
+
+dOmega = 0.01
+
+# a weakly stationary GARCH
+dAlpha = 0.04
+dBeta = 0.95
+
+ComputeElog(dAlpha, dBeta)
+
+lSim = SimGARCH(iT, dOmega, dAlpha, dBeta)
+par(mfrow = c(1,2))
+plot.ts(lSim$vY)
+plot.ts(lSim$vSigma2)
+
+# a strongly stationary GARCH
+# which is not weakly stationary
+
+dAlpha = 0.051
+dBeta = 0.95
+
+ComputeElog(dAlpha, dBeta)
+
+lSim = SimGARCH(iT, dOmega, dAlpha, dBeta)
+par(mfrow = c(1,2))
+plot.ts(lSim$vY)
+plot.ts(lSim$vSigma2)
+
+# a nonstarionary GARCH
+
+dAlpha = 0.06
+dBeta = 0.95
+
+ComputeElog(dAlpha, dBeta)
+
+lSim = SimGARCH(iT, dOmega, dAlpha, dBeta)
+par(mfrow = c(1,2))
+plot.ts(lSim$vY)
+plot.ts(lSim$vSigma2)
+
+## when T increases the process "explodes"
+lSim = SimGARCH(1e5, dOmega, dAlpha, dBeta)
+par(mfrow = c(1,2))
+plot.ts(lSim$vY)
+plot.ts(lSim$vSigma2)
+
+
+
+
+
+
