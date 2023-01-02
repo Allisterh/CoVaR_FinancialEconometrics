@@ -105,7 +105,6 @@ kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
         # The posterior adjust the prior with the new information
         # filtered state mean E[alpha_t |Y_1:t], \tilde{a}_t = a_pred_t + P_pred_t * Z_t' * inv(F_t) * v_t
         a_filt[, t] <- a_pred[, t] + P_pred[, , t] %*% t(mZ) %*% solve(F[, , t]) %*% v[, t]
-        
         # filtered state variance Var[alpha_t |Y_{1:t}], P_t = P_pred_t - P_pred_t * Z_t' * inv(F_t) * Z_t * P_pred_t
         P_filt[, , t] <- P_pred[, , t] - P_pred[, , t] %*% t(mZ) %*% solve(F[, , t]) %*% mZ %*% P_pred[, , t]
 
