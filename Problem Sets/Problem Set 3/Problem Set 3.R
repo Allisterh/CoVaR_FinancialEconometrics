@@ -26,7 +26,35 @@
 # Q   is l x l
 # a1 is the initialization for a
 # P1 is the initialization for P
-#
+
+## Here is the explanation for the code above:
+# The function kalman_filter() takes the following arguments:
+#     1. mY: The observed data matrix of size p * n
+#     2. mZ: The matrix of the deterministic terms of size p * m
+#     3. mS: The matrix of the deterministic terms of size p * p
+#     4. mT: The matrix of the deterministic terms of size m * m
+#     5. mH: The matrix of the deterministic terms of size r_int * m
+#     6. mQ: The matrix of the deterministic terms of size r_int * r_int
+#     7. a1: The initial state vector of length m
+#     8. P1: The initial covariance matrix of size m * m
+#     9. Smoothing: A boolean value that specifies if the smoothing should be performed, set to true by default
+
+# The function kalman_filter() returns a list of the following elements:
+#     1. v: The prediction error matrix of size p * n
+#     2. a_filt: The filtered state mean matrix of size m * n
+#     3. a_pred: The predicted state mean matrix of size m * n
+#     4. P_filt: The filtered state variance matrix of size m * m * n
+#     5. P_pred: The predicted state variance matrix of size m * m * n
+#     6. F: The variance of the prediction error matrix of size p * p * n
+#     7. K: The kalman gain matrix of size m * p * n
+#     8. N: The error smoothing matrix of size m * m * n
+#     9. a_smoot: The smoothed state mean matrix of size m * n
+#     10. V: The smoothed state variance matrix of size m * m * n
+#     11. L: The error smoothing matrix of size m * m * n
+#     12. eps_smoot: The error smoothing matrix of size p * n
+#     13. eta_smoot: The error smoothing matrix of size r_int * n
+#     14. vLLK: The log likelihood contribution vector of length n
+
 kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
     n <- ncol(mY)
     p <- nrow(mY)
@@ -59,41 +87,57 @@ kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
     P_pred[, , 1] <- P1
 
     HQH <- mH %*% mQ %*% t(mH)
+    # Constant in the log likelihood contribution, from slide 23
     dC <- -0.5 * (n * p * 1.0) * log(pi * 2.0)
 
-    # filtering recursion
+    # Filtering recursions
     for (t in 1:n) {
-        # prediction error
+        # one step ahead prediction mean, from slide 23
         v[, t] <- mY[, t] - mZ %*% a_pred[, t]
-        # variance of the prediction error
+
+        # one step ahead prediction variance, from slide 23
         F[, , t] <- mZ %*% P_pred[, , t] %*% t(mZ) + mS
-        # filtered state mean E[alpha_t |Y_1:t]
-        a_filt[, t] <- a_pred[, t] + P_pred[, , t] %*% t(mZ) %*% solve(F[, , t]) %*% v[, t]
-        # filtered state variance Var[alpha_t |Y_{1:t}]
-        P_filt[, , t] <- P_pred[, , t] - P_pred[, , t] %*% t(mZ) %*% solve(F[, , t]) %*% mZ %*% P_pred[, , t]
-        # kalman gain
+
+        # kalman gain, K_t = P_t * Z_t' * inv(F_t)
         K[, , t] <- mT %*% P_pred[, , t] %*% t(mZ) %*% solve(F[, , t])
-        # likelihood contribution
+
+        ## Calculate the posterior mean and variance
+        # The posterior adjust the prior with the new information
+        # filtered state mean E[alpha_t |Y_1:t], \tilde{a}_t = a_pred_t + P_pred_t * Z_t' * inv(F_t) * v_t
+        a_filt[, t] <- a_pred[, t] + P_pred[, , t] %*% t(mZ) %*% solve(F[, , t]) %*% v[, t]
+        
+        # filtered state variance Var[alpha_t |Y_{1:t}], P_t = P_pred_t - P_pred_t * Z_t' * inv(F_t) * Z_t * P_pred_t
+        P_filt[, , t] <- P_pred[, , t] - P_pred[, , t] %*% t(mZ) %*% solve(F[, , t]) %*% mZ %*% P_pred[, , t]
+
+        # likelihood contribution. 
+        # This relation is not from slide 22 of the lecture notes, but from slide 23
         vLLK[t] <- (log(det(as.matrix(F[, , t]))) + c(v[, t] %*% solve(F[, , t]) * v[, t]))
+
+        # Predicted states
         if (t < n) {
-            # predicted state mean E[alpha_{t+1}|Y_{1:t}]
+            # Predicted state mean E[alpha_{t+1}|Y_{1:t}], see slide 22
             a_pred[, t + 1] <- mT %*% a_pred[, t] + K[, , t] %*% v[, t]
-            # predicted state variance Var[alpha_{t+1}|Y_{1:t}]
+            # Predicted state variance Var[alpha_{t+1}|Y_{1:t}], see slide 22
             P_pred[, , t + 1] <- mT %*% P_pred[, , t] %*% t((mT - K[, , t] %*% mZ)) + HQH
         }
     }
-    # Smoothing recursion
+    # Smoothing recursion from 
     if (Smoothing) {
         for (t in n:2) {
+            # Error smoothing matrix, L_t = P_t * Z_t' * inv(F_t) from slide 22
             L[, , t] <- mT - K[, , t] %*% mZ
+            # Weighted sum of innovations from slide 27
             r[, t - 1] <- t(mZ) %*% solve(F[, , t]) %*% v[, t] + t(L[, , t]) %*% r[, t]
+            # Variance of smoothed state recursion from slide 28
             N[, , t - 1] <- t(mZ) %*% solve(F[, , t]) %*% mZ + t(L[, , t]) %*% N[, , t] %*% L[, , t]
-            # smoothed state mean E[alpha_t | Y_{1:n}]
+            # Smoothed state mean E[alpha_t | Y_{1:n}], from slide 27
             a_smoot[, t] <- a_pred[, t] + P_pred[, , t] %*% r[, t - 1]
-            # smoothed state variance Var[alpha_t | Y_{1:n}]
+            # Smoothed state variance Var[alpha_t | Y_{1:n}], from slide 28
             V[, , t] <- P_pred[, , t] - P_pred[, , t] %*% N[, , t - 1] %*% P_pred[, , t]
-            # error smoothing
+            # Solving for the smoothed shocks
+            # eps_t = S * inv(F_t) * v_t - K_t' * r_t
             eps_smoot[, t] <- mS %*% (solve(F[, , t]) %*% v[, t] - t(K[, , t]) %*% r[, t])
+            # eta_t = Q * inv(F_t) * v_t - K_t' * r_t
             eta_smoot[, t] <- mQ %*% t(mH) %*% r[, t]
         }
     }
@@ -194,7 +238,6 @@ sv_sim <- simulate_sv(1000, sigma = 1, rho = 0.9, sigma2_eta = 0.25)
 # the Kalman filter for the SV model of the previous point.
 # The likelihood to maximize is defined in slide 23 of Lecture 7.
 
-
 quasi_ml_sv <- function(y) {
     #' This function maximizes the Quasi Log Likelihood
     #' computed by the Kalman Filter for a log-linearized
@@ -211,6 +254,34 @@ quasi_ml_sv <- function(y) {
     #' where E[log(z_t^2)] = -1.270376
     #'
     #' y are the "level" non-transformed returns
+    #' 
+    #' # THIS FUNCTION WILL BE USEFUL LATER!
+    # Kalman filter and smoother for the model
+    # y_t = alpha_t + sigma * eps_t
+    # alpha_{t+1} = phi * alpha_t + eta * xi_t
+    # vPar is the vector of parameters vPar = (phi, sigma, eta)
+    # note that the vPar contains the standard deviations (sigma and eta)
+    # and not the variances (sigma^2, eta^2).
+    # vY is the vector of observations
+    KalmanFilter_AR1plusNoise <- function(vY, vPar, Smoothing = FALSE) {
+    dPhi <- vPar[1]
+    dSigma <- vPar[2]
+    dEta <- vPar[3]
+
+    mY <- matrix(vY, nrow = 1)
+    mZ <- matrix(1, 1, 1)
+    mS <- matrix(dSigma^2, 1, 1)
+    mT <- matrix(dPhi, 1, 1)
+    mH <- matrix(1, 1, 1)
+    mQ <- matrix(dEta^2, 1, 1)
+    a1 <- 0
+    mP1 <- matrix(dEta^2 / (1 - dPhi^2), 1, 1)
+
+    return(
+        kalman_filter(mY, mZ, mS, mT, mH, mQ, a1, mP1, Smoothing)
+    )
+}
+
 
     # number of observations
     obs <- length(y)
@@ -290,10 +361,11 @@ quasi_ml_sv <- function(y) {
 fit <- quasi_ml_sv(sv_sim$r)
 fit$params
 
-# estimated parameters are
+# The estimated parameters are
 # sigma = 1.0671994
 # rho   = 0.9073020
 # sigma2eta = 0.1423963
+
 # We see that estimated for sigma and rho
 # are reasonable but sigma2eta is heavily
 # underestimated. If you increase T = 5000
@@ -315,24 +387,21 @@ fit$params
 # one of Lecture 6 in order to compare your estimates with those obtained
 # from the GMM estimator in Exercise Set 2.
 
-setwd("Exam/Problem Sets/Problem Set 3")
+rm(list=ls())
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 3")
+
 library(quantmod)
 
-price <- getSymbols(
-    "^GSPC",
-    from = "2005-01-01",
-    to = "2018-01-01",
-    auto.assign = FALSE
-)
+price <- getSymbols("^GSPC", from = "2005-01-01", to = "2018-01-01", auto.assign = FALSE)
 
-# extract and parse data
+# extract and parse Adjusted Close
 price <- price$GSPC.Adjusted
 price <- as.numeric(price)
 
 # auto-removes the NA observation
 price <- diff(log(price)) * 100
 
-# remove zeros
+# replace zero returns with their empirical mean
 price[price == 0] <- mean(price)
 
 

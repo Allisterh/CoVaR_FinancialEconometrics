@@ -6,7 +6,6 @@ rm(list = ls())
 ########################################
 
 ####Exercise 1: Write a function to estimate the GAS–GED model derived earlier####
-
 #A function for the score variable used in the GAS_GED_LLK function
 ForcingVariableS <- function(dY, dPhi, dNu) {
   
@@ -176,9 +175,6 @@ AltComputeVAR <- function(vSigma, dNu, dAlpha) {
   
   return(dVAR)
 }
-
-#####
-
 
 ########################################
 ########### Estimation Part ############
@@ -534,7 +530,6 @@ plot.ts(garchFIT_DJI$vSigma, col = 1, ylab="filtered volatility", main = "Dow Jo
 lines(sqrt(egarchFIT_DJI$Filter$vSigma2), col = 2)
 lines(sqrt(gjrgarchFIT_DJI$Filter$vSigma2), col = 4)
 legend(2300, 5.5, legend = c("GARCH(1,1)", "EGARCH(1,1)", "gjr-GARCH(1,1)"), col = c(1,2,4), lty = 1, cex = 0.5, lwd = 3)
-
 #we notice that the filtered volatility under these three model specifications are quite similar
 
 #####
@@ -624,7 +619,6 @@ legend(2300, -12.25, legend = c("GARCH(1,1)", "GAS-GED"), col = 1:2, lty = 1, ce
 plot.ts(vSPX005_GARCH, ylab = "VaR SPX", main = "alpha=0.05", col = "1")
 lines(vSPX005_GASGED, col = "2")
 legend(2300, -7.5, legend = c("GARCH(1,1)", "GAS-GED"), col = 1:2, lty = 1, cex = 0.5, lwd = 3)
-
 #Plotting VAR for DJI (alpha = 0.01, 0.05)
 plot.ts(vDJI001_GARCH, ylab = "VaR DJI", main = "alpha=0.01", col = "1")
 lines(vDJI001_GASGED, col = "2")

@@ -1,5 +1,5 @@
-rm(list=ls()) 
-setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 1")
+rm(list = ls())
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 1") 
 
 ################################################################################
 ### Problem 1                                                                ###
@@ -10,7 +10,7 @@ vTickers <- read.csv("DJITicker.csv", sep = ";")
 
 # running code in problem 2 without modifying data results in errors.
 # some tickers have been delisted since, and we need to remove these
-vTickers <- vTickers[!(vTickers$Symbol == "UTX" | vTickers$Symbol == "DWDP"), ]
+vTickers <- vTickers[!(vTickers$Symbol == "UTX" | vTickers$Symbol == "DWDP"),]
 
 ################################################################################
 ### Problem 2                                                                ###
@@ -37,7 +37,8 @@ names(mData)[1] <- vTickers$Symbol[1]
 
 # get remaining tickers in loop
 for (sTicker in vTickers$Symbol[-1]) { # exclude the first ticker
-  vReturns <- getSymbols(
+  # Retrieve the adjusted prices for the ticker.
+    vReturns <- getSymbols(
     Symbols = c(sTicker),
     from = date_min,
     to = date_max,
@@ -45,17 +46,18 @@ for (sTicker in vTickers$Symbol[-1]) { # exclude the first ticker
     symbol.lookup = TRUE,
     auto.assign = FALSE
   )[, paste(sTicker, "Adjusted", sep = ".")]
-  # append the column to the data-frame
+  # Append the column to the data-frame.
   mData$sTicker <- vReturns
-  # set name of column to the ticker-name
-  names(mData)[ncol(mData)] <- sTicker}
+  # Set the column name to the ticker-name.
+  names(mData)[ncol(mData)] <- sTicker
+}
 
 # print last return observations
 tail(mData)
 
 pct_log_returns <- function(level_returns) {
-  #' calculates % log returns and returns object of same shape as input
-  #' Mathematical reasoning: r_{t}=(\ln(p_{t})-\ln(p_{t-1}))\cdot 100
+  # Calculate % log returns and return object of same shape as input
+  # Mathematical reasoning: r_{t}=(\ln(p_{t})-\ln(p_{t-1}))\cdot 100
   return(
     diff(log(level_returns)) * 100
   )
@@ -74,20 +76,24 @@ rm(sTicker)
 ################################################################################
 
 ## create the matrix where to store descriptive statistics
-DescStat = matrix(NA, 
-                  nrow = nrow(vTickers),
-                  ncol = 7,
-                  ## the names of the rows and columns are defined with the
-                  #  dimnames argument
-                  dimnames = list(vTickers[, "Symbol"],
-                                  c("mean", "median", "variance", "kurtosis",
-                                    "skewness", "rho", "rho2"))
+DescStat <- matrix(
+  NA,
+  nrow = nrow(vTickers),
+  ncol = 7,
+  # the names of the rows and columns are
+  # defined with the dimnames argument
+  dimnames = list(
+    vTickers[, "Symbol"],
+    c("mean", "median", "variance", "kurtosis", "skewness", "rho", "rho2")
+  )
 )
 
 # function to calculate acf
 autocorrelation <- function(vReturns, exponent = 1) {
-  #' returns the autocorrelation coefficient for lag = 1
-  # `[2]` due to acf calculates both lag=0 and lag=1
+### The code above does the following: ###
+# 1. The function accepts two arguments, a vector of returns and an exponent.
+# 2. The exponent is set to 1 as default, so if it is not passed to the function it will be 1.
+# 3. acf() is called and the 2nd element of the acf vector, which is the autocorrelation coefficient for lag = 1, is returned.
   return(
     acf(
       vReturns^exponent,
@@ -108,8 +114,18 @@ DescStat[, "skewness"] <- apply(mReturns, 2, skewness, na.rm = TRUE)
 DescStat[, "rho"] <- apply(mReturns, 2, autocorrelation)
 DescStat[, "rho2"] <- apply(mReturns, 2, autocorrelation, exponent = 2)
 
+# or alternatively
+DescStatEasy[, "mean"] <- colMeans(mReturns, na.rm = TRUE)
+DescStatEasy[, "median"] <- colMedians(mReturns)
+DescStatEasy[, "variance"] <- colVariances(mReturns)
+DescStatEasy[, "kurtosis"] <- colKurtosis(mReturns)
+DescStatEasy[, "skewness"] <- colSkewness(mReturns)
+DescStatEasy[, "rho"] <- colAutoCorr(mReturns)
+DescStatEasy[, "rho2"] <- colAutoCorr(mReturns, exponent = 2)
+
 # print descriptive statistics
 DescStat
+DescStatEasy
 
 ################################################################################
 ### Problem 4                                                                ###
@@ -229,11 +245,9 @@ ARCH.LLK <- function(vY, dOmega, dAlpha) {
 #  is omega, the second is alpha.
 
 ObjectiveFunction <- function(vPar, vY) {
-  
-  dOmega = vPar[1]
-  dAlpha = vPar[2]
-  dLLK = ARCH.LLK(vY, dOmega, dAlpha)
-  
+  dOmega <- vPar[1]
+  dAlpha <- vPar[2]
+  dLLK <- ARCH.LLK(vY, dOmega, dAlpha)
   return(-dLLK)
 }
 
@@ -244,8 +258,8 @@ EstimateARCH <- function(vY, ...) {
   # the empirical variance by targeting the unconditional variance of the 
   # ARCH model.
   
-  dAlpha = 0.3
-  dOmega = var(vY) * (1.0 - dAlpha)
+  dAlpha <- 0.3
+  dOmega <- var(vY) * (1.0 - dAlpha)
   
   # Precision constants (lower and upper)
   ## positivity condition
@@ -495,4 +509,3 @@ vBest[] = colnames(mBIC)[vBest]
 
 Selection = as.data.frame(vBest)
 Selection
-

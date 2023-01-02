@@ -18,36 +18,36 @@
 # a1 is the initialization for a
 # P1 is the initialization for P
 #
-KF_R <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
-  n = ncol(mY)
-  p = nrow(mY)
-  r_int = ncol(mH)
-  m = length(a1)
+KF_R <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) { 
+  n <- ncol(mY)
+  p <- nrow(mY) # nolint
+  r_int <- ncol(mH)
+  m <- length(a1)
 
-  v = matrix(0, p,n);
-  F = array(0, dim = c(p, p, n));
-  K = array(0, dim = c(m, p, n));
-  a_filt = matrix(0, m,n);
-  a_pred = matrix(0, m,n);
-  P_filt = array(0, dim = c(m, m, n));
-  P_pred = array(0, dim = c(m,m,n));
+  v <- matrix(0, p, n);
+  F <- array(0, dim = c(p, p, n));
+  K <- array(0, dim = c(m, p, n));
+  a_filt <- matrix(0, m,n);
+  a_pred <- matrix(0, m,n);
+  P_filt <- array(0, dim = c(m, m, n));
+  P_pred <- array(0, dim = c(m,m,n));
 
-  r = matrix(0, m,n);
-  N = array(0, dim = c(m,m,n));
-  a_smoot = matrix(0, m, n);
-  V = array(0, dim = c(m, m, n));
-  L = array(0, dim = c(m,m,n));
+  r <- matrix(0, m,n);
+  N <- array(0, dim = c(m,m,n));
+  a_smoot <- matrix(0, m, n);
+  V <- array(0, dim = c(m, m, n));
+  L <- array(0, dim = c(m,m,n));
 
-  eps_smoot = matrix(0, p,n);
-  eta_smoot = matrix(0, r_int, n);
-  vLLK = numeric(n);
+  eps_smoot <- matrix(0, p,n);
+  eta_smoot <- matrix(0, r_int, n);
+  vLLK <- numeric(n);
 
   # //initialise
-  v[, 1] = mY[, 1];
-  a_filt[, 1] = a1;
-  a_pred[, 1] = a1;
-  P_filt[,,1] = P1;
-  P_pred[,,1] = P1;
+  v[, 1] <- mY[, 1];
+  a_filt[, 1] <- a1;
+  a_pred[, 1] <- a1;
+  P_filt[,,1] <- P1;
+  P_pred[,,1] <- P1;
 
   HQH = mH %*% mQ %*% t(mH);
   dC = -0.5 * (n * p * 1.0) * log(pi * 2.0);

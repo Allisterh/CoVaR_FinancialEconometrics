@@ -1,3 +1,5 @@
+rm(list=ls())
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 4")
 
 ################################################################################
 ### Problem 1                                                                ###
@@ -339,6 +341,11 @@ vol_bootstrapped_g050 <- bootstrap_filter(
     ess_g = 0.5,
     m = particles
 )
+plot.new()
+File <- "./img/1,4_1000particles.png"
+if (file.exists(File)) stop(File, " already exists")
+dir.create(dirname(File), showWarnings = FALSE)
+png(File)
 
 # Visual inspection
 plot.ts(
@@ -354,8 +361,7 @@ legend(1, 5,
     legend = c("g = 1.0", "g = 0.75", "g = 0.50"),
     col = c("blue", "red", "purple"), lty = rep(1, 3), cex = 1.5
 )
-
-
+if(!is.null(dev.list())) dev.off()
 
 ## Try with 25 particles
 # number of particles
@@ -391,6 +397,10 @@ vol_bootstrapped_g050 <- bootstrap_filter(
     m = particles
 )
 
+File <- "./img/1,4_25particles.png"
+if (file.exists(File)) stop(File, " already exists")
+dir.create(dirname(File), showWarnings = FALSE)
+png(File)
 # Visual inspection
 plot.ts(
     simulated_sv$sigma2,
@@ -405,7 +415,7 @@ legend(1, 5,
     legend = c("g = 1.0", "g = 0.75", "g = 0.50"),
     col = c("blue", "red", "purple"), lty = rep(1, 3), cex = 1.5
 )
-
+if(!is.null(dev.list())) dev.off()
 
 ### Point 5)
 # Estimate the parameters omega, rho and tau using the QML estimator
@@ -415,7 +425,8 @@ legend(1, 5,
 
 
 # Source model from Problem Set 3
-source("Exam/Problem Sets/Problem Set 3/Problem Set 3.R")
+
+source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 3/quasi_ml_sv.R")
 
 
 # estimate model using QML
@@ -458,8 +469,13 @@ vol_bootstrapped_estimated <- bootstrap_filter(
     m = particles
 )
 
+File <- "./img/1,5.png"
+if (file.exists(File)) stop(File, " already exists")
+dir.create(dirname(File), showWarnings = FALSE)
+png(File)
 
 # Visual inspection
+plot.new()
 plot.ts(
     simulated_sv$sigma2,
     main = paste(c(particles, " Particles for Bootstrap")),
@@ -472,6 +488,10 @@ legend(1, 5,
     legend = c("True parameters", "Estimated parameters"),
     col = c("blue", "red"), lty = rep(1, 2), cex = 1.5
 )
+
+
+if(!is.null(dev.list())) dev.off()
+
 
 # comments from solution
 ## Results are similar, and estimator error does not play a crucial role in our
@@ -514,7 +534,7 @@ price[price == 0] <- mean(price)
 
 ### Point 2)
 # Estimate the SV model by QML.
-
+source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 3/Problem Set 3.R")
 # estimate model using QML
 fit_qml <- quasi_ml_sv(price)
 
@@ -532,7 +552,6 @@ tau_hat
 
 ### Point 3)
 # Perform filtering using the Bootstrap filter with g = 1 and N = 10000.
-
 sv_volatility <- bootstrap_filter(
     price,
     omega = omega_hat,
@@ -561,6 +580,7 @@ fit_garch <- ugarchfit(spec, price)
 # and the one obtained by the GARCH model.
 
 
+
 # Visual inspection
 plot.ts(
     sv_volatility$volatility,
@@ -572,5 +592,7 @@ plot.ts(
 lines(as.numeric(sigma(fit_garch)), col = "blue")
 legend(2000, 5,
     legend = c("SV Model", "GARCH(1,1)"),
-    col = c("black", "red"), lty = rep(1, 2), cex = 1.5
+    col = c("blue", "red"), lty = rep(1, 2), cex = 1.5
 )
+
+if(!is.null(dev.list())) dev.off()
