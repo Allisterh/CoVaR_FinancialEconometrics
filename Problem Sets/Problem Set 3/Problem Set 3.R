@@ -3,7 +3,7 @@
 ### Problem 1                                                                ###
 ################################################################################
 
-# Solved in .tex/.pdf file
+# Theoretical excercise...
 
 ################################################################################
 ### Problem 2                                                                ###
@@ -163,7 +163,7 @@ kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
     return(KF)
 }
 
-# THIS FUNCTION WILL BE USEFUL LATER!
+# Create function to map AR(1) process to Kalman filter
 # Kalman filter and smoother for the model
 # y_t = alpha_t + sigma * eps_t
 # alpha_{t+1} = phi * alpha_t + eta * xi_t
