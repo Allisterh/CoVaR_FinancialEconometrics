@@ -15,7 +15,7 @@
 
 
 # Kalman filter and smoother for the state space:
-# Y_t         = Z * alpha_t + eps_t, eps_t ~ N(0, S)
+# Y_t         = Z * alpha_t + D*eps_t, eps_t ~ N(0, S)
 # alpha_{t+1} = T * alpha_t + H*eta_t, eta_t ~N(0, Q)
 #
 # Y_t is p x 1
@@ -94,19 +94,11 @@ kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
     for (t in 1:n) {
         # one step ahead prediction mean, from slide 23
         v[, t] <- mY[, t] - mZ %*% a_pred[, t]
-
         # one step ahead prediction variance, from slide 23
         F[, , t] <- mZ %*% P_pred[, , t] %*% t(mZ) + mS
 
         # kalman gain, K_t = P_t * Z_t' * inv(F_t)
         K[, , t] <- mT %*% P_pred[, , t] %*% t(mZ) %*% solve(F[, , t])
-
-        ## Calculate the posterior mean and variance
-        # The posterior adjust the prior with the new information
-        # filtered state mean E[alpha_t |Y_1:t], \tilde{a}_t = a_pred_t + P_pred_t * Z_t' * inv(F_t) * v_t
-        a_filt[, t] <- a_pred[, t] + P_pred[, , t] %*% t(mZ) %*% solve(F[, , t]) %*% v[, t]
-        # filtered state variance Var[alpha_t |Y_{1:t}], P_t = P_pred_t - P_pred_t * Z_t' * inv(F_t) * Z_t * P_pred_t
-        P_filt[, , t] <- P_pred[, , t] - P_pred[, , t] %*% t(mZ) %*% solve(F[, , t]) %*% mZ %*% P_pred[, , t]
 
         # likelihood contribution. 
         # This relation is not from slide 22 of the lecture notes, but from slide 23
@@ -360,6 +352,21 @@ quasi_ml_sv <- function(y) {
 
 fit <- quasi_ml_sv(sv_sim$r)
 fit$params
+
+mKF <- fit$kalman
+
+# Plot the smoothed shocks
+plot(t(mKF$eps_smoot), type = "l", col = "blue", lwd = 2, xlab = "Time", ylab = "Volatility")
+lines(t(mKF$eta_smoot), col = "red", lwd = 2)
+
+# Plot the smoothed volatility
+plot(t(mKF$a_pred), type = "l", col = "blue", lwd = 2, xlab = "Time", ylab = "Volatility")
+
+# Output all elements of list mKF
+names(mKF)
+
+
+
 
 # The estimated parameters are
 # sigma = 1.0671994
