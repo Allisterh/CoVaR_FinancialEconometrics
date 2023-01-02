@@ -134,7 +134,8 @@ kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
             a_smoot[, t] <- a_pred[, t] + P_pred[, , t] %*% r[, t - 1]
             # Smoothed state variance Var[alpha_t | Y_{1:n}], from slide 28
             V[, , t] <- P_pred[, , t] - P_pred[, , t] %*% N[, , t - 1] %*% P_pred[, , t]
-            # Solving for the smoothed shocks
+            
+            # Not that we have smoothed states for the entire model, we can solve for the shocks
             # eps_t = S * inv(F_t) * v_t - K_t' * r_t
             eps_smoot[, t] <- mS %*% (solve(F[, , t]) %*% v[, t] - t(K[, , t]) %*% r[, t])
             # eta_t = Q * inv(F_t) * v_t - K_t' * r_t
