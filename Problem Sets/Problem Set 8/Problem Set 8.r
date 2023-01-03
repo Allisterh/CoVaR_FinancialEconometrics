@@ -140,6 +140,7 @@ EstimateCCC <- function(vY1, vY2) {
 setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 8")
 
 source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/DCC.r")
+source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/ReplaceOutlierMean.r")
 
 ################################################################################
 ### Problem 3                                                                ###
@@ -188,15 +189,15 @@ aWeights = array(NA, dim = c(iF, 2, 2, 2),
 ## it is computationally expensive !!! try with a fixed t before.
 
 for (t in (iT - iF):(iT - 1)) {
-  #Estimate models and make prediction for time t + 1
+  # Estimate models and make prediction for time t + 1
   Fit_CCC = EstimateCCC(vY1[(t - iT + iF + 1):t], vY2[(t - iT + iF + 1):t])
   Fit_DCC = EstimateDCC(vY1[(t - iT + iF + 1):t], vY2[(t - iT + iF + 1):t])
 
-  #Compute Tangency Portfolio
+  # Compute Tangency Portfolio
   aWeights[t - iT + iF + 1, "CCC", "FixMean", ] = EfficientSet(mSigma = Fit_CCC$mSigma_tp1, vMu = Fit_CCC$vMu_tp1, dK)$weights
   aWeights[t - iT + iF + 1, "DCC", "FixMean", ] = EfficientSet(mSigma = Fit_DCC$mSigma_tp1, vMu = Fit_DCC$vMu_tp1, dK)$weights
 
-  #Compute MVP
+  # Compute MVP
   aWeights[t - iT + iF + 1, "CCC", "MVP", ] = MinimumVariancePortfolio(mSigma = Fit_CCC$mSigma_tp1)
   aWeights[t - iT + iF + 1, "DCC", "MVP", ] = MinimumVariancePortfolio(mSigma = Fit_DCC$mSigma_tp1)
 
@@ -204,8 +205,8 @@ for (t in (iT - iF):(iT - 1)) {
 
 }
 
-#array of portfolio returns computed according to different strategies
-#and models.
+# Array of portfolio returns computed according to different strategies
+# and models.
 mPortfolioReturns = matrix(NA, iF, 4, dimnames = list(NULL, c("CCC-MVP", "CCC-FixMean", "DCC-MVP", "DCC-FixMean")))
 
 mPortfolioReturns[, "CCC-MVP"] = aWeights[, "CCC", "MVP", "omega1"] * tail(vY1, iF) +
@@ -228,18 +229,66 @@ mStat["Mean", ] = colMeans(mPortfolioReturns)
 mStat["SD", ] = apply(mPortfolioReturns, 2, sd)
 mStat["SR", ] = mStat["Mean", ]/mStat["SD", ]
 mStat["Kurtosis", ] = apply(mPortfolioReturns, 2, function(x) mean((x - mean(x))^4)/(sd(x)^4))
-mStat["Skewness", ] = apply(mPortfolioReturns, 2, function(x) mean((x - mean(x))^3)/(sd(x)^3))
+mStat["Skewness", ] = apply(mPortfolioReturns, 2, function(x) mean((x - mean(x))^3)/(sd(x)^3)) 
 
 # Plot the portfolio weights
-df <- data.frame(
-    x = seq(1, iF),
-    y = c(aWeights[,, "MVP", "omega1"], aWeights[,, "FixMean", "omega1"]),
-    # append CCC-TP and DCC-TP to CCC-MVP and DCC-MVP
-    col = rep(c("CCC-MVP", "DCC-MVP", "CCC-FixMean", "DCC-FixMean"), each = iF)
-    )
-ggplot(df, aes(x, y, color = col)) + 
+dfW <- data.frame(
+    x = rep(seq(1, iF), 4),
+    y = matrix(data = c(aWeights[, "CCC", "MVP", "omega1"],
+                      aWeights[, "CCC", "FixMean", "omega1"],
+                      aWeights[, "DCC", "MVP", "omega1"],
+                      aWeights[, "DCC", "FixMean", "omega1"]),
+           nrow = iF*4, ncol = 1, byrow = TRUE),
+    col = rep(c("CCC-MVP", "CCC-FixMean", "DCC-MVP", "DCC-FixMean"), each = iF)
+)
+
+# Replace outliers in dfW with mean
+dfW$y[dfW$y > 1.5] = mean(dfW$y[dfW$y < 1.5])
+dfW$y[dfW$y < -1.5] = mean(dfW$y[dfW$y > -1.5])
+ 
+ggplot(dfW, aes(x, y, color = col)) + 
         geom_line() + 
         labs(x = "Time", y = "Portfolio weights") + 
         theme_economist() + 
         theme(legend.title=element_blank())
 ggsave("./img/PortfolioWeights.pdf")
+
+# Plot the portfolio returns
+dfR <- data.frame(
+    x = rep(seq(1, iF), 4),
+    y = matrix(data = c(mPortfolioReturns[,1],
+                        mPortfolioReturns[,3],
+                        mPortfolioReturns[,2],
+                        mPortfolioReturns[,4]),
+              nrow = 4*iF, ncol = 1, byrow = TRUE),
+    # append CCC-TP and DCC-TP to CCC-MVP and DCC-MVP
+    col = rep(c("CCC-MVP", "CCC-FixMean", "DCC-MVP", "DCC-FixMean"), each = iF)
+    )
+# Replace outliers in dfW with mean
+dfR[] <- lapply(dfR, replace_outlier_with_mean)
+
+dfR$y[dfR$y > 1.5] = mean(dfR$y[dfR$y < 1.5])
+dfR$y[dfR$y < -1.5] = mean(dfR$y[dfR$y > -1.5])
+
+ggplot(dfR, aes(x, y, color = col)) + 
+        geom_line() + 
+        labs(x = "Time", y = "Portfolio Returns") + 
+        theme_economist() + 
+        theme(legend.title=element_blank())
+ggsave("./img/PortfolioReturns.pdf")
+
+
+
+vDCCMVP <- c(aWeights[, "CCC", "MVP", "omega1"])
+
+
+mW <- matrix(data = c(aWeights[, "CCC", "MVP", "omega1"],
+                      aWeights[, "CCC", "FixMean", "omega1"],
+                      aWeights[, "DCC", "MVP", "omega1"],
+                      aWeights[, "DCC", "FixMean", "omega1"]),
+           nrow = iF, ncol = 4, byrow = FALSE)
+
+
+
+vW <- append(mW[,1], mW[,2])
+

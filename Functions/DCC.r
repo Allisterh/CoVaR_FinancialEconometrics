@@ -178,11 +178,16 @@ EstimateCCC <- function(vY1, vY2) {
   Fit_1 = ugarchfit(ModelSpec, vY1)
   Fit_2 = ugarchfit(ModelSpec, vY2)
 
-  # Standardized residuas
+  # Standardized residuals
+  # Lecture 10, slide 4: y_t = mu_t + epsilon_t <=> epsilon_t = y_t - mu_t = H_t^(-1/2) * z_t
   vZ_1 = residuals(Fit_1, standardize = TRUE)
   vZ_2 = residuals(Fit_2, standardize = TRUE)
 
   # Unconditional correlation
+  # Lecture 10, slide 5: R_t = Corr_t-1(epsilon_t) = D_t^(-1/2) * H_t-1 * D_t^(-1/2)
+  #                      D_t =  diag(H_t) 
+  # Slide 27: R is estimated using the sample estimator of standardized residuals
+  # eta_t = D_t^(-1/2) * y_t
   mR = cor(cbind(vZ_1, vZ_2))
 
   ## Prediction
@@ -211,5 +216,4 @@ EstimateCCC <- function(vY1, vY2) {
   lOut[["vMu_tp1"]] = vMu_tp1
 
   return(lOut)
-
 }
