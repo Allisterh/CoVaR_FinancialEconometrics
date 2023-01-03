@@ -21,7 +21,8 @@
 #     6. mQ: The matrix of the deterministic terms of size r_int * r_int
 #     7. a1: The initial state vector of length m
 #     8. P1: The initial covariance matrix of size m * m
-#     9. Smoothing: A boolean value that specifies if the smoothing should be performed, set to true by default
+#     9. mD: The matrix of the deterministic terms of size p * r_int, set to 1 by default
+#     10. Smoothing: A boolean value that specifies if the smoothing should be performed, set to true by default
 
 # The function kalman_filter() returns a list of the following elements:
 #     1. v: The prediction error matrix of size p * n
@@ -39,12 +40,12 @@
 #     13. eta_smoot: The error smoothing matrix of size r_int * n
 #     14. vLLK: The log likelihood contribution vector of length n
 
-kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
+kalman_filter <- function(mY, mZ, mD = matrix(1,1,1),mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
     n <- ncol(mY)
     p <- nrow(mY)
     r_int <- ncol(mH)
     m <- length(a1)
-
+    
     v <- matrix(0, p, n)
     F <- array(0, dim = c(p, p, n))
     K <- array(0, dim = c(m, p, n))
@@ -79,7 +80,7 @@ kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
         # one step ahead prediction mean, from slide 23
         v[, t] <- mY[, t] - mZ %*% a_pred[, t]
         # one step ahead prediction variance, from slide 23
-        F[, , t] <- mZ %*% P_pred[, , t] %*% t(mZ) + mS
+        F[, , t] <- mZ %*% P_pred[, , t] %*% t(mZ) + mS %*% mD %*% t(mD)
 
         # kalman gain, K_t = P_t * Z_t' * inv(F_t)
         K[, , t] <- mT %*% P_pred[, , t] %*% t(mZ) %*% solve(F[, , t])
@@ -109,10 +110,10 @@ kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
         for (t in n:2) {
             # Error smoothing matrix, L_t = P_t * Z_t' * inv(F_t) from slide 22
             L[, , t] <- mT - K[, , t] %*% mZ
-            # Weighted sum of innovations from slide 27
-            r[, t - 1] <- t(mZ) %*% solve(F[, , t]) %*% v[, t] + t(L[, , t]) %*% r[, t]
+            # Weighted sum of innovations from slide 27, r_t-1 = inv(F_t) * v_t + L_t * r_t
+            r[, t - 1] <- solve(F[, , t]) %*% v[, t] + t(L[, , t]) %*% r[, t]
             # Variance of smoothed state recursion from slide 28
-            N[, , t - 1] <- t(mZ) %*% solve(F[, , t]) %*% mZ + t(L[, , t]) %*% N[, , t] %*% L[, , t]
+            N[, , t - 1] <- solve(F[, , t]) %*% mZ + t(L[, , t]) %*% N[, , t] %*% L[, , t]
             # Smoothed state mean E[alpha_t | Y_{1:n}], from slide 27
             a_smoot[, t] <- a_pred[, t] + P_pred[, , t] %*% r[, t - 1]
             # Smoothed state variance Var[alpha_t | Y_{1:n}], from slide 28
