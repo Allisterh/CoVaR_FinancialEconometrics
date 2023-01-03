@@ -75,7 +75,6 @@ tgas_log_likelihood <- function(y, params) {
 
 
 estimate_tgas <- function(returns) {
-    #' TODO: add docstring
 
     require(Rsolnp)
 
@@ -170,7 +169,6 @@ gas_fit <- estimate_tgas(price)
 
 gas_fit$optimal_params
 
-names(gas_fit)
 
 ### Point 3)
 # Compare the volatility implied by GAS and the ones from the GARCH and
