@@ -112,7 +112,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
     weights <- matrix(NA, nrow = obs, ncol = N)
 
     # placeholder for normalized weights at each t
-    norm_weights <- numeric(m)
+    norm_weights <- numeric(N)
 
     effective_sample_size <- function(weights, g, N) {
     #' returns boolean based on whether to perform resampling
@@ -186,7 +186,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
         volatility[t] <- sum(exp(alpha_bootstrap[t, ] / 2) * norm_weights)
 
         # resample
-        if (effective_sample_size(norm_weights, ess_g, m)) {
+        if (effective_sample_size(norm_weights, ess_g, N)) {
             alpha_bootstrap[t, ] <- sample(
                 alpha_bootstrap[t, ],
                 size = N,

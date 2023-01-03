@@ -130,23 +130,40 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
     #' omega, phi, tau:     `double` parameters of SV model
     #' ess_g:               `double` threashold for effective sample size
     #' N = 10000:           `int` number of bootstraps
-
+    #' 
     # number of observations
     obs <- length(returns)
 
     # matrix of bootstrapped particles
     alpha_bootstrap <- matrix(
-        data = NA, nrow = obs, ncol = m
+        data = NA, nrow = obs, ncol = N
     )
 
     # vector of filtered volatility values
     volatility <- numeric(obs)
 
     # weights (tilde) for each bootstrap and time t
-    weights <- matrix(NA, nrow = obs, ncol = m)
+    weights <- matrix(NA, nrow = obs, ncol = N)
 
     # placeholder for normalized weights at each t
-    norm_weights <- numeric(m)
+    norm_weights <- numeric(N)
+
+    effective_sample_size <- function(weights, g, N) {
+    #' returns boolean based on whether to perform resampling
+    #' based on effective sample size.
+    #' TRUE if ESS < gN
+    #' FALSE if ESS >= gN
+    #'
+    #' weights:  `vector` of weights
+    #' g:        `double` ESS threashold for effective sample size
+    #' m:        `int` number og bootstraps
+
+    ess <- 1.0 / sum(weights**2)
+
+    return(
+        ess < (g * N)
+        )
+    }
 
 
     # initialize values with draws from unconditional distribution
@@ -237,7 +254,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
 # )
 
 # set.seed(69)
-# leo_boot <- BootstrapFilter_EES(
+# leo_boot <- BootstrapFilter_ESS(
 #    simulated_sv$y,
 #    dOmega = 0,
 #    dPhi = 0.9,
