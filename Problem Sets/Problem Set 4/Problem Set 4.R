@@ -10,33 +10,33 @@ setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documen
 # Volatility (E[\exp\left(\alpha_{t}/2\right)\mid y_{1:t}) using the Bootstrap
 # filter reported in slide 25 of Lecture 8.
 
-bootstrap_filter <- function(returns, omega, phi, tau, m = 10000) {
-    #' function to perform bootstrap particle filter algorithm
+bootstrap_filter <- function(returns, omega, phi, tau, N = 10000) {
+    # function to perform bootstrap particle filter algorithm
 
     # number of observations
     obs <- length(returns)
 
     # matrix of bootstrapped particles
     alpha_bootstrap <- matrix(
-        data = NA, nrow = obs, ncol = m
+        data = NA, nrow = obs, ncol = N
     )
 
     # vector of filtered volatility values
     volatility <- numeric(obs)
 
     # importance weight at each t
-    weights <- numeric(m)
+    weights <- numeric(N)
 
 
     # initialize values with draws from unconditional distribution
     # fill in first row
     alpha_bootstrap[1, ] <- rnorm(
-        m,
+        N,
         mean = omega / (1.0 - phi),
         sd = sqrt(tau**2 / (1.0 - phi**2))
     )
     # compute importance weights following notes in .pdf/.tex file
-    # we draw `m` draws from gaussian distribution with varying scale
+    # we draw `N` draws from gaussian distribution with varying scale
     weights <- dnorm(
         returns[1],
         mean = 0, sd = exp(alpha_bootstrap[1, ] / 2.0)
@@ -49,11 +49,11 @@ bootstrap_filter <- function(returns, omega, phi, tau, m = 10000) {
     # this is a weighted average
     volatility[1] <- sum(exp(alpha_bootstrap[1, ] / 2) * weights)
 
-    # draw `m` samples from `alpha_bootstrap` with replacement and
+    # draw `N` samples from `alpha_bootstrap` with replacement and
     # corresponding probabilities
     alpha_bootstrap[1, ] <- sample(
         alpha_bootstrap[1, ],
-        size = m,
+        size = N,
         replace = TRUE,
         prob = weights
     )
@@ -61,7 +61,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, m = 10000) {
     for (t in seq(2, obs)) {
         # generate data
         alpha_bootstrap[t, ] <- omega + phi * alpha_bootstrap[t - 1, ] +
-            rnorm(m, mean = 0, sd = tau)
+            rnorm(N, mean = 0, sd = tau)
 
         # draw weights
         weights <- dnorm(
@@ -79,7 +79,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, m = 10000) {
         # resample
         alpha_bootstrap[t, ] <- sample(
             alpha_bootstrap[t, ],
-            size = m,
+            size = N,
             replace = TRUE,
             prob = weights
         )
@@ -101,7 +101,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, m = 10000) {
 # threshold gN. Let g be an argument of this function. Note that, when
 # g = 1 resampling occurs at each iteration of the algorithm.
 
-effective_sample_size <- function(weights, g, m) {
+effective_sample_size <- function(weights, g, N) {
     #' returns boolean based on whether to perform resampling
     #' based on effective sample size.
     #' TRUE if ESS < gN
@@ -114,12 +114,12 @@ effective_sample_size <- function(weights, g, m) {
     ess <- 1.0 / sum(weights**2)
 
     return(
-        ess < (g * m)
+        ess < (g * N)
     )
 }
 
 
-bootstrap_filter <- function(returns, omega, phi, tau, ess_g, m = 10000) {
+bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
     #' #####################################################
     #' ### refactor of function in 1) to account for ESS ###
     #' #####################################################
@@ -129,7 +129,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, m = 10000) {
     #' returns:             `vector` of returns to model
     #' omega, phi, tau:     `double` parameters of SV model
     #' ess_g:               `double` threashold for effective sample size
-    #' m = 10000:           `int` number of bootstraps
+    #' N = 10000:           `int` number of bootstraps
 
     # number of observations
     obs <- length(returns)
@@ -142,7 +142,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, m = 10000) {
     # vector of filtered volatility values
     volatility <- numeric(obs)
 
-    # weights (tilde) for each bootstrap m and time t
+    # weights (tilde) for each bootstrap and time t
     weights <- matrix(NA, nrow = obs, ncol = m)
 
     # placeholder for normalized weights at each t
@@ -157,7 +157,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, m = 10000) {
         sd = sqrt(tau**2 / (1.0 - phi**2))
     )
     # compute importance weights following notes in .pdf/.tex file
-    # we draw `m` draws from gaussian distribution with varying scale
+    # we draw `N` draws from gaussian distribution with varying scale
     weights[1, ] <- dnorm(
         returns[1],
         mean = 0,
@@ -171,12 +171,12 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, m = 10000) {
     # this is a weighted average
     volatility[1] <- sum(exp(alpha_bootstrap[1, ] / 2) * norm_weights)
 
-    # draw `m` samples from `alpha_bootstrap` with replacement and
+    # draw `N` samples from `alpha_bootstrap` with replacement and
     # corresponding probabilities
-    if (effective_sample_size(norm_weights, ess_g, m)) {
+    if (effective_sample_size(norm_weights, ess_g, N)) {
         alpha_bootstrap[1, ] <- sample(
             alpha_bootstrap[1, ],
-            size = m,
+            size = N,
             replace = TRUE,
             prob = norm_weights
         )
@@ -187,7 +187,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, m = 10000) {
     for (t in seq(2, obs)) {
         # generate data
         alpha_bootstrap[t, ] <- omega + phi * alpha_bootstrap[t - 1, ] +
-            rnorm(m, mean = 0, sd = tau)
+            rnorm(N, mean = 0, sd = tau)
 
         # draw weights
         weights[t, ] <- weights[t - 1, ] * dnorm(
@@ -206,7 +206,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, m = 10000) {
         if (effective_sample_size(norm_weights, ess_g, m)) {
             alpha_bootstrap[t, ] <- sample(
                 alpha_bootstrap[t, ],
-                size = m,
+                size = N,
                 replace = TRUE,
                 prob = norm_weights
             )
@@ -233,7 +233,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, m = 10000) {
 #    phi = 0.9,
 #    tau = 0.5,
 #    ess_g = 0.75,
-#    m = 10
+#    N= 10
 # )
 
 # set.seed(69)
@@ -319,7 +319,7 @@ vol_bootstrapped_g1 <- bootstrap_filter(
     phi = prior_phi,
     tau = prior_tau,
     ess_g = 1,
-    m = particles
+    N = particles
 )
 
 set.seed(123)
@@ -329,7 +329,7 @@ vol_bootstrapped_g075 <- bootstrap_filter(
     phi = prior_phi,
     tau = prior_tau,
     ess_g = 0.75,
-    m = particles
+    N = particles
 )
 
 set.seed(123)
@@ -339,7 +339,7 @@ vol_bootstrapped_g050 <- bootstrap_filter(
     phi = prior_phi,
     tau = prior_tau,
     ess_g = 0.5,
-    m = particles
+    N = particles
 )
 plot.new()
 File <- "./img/1,4_1000particles.png"
@@ -374,7 +374,7 @@ vol_bootstrapped_g1 <- bootstrap_filter(
     phi = prior_phi,
     tau = prior_tau,
     ess_g = 1,
-    m = particles
+    N = particles
 )
 
 set.seed(123)
@@ -384,7 +384,7 @@ vol_bootstrapped_g075 <- bootstrap_filter(
     phi = prior_phi,
     tau = prior_tau,
     ess_g = 0.75,
-    m = particles
+    N = particles
 )
 
 set.seed(123)
@@ -394,7 +394,7 @@ vol_bootstrapped_g050 <- bootstrap_filter(
     phi = prior_phi,
     tau = prior_tau,
     ess_g = 0.5,
-    m = particles
+    N = particles
 )
 
 File <- "./img/1,4_25particles.png"
@@ -456,7 +456,7 @@ vol_bootstrapped_true <- bootstrap_filter(
     phi = prior_phi,
     tau = prior_tau,
     ess_g = 0.75,
-    m = particles
+    N = particles
 )
 
 set.seed(123)
@@ -466,7 +466,7 @@ vol_bootstrapped_estimated <- bootstrap_filter(
     phi = phi_hat,
     tau = tau_hat,
     ess_g = 0.75,
-    m = particles
+    N = particles
 )
 
 File <- "./img/1,5.png"
@@ -558,7 +558,7 @@ sv_volatility <- bootstrap_filter(
     phi = phi_hat,
     tau = tau_hat,
     ess_g = 1,
-    m = 10000
+    N = 10000
 )
 
 

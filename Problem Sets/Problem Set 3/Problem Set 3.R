@@ -100,6 +100,14 @@ kalman_filter <- function(mY, mZ, mS, mT, mH, mQ, a1, P1, Smoothing = TRUE) {
         # kalman gain, K_t = P_t * Z_t' * inv(F_t)
         K[, , t] <- mT %*% P_pred[, , t] %*% t(mZ) %*% solve(F[, , t])
 
+        ## Calculate the posterior mean and variance
+         # The posterior adjust the prior with the new information
+         # filtered state mean E[alpha_t |Y_1:t], a_filt_t = a_pred_t + K_t * v_t
+         # From slide 20
+         a_filt[, t] <- a_pred[, t] + K[, , t] %*% v[, t]
+         # filtered state variance Var[alpha_t |Y_{1:t}], P_filt_t = P_pred_t - K_t * P_pred_t
+         P_filt[, , t] <- P_pred[, , t] %*% (1 - K[, , t]) 
+
         # likelihood contribution. 
         # This relation is not from slide 22 of the lecture notes, but from slide 23
         vLLK[t] <- (log(det(as.matrix(F[, , t]))) + c(v[, t] %*% solve(F[, , t]) * v[, t]))
