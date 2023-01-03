@@ -1,3 +1,7 @@
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions")
+source("KalmanFilter.R")
+
+
 quasi_ml_sv <- function(y) {
     #' This function maximizes the Quasi Log Likelihood
     #' computed by the Kalman Filter for a log-linearized
