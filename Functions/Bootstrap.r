@@ -135,7 +135,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
     # initialize values with draws from unconditional distribution
     # fill in first row
     alpha_bootstrap[1, ] <- rnorm(
-        m,
+        N,
         mean = omega / (1.0 - phi),
         sd = sqrt(tau**2 / (1.0 - phi**2))
     )
