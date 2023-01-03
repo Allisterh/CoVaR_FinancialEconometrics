@@ -403,6 +403,10 @@ names(mKF)
 # from the GMM estimator in Exercise Set 2.
 
 rm(list=ls())
+
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions")
+source("KalmanFilter.r")
+
 setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 3")
 
 library(quantmod)
@@ -419,9 +423,9 @@ price <- diff(log(price)) * 100
 # replace zero returns with their empirical mean
 price[price == 0] <- mean(price)
 
-
-source("GMMEstimation_SV.R")
-
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 3")
+source("GMMEstimation_SV.r")
+source("quasi_ml_sv.r")
 # fit QML model
 fit_qml <- quasi_ml_sv(price)
 
