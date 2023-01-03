@@ -1,3 +1,7 @@
+rm(list=ls())
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 5")
+
+
 # Estimate the DCC model of Engle (2002) and the Patton's (2006) model
 
 # Filter for the dynamic correlation of the DCC model of Engle (2002)
@@ -219,10 +223,28 @@ Fit_DCC = Estimate_DCC(mY)
 #estimate Student's t DCC in two step with QML for the first step
 Fit_DCC_t = Estimate_DCC_t(mY)
 
-# The filtered correlation of the Gaussian and Student's t DCC models are the same
-plot.ts(Fit_DCC$aCor[1,2,])
 
-# The two are very similar
+df <- data.frame(
+    time = 1:length(Fit_DCC$aCor),
+    corr = c(Fit_DCC$aCor[1,2,],
+            Fit_DCC_t$Fit_QML$aCor[1,2,]),
+    lab = rep(c("Gaussian DCC","Student's t DCC"),
+            each = length(Fit_DCC$aCor))
+    )
+
+
+# Plot
+ggplot(data = df, aes(x=time, y=corr, col = lab)) + 
+                                    geom_line() +
+                                    labs(title = paste0("Filtered Correlation")) +
+                                    labs(x = "Time") +
+                                    labs(y = "Correlation") +
+                                    theme_economist() +
+                                    theme(legend.title=element_blank())
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 6")
+ggsave("./img/Filtered Correlation of G and t.pdf")
+# The filtered correlation of the Gaussian and Student's t DCC models are identical
+
 
 # Compare the two DCC and copula models using BIC. Which model is selected?
 # This point is subtle because we haven't computed the Likelihood for the DCC model with
