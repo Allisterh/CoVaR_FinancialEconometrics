@@ -26,10 +26,10 @@ data(dji30ret)
 dj_returns <- dji30ret[seq(1, 2000), c("AA", "AXP")]
 
 # Estimate a the Patton’s model with Gaussian copula.
-copNorm <- Estimate_Patton(CopType = "norm", mY = dj_returns, M = 10)
+copNorm <- Estimate_Patton(CopType = "norm", mY = dj_returns, M = 1)
 
 # Estimate a the Patton’s model with Student’s t copula.
-copT <- Estimate_Patton(CopType = "t", mY = dj_returns, M = 10)
+copT <- Estimate_Patton(CopType = "t", mY = dj_returns, M = 1)
 
 # Compare the filtered copula correlation parameter of the Gaussian and Student’s t copula models.
 if(!require(ggplot2)){install.packages('ggplot2')}
@@ -51,7 +51,7 @@ ggplot(data = df, aes(x=time, y=corr, col = lab)) +
                                     theme_economist() +
                                     theme(legend.title=element_blank())
 setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 7")
-ggsave("./img/Correlation of Gaussian Copula and t Copula.pdf")
+ggsave("./img/Correlation of Gaussian Copula and t Copula, M=1.pdf")
 
 # The correlation of the Gaussian copula is more stable than the correlation of the Student’s t copula.
 

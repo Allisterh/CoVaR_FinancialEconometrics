@@ -149,6 +149,7 @@ EstimateCCC <- function(vY1, vY2) {
            #  step ahead prediction of the conditional mean and covariance matrix. 
            #  You can use the rugarch package to estimate the univariate models.
 
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 8")
 
 source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/DCC.r")
 
@@ -156,3 +157,101 @@ source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Docume
 ### Problem 3                                                                ###
 ################################################################################
 
+# Consider the last 2000 financial returns of Hewlett–Packard (HPQ) and
+# Procter & Gamble (PG) in the dji30ret dataset available in the rugarch package.
+
+library(rugarch)
+library(Rsolnp)
+library(ggplot2)
+library(ggthemes)
+data("dji30ret")
+
+
+#full sample size
+iT = 2000
+
+vY1 = tail(dji30ret[, "HPQ"] * 100, iT)
+vY2 = tail(dji30ret[, "PG"] * 100, iT)
+
+# Plot the cumulative returns of HPQ and PG using ggplot2
+df <- data.frame(
+    x = seq(1, 2000),
+    y = c(cumsum(vY1),
+          cumsum(vY2)),
+    col = rep(c("HPQ", "PG"), each = 2000)
+    )
+ggplot(df, aes(x, y, color = col)) + 
+        geom_line() + 
+        labs(x = "Time", y = "Cumulative returns") + 
+        theme_economist() + 
+        theme(legend.title=element_blank())
+
+## we (arbitrarily) set K such that we have an annualized expected return of 7%
+dK = 7/225
+
+#length of the out of sample period
+# if IF = 1000 you get the answer of the Exercise set.
+# here we use IF = 100 because it is faster to run.
+iF = 100
+
+aWeights = array(NA, dim = c(iF, 2, 2, 2),
+                 dimnames = list(NULL, c("CCC", "DCC"), c("MVP", "FixMean"), c("omega1", "omega2")))
+
+## it is computationally expensive !!! try with a fixed t before.
+
+for (t in (iT - iF):(iT - 1)) {
+  #Estimate models and make prediction for time t + 1
+  Fit_CCC = EstimateCCC(vY1[(t - iT + iF + 1):t], vY2[(t - iT + iF + 1):t])
+  Fit_DCC = EstimateDCC(vY1[(t - iT + iF + 1):t], vY2[(t - iT + iF + 1):t])
+
+  #Compute Tangency Portfolio
+  aWeights[t - iT + iF + 1, "CCC", "FixMean", ] = EfficientSet(mSigma = Fit_CCC$mSigma_tp1, vMu = Fit_CCC$vMu_tp1, dK)$weights
+  aWeights[t - iT + iF + 1, "DCC", "FixMean", ] = EfficientSet(mSigma = Fit_DCC$mSigma_tp1, vMu = Fit_DCC$vMu_tp1, dK)$weights
+
+  #Compute MVP
+  aWeights[t - iT + iF + 1, "CCC", "MVP", ] = MinimumVariancePortfolio(mSigma = Fit_CCC$mSigma_tp1)
+  aWeights[t - iT + iF + 1, "DCC", "MVP", ] = MinimumVariancePortfolio(mSigma = Fit_DCC$mSigma_tp1)
+
+  cat(paste(t, "\n"))
+
+}
+
+#array of portfolio returns computed according to different strategies
+#and models.
+mPortfolioReturns = matrix(NA, iF, 4, dimnames = list(NULL, c("CCC-MVP", "CCC-FixMean", "DCC-MVP", "DCC-FixMean")))
+
+mPortfolioReturns[, "CCC-MVP"] = aWeights[, "CCC", "MVP", "omega1"] * tail(vY1, iF) +
+  aWeights[, "CCC", "MVP", "omega2"] * tail(vY2, iF)
+
+mPortfolioReturns[, "DCC-MVP"] = aWeights[, "DCC", "MVP", "omega1"] * tail(vY1, iF) +
+  aWeights[, "DCC", "MVP", "omega2"] * tail(vY2, iF)
+
+mPortfolioReturns[, "CCC-FixMean"] = aWeights[, "CCC", "FixMean", "omega1"] * tail(vY1, iF) +
+  aWeights[, "CCC", "FixMean", "omega2"] * tail(vY2, iF)
+
+mPortfolioReturns[, "DCC-FixMean"] = aWeights[, "DCC", "FixMean", "omega1"] * tail(vY1, iF) +
+  aWeights[, "DCC", "FixMean", "omega2"] * tail(vY2, iF)
+
+# Porfolio statistics
+mStat = matrix(NA, 5, 4, dimnames = list(c("Mean", "SD", "SR", "Kurtosis", "Skewness"),
+                                         c("CCC-MVP", "CCC-TP", "DCC-MVP", "DCC-TP")))
+
+mStat["Mean", ] = colMeans(mPortfolioReturns)
+mStat["SD", ] = apply(mPortfolioReturns, 2, sd)
+mStat["SR", ] = mStat["Mean", ]/mStat["SD", ]
+mStat["Kurtosis", ] = apply(mPortfolioReturns, 2, function(x) mean((x - mean(x))^4)/(sd(x)^4))
+mStat["Skewness", ] = apply(mPortfolioReturns, 2, function(x) mean((x - mean(x))^3)/(sd(x)^3))
+
+# Plot the portfolio weights
+df <- data.frame(
+    x = seq(1, iF),
+    y = c(aWeights[,, "MVP", "omega1"], aWeights[,, "FixMean", "omega1"]),
+    # append CCC-TP and DCC-TP to CCC-MVP and DCC-MVP
+    col = rep(c("CCC-MVP", "DCC-MVP", "CCC-FixMean", "DCC-FixMean"), each = iF)
+    )
+ggplot(df, aes(x, y, color = col)) + 
+        geom_line() + 
+        labs(x = "Time", y = "Portfolio weights") + 
+        theme_economist() + 
+        theme(legend.title=element_blank())
+ggsave("./img/PortfolioWeights.pdf")

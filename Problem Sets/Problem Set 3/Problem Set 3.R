@@ -185,7 +185,7 @@ mKF <- fit$kalman
 
 # Plot the smoothed shocks
 plot(t(mKF$eps_smoot), type = "l", col = "blue", lwd = 2, xlab = "Time", ylab = "Volatility")
-lines(t(mKF$eta_smoot), col = "red", lwd = 2)
+lines(t(mKF$a_pred), col = "red", lwd = 2)
 
 # Plot the smoothed volatility
 plot(t(mKF$a_pred), type = "l", col = "blue", lwd = 2, xlab = "Time", ylab = "Volatility")

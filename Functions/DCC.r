@@ -45,126 +45,6 @@ DCCFilter <- function(mEta, dA, dB, mQ) {
   return(lOut)
 }
 
-# Function to estimate the DCC model
-# y_t = Sigma_t^{1/2}z_t
-# Sigma_t = D_t^{1/2} R_t D_t^{1/2}
-# where D_t is a diagonal matrix with
-# typical element D_iit = sigma_it^2.
-# we define with eta_t = D_t^{-1/2} y_t
-Estimate_DCC <- function(mY) {
-
-  ## estimate the marginal GARCH models
-  require(rugarch) #load the rugarch package
-  require(Rsolnp)
-
-  #####################################################
-  # The following part of GARCH estimation can be written
-  # in a nicer way by using the multifit function in the rugarch
-  # package. See help(multifit)
-  #############################################################
-
-  #Marginal garch specifications
-  SpecGARCH = ugarchspec(mean.model = list(armaOrder = c(0, 0)))
-
-  #list where marginal models are stored
-  lFit_univariate = list()
-
-  #estimate the univariate GARCH models
-  for(n in 1:ncol(mY)) {
-    lFit_univariate[[n]] = ugarchfit(SpecGARCH, mY[, n])
-  }
-
-  #Compute the residuals
-  mEta = do.call(cbind, lapply(lFit_univariate, function(Fit) {
-    as.numeric(residuals(Fit, standardize = TRUE))
-  }))
-
-  #####################################################
-
-  ## maximization of the DCC likelihood
-
-  #initial parameters
-  vPar = c(0.04, 0.9)
-
-  #unconditional correlation
-  mQ = cor(mEta)
-
-  #maximize the DCC likelihood
-  optimizer = solnp(vPar, fun = function(vPar, mEta, mQ) {
-
-    Filter = DCCFilter(mEta, vPar[1], vPar[2], mQ)
-    dNLLK = -as.numeric(Filter$dLLK)
-    return(dNLLK)
-
-  }, ineqfun = function(vPar, ...) {
-    sum(vPar)
-  }, ineqLB = 1e-4, ineqUB = 0.999,
-  LB = c(1e-4, 1e-4), UB = c(0.999, 0.999),
-  mEta = mEta, mQ = mQ)
-
-  #Extract the estimated parameters
-  vPar = optimizer$pars
-
-  #Filter the dynamic correlation using the estimated parameters
-  Filter = DCCFilter(mEta, vPar[1], vPar[2], mQ)
-
-  #extract univariate volatilities
-  mSigma = do.call(cbind, lapply(lFit_univariate, function(Fit) {
-    as.numeric(sigma(Fit))
-  }))
-
-  #extract univariate estimated parameters
-  mCoef = do.call(cbind, lapply(lFit_univariate, function(Fit) {
-    as.numeric(coef(Fit))
-  }))
-
-  #compute the likelihood of the volatility  part
-  dLLK_V = do.call(sum, lapply(lFit_univariate, function(Fit) {
-    as.numeric(likelihood(Fit))
-  }))
-
-  #compute the total likelihood
-  ## this can be computed in the following way or
-  ## or as in slides 35 of lecture 10
-  aCor = Filter[["aCor"]]
-  aCov = array(NA, dim = dim(aCor))
-  iT = dim(aCor)[3]
-  iN = dim(aCor)[2]
-  dkern = 0
-  for (t in 1:iT) {
-    aCov[,,t] = diag(mSigma[t, ]) %*% aCor[,,t] %*% diag(mSigma[t, ])
-    dkern = dkern + as.numeric(determinant(aCov[,,t], logarithm = TRUE)$modulus + t(t(mY[t, ])) %*% solve(aCov[,,t]) %*% t(mY[t, ]))
-  }
-  dLLK = -0.5*(iT * iN * log(2*pi) + dkern)
-
-  ## Compute z_t
-
-  iT = nrow(mY)
-
-  mZ = matrix(0, iT, ncol(mY))
-
-  for (t in 1:iT) {
-    mZ[t, ] = diag(1/mSigma[t, ]) %*% solve(chol(aCor[,,t])) %*% as.numeric(mY[t, ])
-  }
-
-  BIC = log(iT) * 8 - 2 * dLLK
-
-  lOut = list()
-
-  #output the results
-  lOut[["dLLK"]] = dLLK
-  lOut[["mCoef"]] = mCoef
-  lOut[["vPar"]] = vPar
-  lOut[["mSigma"]] = mSigma
-  lOut[["aCor"]] = aCor
-  lOut[["mEta"]] = mEta
-  lOut[["mZ"]] = mZ
-  lOut[["BIC"]] = BIC
-
-  return(lOut)
-
-}
-
 # Two step estimation of DCC model with Student's t
 # distributed shocks
 
@@ -200,6 +80,135 @@ Estimate_DCC_t <- function(mY) {
   lOut = list()
   lOut[["Fit_QML"]] = Fit_QML
   lOut[["dNu"]] = dNu
+
+  return(lOut)
+
+}
+
+
+
+#DCC estimation
+# StartingDCCPar is a vector of starting parameters for the DCC estimation
+# we will use previous estimates of the DCC parameters as starting value during
+# the for loop in the empirical part. This will speed up the estimation.
+EstimateDCC <- function(vY1, vY2) {
+  require(rugarch)
+
+  #Model Specification
+  ModelSpec = ugarchspec(mean.model = list(armaOrder = c(1, 0)))
+
+  #Model estimation -- univariate
+  Fit_1 = ugarchfit(ModelSpec, vY1)
+  Fit_2 = ugarchfit(ModelSpec, vY2)
+
+  #standardized residuas
+  vZ_1 = residuals(Fit_1, standardize = TRUE)
+  vZ_2 = residuals(Fit_2, standardize = TRUE)
+
+  #unconditional correlation
+  mR = cor(cbind(vZ_1, vZ_2))
+
+  #Model estimation -- multivariate
+
+  ## maximization of the DCC likelihood
+  vPar = c(0.04, 0.9)
+
+  #maximize the DCC likelihood
+  optimizer = solnp(vPar, fun = function(vPar, mEta, mQ) {
+
+    Filter = DCCFilter(mEta, vPar[1], vPar[2], mQ)
+    dNLLK = -as.numeric(Filter$dLLK)
+    return(dNLLK)
+
+  }, ineqfun = function(vPar, ...) {
+    sum(vPar)
+  }, ineqLB = 1e-4, ineqUB = 0.999,
+  LB = c(1e-4, 1e-4), UB = c(0.999, 0.999),
+  mEta = cbind(vZ_1, vZ_2), mQ = mR)
+
+  vPar = optimizer$pars
+
+  ##prediction
+  Forc_1 = ugarchforecast(Fit_1, n.ahead = 1)
+  Forc_2 = ugarchforecast(Fit_2, n.ahead = 1)
+
+  #one step ahead standard deviations
+  vSigma1_tp1 = as.numeric(sigma(Forc_1))
+  vSigma2_tp1 = as.numeric(sigma(Forc_2))
+  #one step ahead mean
+  vMu1_tp1 = as.numeric(fitted(Forc_1))
+  vMu2_tp1 = as.numeric(fitted(Forc_2))
+
+  #Filter DCC
+  Filter_DCC = DCCFilter(mEta = cbind(vZ_1, vZ_2), vPar[1], vPar[2], mR)
+
+  #prediction DCC
+  mR_tp1 = Filter_DCC$aCor[,, length(vY1)]
+
+  #one step ahead covariance matrix
+  mSigma_tp1 = diag(c(vSigma1_tp1, vSigma2_tp1)) %*% mR_tp1 %*% diag(c(vSigma1_tp1, vSigma2_tp1))
+  #one step ahead mean vector
+  vMu_tp1 = c(vMu1_tp1, vMu2_tp1)
+
+  #output
+  lOut = list()
+
+  lOut[["Fit_1"]] = Fit_1
+  lOut[["Fit_2"]] = Fit_2
+  lOut[["Filter_DCC"]] = Filter_DCC
+  lOut[["optimizer"]] = optimizer
+  lOut[["vDCCPar"]] = vPar
+  lOut[["mR"]] = mR
+  lOut[["mSigma_tp1"]] = mSigma_tp1
+  lOut[["vMu_tp1"]] = vMu_tp1
+
+  return(lOut)
+
+}
+
+
+# CCC estimation
+EstimateCCC <- function(vY1, vY2) {
+  require(rugarch)
+
+  # Model Specification
+  ModelSpec = ugarchspec(mean.model = list(armaOrder = c(1, 0)))
+
+  # Model estimation
+  Fit_1 = ugarchfit(ModelSpec, vY1)
+  Fit_2 = ugarchfit(ModelSpec, vY2)
+
+  # Standardized residuas
+  vZ_1 = residuals(Fit_1, standardize = TRUE)
+  vZ_2 = residuals(Fit_2, standardize = TRUE)
+
+  # Unconditional correlation
+  mR = cor(cbind(vZ_1, vZ_2))
+
+  ## Prediction
+  Forc_1 = ugarchforecast(Fit_1, n.ahead = 1)
+  Forc_2 = ugarchforecast(Fit_2, n.ahead = 1)
+
+  # One step ahead standard deviations
+  vSigma1_tp1 = as.numeric(sigma(Forc_1))
+  vSigma2_tp1 = as.numeric(sigma(Forc_2))
+  # One step ahead mean
+  vMu1_tp1 = as.numeric(fitted(Forc_1))
+  vMu2_tp1 = as.numeric(fitted(Forc_2))
+
+  # One step ahead covariance matrix
+  mSigma_tp1 = diag(c(vSigma1_tp1, vSigma2_tp1)) %*% mR %*% diag(c(vSigma1_tp1, vSigma2_tp1))
+  # One step ahead mean vector
+  vMu_tp1 = c(vMu1_tp1, vMu2_tp1)
+
+  # Output
+  lOut = list()
+
+  lOut[["Fit_1"]] = Fit_1
+  lOut[["Fit_2"]] = Fit_2
+  lOut[["mR"]] = mR
+  lOut[["mSigma_tp1"]] = mSigma_tp1
+  lOut[["vMu_tp1"]] = vMu_tp1
 
   return(lOut)
 
