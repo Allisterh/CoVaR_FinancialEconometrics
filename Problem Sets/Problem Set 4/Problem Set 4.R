@@ -169,7 +169,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
     # initialize values with draws from unconditional distribution
     # fill in first row
     alpha_bootstrap[1, ] <- rnorm(
-        m,
+        N,
         mean = omega / (1.0 - phi),
         sd = sqrt(tau**2 / (1.0 - phi**2))
     )
@@ -220,7 +220,7 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
         volatility[t] <- sum(exp(alpha_bootstrap[t, ] / 2) * norm_weights)
 
         # resample
-        if (effective_sample_size(norm_weights, ess_g, m)) {
+        if (effective_sample_size(norm_weights, ess_g, N)) {
             alpha_bootstrap[t, ] <- sample(
                 alpha_bootstrap[t, ],
                 size = N,
@@ -358,27 +358,31 @@ vol_bootstrapped_g050 <- bootstrap_filter(
     ess_g = 0.5,
     N = particles
 )
-plot.new()
-File <- "./img/1,4_1000particles.png"
-if (file.exists(File)) stop(File, " already exists")
-dir.create(dirname(File), showWarnings = FALSE)
-png(File)
 
-# Visual inspection
-plot.ts(
-    simulated_sv$sigma2,
-    main = paste(c(particles, " Particles for Bootstrap")),
-    xlab = "Time",
-    ylab = "Volatility"
-)
-lines(vol_bootstrapped_g1$volatility, col = "blue")
-lines(vol_bootstrapped_g075$volatility, col = "red")
-lines(vol_bootstrapped_g050$volatility, col = "purple")
-legend(1, 5,
-    legend = c("g = 1.0", "g = 0.75", "g = 0.50"),
-    col = c("blue", "red", "purple"), lty = rep(1, 3), cex = 1.5
-)
-if(!is.null(dev.list())) dev.off()
+# Plot the simulated volatility and the filtered volatility in one plot
+if(!require(ggplot2)){install.packages('ggplot2')}
+if(!require(ggthemes)){install.packages('ggthemes')}
+# Create Dataframe for ggplot
+df <- data.frame(
+    time = 1:length(simulated_sv$sigma2),
+    vol = c(simulated_sv$sigma2,
+            vol_bootstrapped_g1$volatility,
+            vol_bootstrapped_g075$volatility,
+            vol_bootstrapped_g050$volatility),
+    lab = rep(c("True","g = 1.0", "g = 0.75", "g = 0.50"),
+            each = length(simulated_sv$sigma2))
+    )
+
+# Plot
+ggplot(data = df, aes(x=time, y=vol, col = lab)) + 
+                                    geom_line() +
+                                    labs(title = paste0((particles), " Particles for Bootstrap")) +
+                                    labs(x = "Time") +
+                                    labs(y = "Volatility") +
+                                    theme_economist() +
+                                    theme(legend.title=element_blank())
+ggsave("./img/10000 particles.pdf")
+
 
 ## Try with 25 particles
 # number of particles
@@ -414,25 +418,30 @@ vol_bootstrapped_g050 <- bootstrap_filter(
     N = particles
 )
 
-File <- "./img/1,4_25particles.png"
-if (file.exists(File)) stop(File, " already exists")
-dir.create(dirname(File), showWarnings = FALSE)
-png(File)
-# Visual inspection
-plot.ts(
-    simulated_sv$sigma2,
-    main = paste(c(particles, " Particles for Bootstrap")),
-    xlab = "Time",
-    ylab = "Volatility"
-)
-lines(vol_bootstrapped_g1$volatility, col = "blue")
-lines(vol_bootstrapped_g075$volatility, col = "red")
-lines(vol_bootstrapped_g050$volatility, col = "purple")
-legend(1, 5,
-    legend = c("g = 1.0", "g = 0.75", "g = 0.50"),
-    col = c("blue", "red", "purple"), lty = rep(1, 3), cex = 1.5
-)
-if(!is.null(dev.list())) dev.off()
+df <- data.frame(
+    time = 1:length(simulated_sv$sigma2),
+    vol = c(simulated_sv$sigma2,
+            vol_bootstrapped_g1$volatility,
+            vol_bootstrapped_g075$volatility,
+            vol_bootstrapped_g050$volatility),
+    lab = rep(c("True","g = 1.0", "g = 0.75", "g = 0.50"),
+            each = length(simulated_sv$sigma2))
+    )
+
+# Plot
+ggplot(data = df, aes(x=time, y=vol, col = lab)) + 
+                                    geom_line() +
+                                    labs(title = paste0((particles), " Particles for Bootstrap")) +
+                                    labs(x = "Time") +
+                                    labs(y = "Volatility") +
+                                    theme_economist() +
+                                    theme(legend.title=element_blank())
+ggsave("./img/25 particles.pdf")
+
+# The precision of the filtered volatility is affected by the number of particles.
+# The more particles, the more precise the filtered volatility is.
+
+
 
 ### Point 5)
 # Estimate the parameters omega, rho and tau using the QML estimator
@@ -444,7 +453,7 @@ if(!is.null(dev.list())) dev.off()
 # Source model from Problem Set 3
 
 source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/quasi_ml_sv.R")
-
+source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/Bootstrap.R")
 
 # estimate model using QML
 fit_qml <- quasi_ml_sv(simulated_sv$y)
@@ -486,28 +495,25 @@ vol_bootstrapped_estimated <- bootstrap_filter(
     N = particles
 )
 
-File <- "./img/1,5.png"
-if (file.exists(File)) stop(File, " already exists")
-dir.create(dirname(File), showWarnings = FALSE)
-png(File)
+# Create Dataframe for ggplot
+df <- data.frame(
+    time = 1:length(simulated_sv$sigma2),
+    vol = c(simulated_sv$sigma2,
+            vol_bootstrapped_true$volatility,
+            vol_bootstrapped_estimated$volatility),
+    lab = rep(c("True","True (Bootstrapped)", "Estimated (Bootstrapped)"),
+            each = length(simulated_sv$sigma2))
+    )
 
-# Visual inspection
-plot.new()
-plot.ts(
-    simulated_sv$sigma2,
-    main = paste(c(particles, " Particles for Bootstrap")),
-    xlab = "Time",
-    ylab = "Volatility"
-)
-lines(vol_bootstrapped_true$volatility, col = "blue")
-lines(vol_bootstrapped_estimated$volatility, col = "red")
-legend(1, 5,
-    legend = c("True parameters", "Estimated parameters"),
-    col = c("blue", "red"), lty = rep(1, 2), cex = 1.5
-)
-
-
-if(!is.null(dev.list())) dev.off()
+# Plot
+ggplot(data = df, aes(x=time, y=vol, col = lab)) + 
+                                    geom_line() +
+                                    labs(title = paste0("True vs estimated vol")) +
+                                    labs(x = "Time") +
+                                    labs(y = "Volatility") +
+                                    theme_economist() +
+                                    theme(legend.title=element_blank())
+ggsave("./img/true vs estimated vol.pdf")
 
 
 # comments from solution
@@ -522,7 +528,11 @@ if(!is.null(dev.list())) dev.off()
 ################################################################################
 ### Problem 2                                                                ###
 ################################################################################
+rm(list=ls())
+source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/Bootstrap.R")
+source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/quasi_ml_sv.R")
 
+setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 4")
 
 ### Point 1)
 # Download the time series of the S&P500 index from Yahoo finance from
@@ -551,7 +561,7 @@ price[price == 0] <- mean(price)
 
 ### Point 2)
 # Estimate the SV model by QML.
-source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 3/Problem Set 3.R")
+
 # estimate model using QML
 fit_qml <- quasi_ml_sv(price)
 
@@ -568,6 +578,7 @@ tau_hat
 
 
 ### Point 3)
+
 # Perform filtering using the Bootstrap filter with g = 1 and N = 10000.
 sv_volatility <- bootstrap_filter(
     price,
@@ -596,20 +607,21 @@ fit_garch <- ugarchfit(spec, price)
 # Compare in a figure the series of filtered volatility from the SV model
 # and the one obtained by the GARCH model.
 
-
-
 # Visual inspection
-plot.ts(
-    sv_volatility$volatility,
-    main = "10.000 Particles for Bootstrap",
-    xlab = "Time",
-    ylab = "Volatility"
-)
-# extract conditional sigma values
-lines(as.numeric(sigma(fit_garch)), col = "blue")
-legend(2000, 5,
-    legend = c("SV Model", "GARCH(1,1)"),
-    col = c("blue", "red"), lty = rep(1, 2), cex = 1.5
-)
+df <- data.frame(
+    time = 1:length(sv_volatility$volatility),
+    vol = c(sv_volatility$volatility,
+            as.numeric(sigma(fit_garch))),
+    lab = rep(c("SV Model","GARCH(1,1)"),
+            each = length(sv_volatility$volatility))
+    )
 
-if(!is.null(dev.list())) dev.off()
+# Plot
+ggplot(data = df, aes(x=time, y=vol, col = lab)) + 
+                                    geom_line() +
+                                    labs(title = paste0("Volatility of SV vs GARCH(1,1)")) +
+                                    labs(x = "Time") +
+                                    labs(y = "Volatility") +
+                                    theme_economist() +
+                                    theme(legend.title=element_blank())
+ggsave("./img/SV vs GARCH.pdf")
