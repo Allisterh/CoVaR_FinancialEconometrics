@@ -119,11 +119,11 @@ kalman_filter <- function(mY, mZ, mD = matrix(1,1,1),mS, mT, mH, mQ, a1, P1, Smo
             # Smoothed state variance Var[alpha_t | Y_{1:n}], from slide 28
             V[, , t] <- P_pred[, , t] - P_pred[, , t] %*% N[, , t - 1] %*% P_pred[, , t]
             
-            # Not that we have smoothed states for the entire model, we can solve for the shocks
-            # eps_t = S * inv(F_t) * v_t - K_t' * r_t
-            eps_smoot[, t] <- mS %*% (solve(F[, , t]) %*% v[, t] - t(K[, , t]) %*% r[, t])
-            # eta_t = Q * inv(F_t) * v_t - K_t' * r_t
-            eta_smoot[, t] <- mQ %*% t(mH) %*% r[, t]
+            # Now that we have smoothed states for the entire model, we can solve for the shocks
+            # D * eps_t = Y_t - Z * a_t <=> eps_t = inv(D) * (Y_t - Z * a_t)
+            eps_smoot[, t] <- solve(mD) %*% (mY[, t] - mZ %*% a_smoot[, t])
+            # H * eta_t = Z * a_t - T * a_{t-1} <=> eta_t = inv(H) * (Z * a_t - T * a_{t-1})
+            eta_smoot[, t] <- solve(mH) %*% (mZ %*% a_smoot[, t] - mT %*% a_smoot[, t - 1])
         }
     }
 
