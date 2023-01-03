@@ -27,7 +27,7 @@
 
 
 
-PattonFilter <- function(mU, CopType, dOmega, dAlpha, dBeta, dNu) {
+PattonFilter <- function(mU, CopType, dOmega, dAlpha, dBeta, dNu, M = 1) {
   
   # Lambda mapping function (modified logistic function)
   # Returns \Lambda(x)=\frac{1-e^{-x}}{1+e^{-x}}, see slide 32 of lecture 11
@@ -62,8 +62,12 @@ PattonFilter <- function(mU, CopType, dOmega, dAlpha, dBeta, dNu) {
   
   ## Main loop ##
   for (t in 2:iT) {
+    for (j in 1:M) {
+      # Compute the correlation using the Patton's (2006) recursion, see slide 32 of lecture 11
+      vCor[t] = LambdaFun(dOmega + dBeta * vCor[t - 1] + dAlpha * sum(mU_Tr[t - j, 1] * mU_Tr[t - j, 2]))
+    }
     # Update the correlation using the Patton's (2006) recursion, see slide 32 of lecture 11
-    vCor[t] = LambdaFun(dOmega + dBeta * vCor[t - 1] + dAlpha * mU_Tr[t - 1, 1] * mU_Tr[t - 1, 2])
+    #vCor[t] = LambdaFun(dOmega + dBeta * vCor[t - 1] + dAlpha * mU_Tr[t - 1, 1] * mU_Tr[t - 1, 2])
     
     # Compute the likelihood contribution at time t
     if (CopType == "norm") {
@@ -104,7 +108,7 @@ PattonFilter <- function(mU, CopType, dOmega, dAlpha, dBeta, dNu) {
 # 7. The function "PattonFilter" computes the filtered correlation parameter.
 ####################################################################################################
 
-Estimate_Patton <- function(mY, CopType) {
+Estimate_Patton <- function(mY, CopType, M = 1) {
   
   ## estimate the marginal GARCH models
   require(rugarch) #load the rugarch package
@@ -147,7 +151,7 @@ Estimate_Patton <- function(mY, CopType) {
     
     optimizer = solnp(vPar, fun = function(vPar, mU) {
       
-      Filter = PattonFilter(mU, CopType = "norm", vPar[1], vPar[2], vPar[3], dNu = NA)
+      Filter = PattonFilter(mU, CopType = "norm", M = M, vPar[1], vPar[2], vPar[3], dNu = NA)
       dNLLK = -as.numeric(Filter$dLLK)
       
       if (!is.finite(dNLLK)) {
@@ -174,7 +178,7 @@ Estimate_Patton <- function(mY, CopType) {
     
     optimizer = solnp(vPar, fun = function(vPar, mU) {
       
-      Filter = PattonFilter(mU, CopType = "t", vPar[1], vPar[2], vPar[3], dNu = vPar[4])
+      Filter = PattonFilter(mU, CopType = "t", M = M, vPar[1], vPar[2], vPar[3], dNu = vPar[4])
       dNLLK = -as.numeric(Filter$dLLK)
       
       if (!is.finite(dNLLK)) {
@@ -197,10 +201,10 @@ Estimate_Patton <- function(mY, CopType) {
   
   # compute the filtered correlation parameter
   if (CopType == "norm") {
-    Filter = PattonFilter(mU, CopType = "norm", vPar[1], vPar[2], vPar[3], dNu = NA)
+    Filter = PattonFilter(mU, CopType = "norm", M = M, vPar[1], vPar[2], vPar[3], dNu = NA)
   }
   if (CopType == "t") {
-    Filter = PattonFilter(mU, CopType = "t", vPar[1], vPar[2], vPar[3], dNu = vPar[4])
+    Filter = PattonFilter(mU, CopType = "t", M = M, vPar[1], vPar[2], vPar[3], dNu = vPar[4])
   }
   
   #extract univariate volatilities

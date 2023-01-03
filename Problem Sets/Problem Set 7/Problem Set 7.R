@@ -26,10 +26,10 @@ data(dji30ret)
 dj_returns <- dji30ret[seq(1, 2000), c("AA", "AXP")]
 
 # Estimate a the Patton’s model with Gaussian copula.
-copNorm <- Estimate_Patton(CopType = "norm", mY = dj_returns)
+copNorm <- Estimate_Patton(CopType = "norm", mY = dj_returns, M = 10)
 
 # Estimate a the Patton’s model with Student’s t copula.
-copT <- Estimate_Patton(CopType = "t", mY = dj_returns)
+copT <- Estimate_Patton(CopType = "t", mY = dj_returns, M = 10)
 
 # Compare the filtered copula correlation parameter of the Gaussian and Student’s t copula models.
 if(!require(ggplot2)){install.packages('ggplot2')}
