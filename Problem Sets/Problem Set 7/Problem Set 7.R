@@ -25,12 +25,13 @@ data(dji30ret)
 # save returns in vector (ticker AA and AXP first 2000 observations)
 dj_returns <- dji30ret[seq(1, 2000), c("AA", "AXP")]
 
+# Estimate a the Patton’s model with Gaussian copula.
 copNorm <- Estimate_Patton(CopType = "norm", mY = dj_returns)
+
+# Estimate a the Patton’s model with Student’s t copula.
 copT <- Estimate_Patton(CopType = "t", mY = dj_returns)
 
-
-
-### Compare the correlation of the two models
+# Compare the filtered copula correlation parameter of the Gaussian and Student’s t copula models.
 if(!require(ggplot2)){install.packages('ggplot2')}
 if(!require(ggthemes)){install.packages('ggthemes')}
 df <- data.frame(
@@ -51,3 +52,9 @@ ggplot(data = df, aes(x=time, y=corr, col = lab)) +
                                     theme(legend.title=element_blank())
 setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 7")
 ggsave("./img/Correlation of Gaussian Copula and t Copula.pdf")
+
+# The correlation of the Gaussian copula is more stable than the correlation of the Student’s t copula.
+
+# Compare the two copula models using BIC. Which model is selected?
+sort(c(BIC_Gaussian = copNorm$BIC, BIC_t = copT$BIC))
+# The Student’s t copula model is selected.
