@@ -64,20 +64,8 @@ mFrontier = t(sapply(vK, function(dK) {
 plot(mFrontier[,2], mFrontier[,1], type = "l", ylab = "variance", xlab = "mean")
 
 
-if(!require(ggplot2)){install.packages('ggplot2')}
-if(!require(ggthemes)){install.packages('ggthemes')}
 
-df <- data.frame(
-    x = mFrontier[,2],
-    y = mFrontier[,1]
-    )
-# Plot the efficient frontier using ggplot2
-ggplot(df, aes(x, y)) +
-  geom_point() +
-  labs(x = "Mean", y = "Variance") +
-  theme_economist() +
-  theme(legend.position = "none")
-ggsave("./img/EfficientFrontier.pdf")
+
 
 
 ### Point iii) Write a function to estimate the CCC model in the Gaussian
@@ -166,7 +154,6 @@ library(ggplot2)
 library(ggthemes)
 data("dji30ret")
 
-
 #full sample size
 iT = 2000
 
@@ -185,6 +172,7 @@ ggplot(df, aes(x, y, color = col)) +
         labs(x = "Time", y = "Cumulative returns") + 
         theme_economist() + 
         theme(legend.title=element_blank())
+ggsave("./img/CumulativeReturns.pdf")
 
 ## we (arbitrarily) set K such that we have an annualized expected return of 7%
 dK = 7/225
