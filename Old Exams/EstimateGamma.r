@@ -68,7 +68,7 @@ ggplot(data = data.frame(vY, vMu = Fit_MEM$Filter$vMu, vVar = vVar),
   geom_line(aes(x = 1:length(vY), y = vVar, color = "vVar")) +
   labs(title = "The VIX Series and the Filtered Mean and Variance", 
        x = "Time", y = "VIX") +
-  theme_economist() + 
+  theme_economist() +
   theme(legend.title=element_blank())
 ggsave("./Old Exams/VIX, Filtered Mean and Variance.pdf")
 
