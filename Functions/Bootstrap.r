@@ -1,10 +1,10 @@
+#####################################################################################
 # Write a function to perform filtering of the volatility in the Stochastic
 # Volatility (E[\exp\left(\alpha_{t}/2\right)\mid y_{1:t}) using the Bootstrap
 # filter reported in slide 25 of Lecture 8.
 
 bootstrap_filter_NoESS <- function(returns, omega, phi, tau, N = 10000) {
     # function to perform bootstrap particle filter algorithm
-
     # number of observations
     obs <- length(returns)
 
@@ -18,7 +18,6 @@ bootstrap_filter_NoESS <- function(returns, omega, phi, tau, N = 10000) {
 
     # importance weight at each t
     weights <- numeric(N)
-
 
     # initialize values with draws from unconditional distribution
     # fill in first row
@@ -85,6 +84,15 @@ bootstrap_filter_NoESS <- function(returns, omega, phi, tau, N = 10000) {
     )
 }
 
+
+#####################################################################################
+                ### The code does the following: ###
+# 1. We draw `N` samples from the unconditional distribution of the alpha process.
+# 2. We compute the importance weights for the first observation.
+# 3. We normalize the weights and approximate the volatility of the first observation
+# 4. We resample if the effective sample size is smaller than `gN`.
+# 5. We repeat the process for each observation.
+#####################################################################################
 bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
     #' #####################################################
     #' ### refactor of function 1 to account for ESS ###
@@ -119,18 +127,13 @@ bootstrap_filter <- function(returns, omega, phi, tau, ess_g, N = 10000) {
     #' based on effective sample size.
     #' TRUE if ESS < gN
     #' FALSE if ESS >= gN
-    #'
     #' weights:  `vector` of weights
     #' g:        `double` ESS threashold for effective sample size
     #' m:        `int` number og bootstraps
-
     ess <- 1.0 / sum(weights**2)
 
-    return(
-        ess < (g * N)
-        )
+    return(ess < (g * N))
     }
-
 
     # initialize values with draws from unconditional distribution
     # fill in first row

@@ -110,8 +110,8 @@ PattonFilter <- function(mU, CopType, dOmega, dAlpha, dBeta, dNu, M = 1) {
 
 Estimate_Patton <- function(mY, CopType, M = 1) {
   
-  ## estimate the marginal GARCH models
-  require(rugarch) #load the rugarch package
+  ## Estimate the marginal GARCH models
+  require(rugarch)
   require(copula)
   require(Rsolnp)
   
@@ -140,8 +140,8 @@ Estimate_Patton <- function(mY, CopType, M = 1) {
   mU[mU < 0.001] = 0.001
   
   ## Maximization of the Copula likelihood in the t and norm copula cases
-  # here we impose the constraint alpha + beta < 1 to avoid explosive patterns
-  # in the correlation parameter
+  #  here we impose the constraint alpha + beta < 1 to avoid explosive patterns
+  #  in the correlation parameter
   if (CopType == "norm") { # Normal copula case
     # Approximated unconditional correlation
     dCor_app = cor(mU[, 1], mU[, 2]) * 0.16 
@@ -199,7 +199,7 @@ Estimate_Patton <- function(mY, CopType, M = 1) {
   vPar = optimizer$pars
   dLLK_C = -tail(optimizer$values, 1)
   
-  # compute the filtered correlation parameter
+  # Compute the filtered correlation parameter
   if (CopType == "norm") {
     Filter = PattonFilter(mU, CopType = "norm", M = M, vPar[1], vPar[2], vPar[3], dNu = NA)
   }
@@ -207,22 +207,22 @@ Estimate_Patton <- function(mY, CopType, M = 1) {
     Filter = PattonFilter(mU, CopType = "t", M = M, vPar[1], vPar[2], vPar[3], dNu = vPar[4])
   }
   
-  #extract univariate volatilities
+  # Extract univariate volatilities
   mSigma = do.call(cbind, lapply(lFit_univariate, function(Fit) {
     as.numeric(sigma(Fit))
   }))
   
-  #extract univariate estimated parameters
+  # Extract univariate estimated parameters
   mCoef = do.call(cbind, lapply(lFit_univariate, function(Fit) {
     as.numeric(coef(Fit))
   }))
   
-  #compute the likelihood od the univariate models
+  # Compute the likelihood od the univariate models
   dLLK_V = do.call(sum, lapply(lFit_univariate, function(Fit) {
     as.numeric(likelihood(Fit))
   }))
   
-  #compute the total likelihood of the model
+  # Compute the total likelihood of the model
   dLLK = dLLK_V + dLLK_C
   
   if (CopType == "norm") {
@@ -238,7 +238,7 @@ Estimate_Patton <- function(mY, CopType, M = 1) {
   
   lOut = list()
   
-  #output the results
+  # Output the results
   lOut[["dLLK"]] = dLLK
   lOut[["mCoef"]] = mCoef
   lOut[["vPar"]] = vPar

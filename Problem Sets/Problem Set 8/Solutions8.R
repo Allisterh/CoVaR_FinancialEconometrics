@@ -263,7 +263,7 @@ iF = 100
 aWeights = array(NA, dim = c(iF, 2, 2, 2),
                  dimnames = list(NULL, c("CCC", "DCC"), c("MVP", "FixMean"), c("omega1", "omega2")))
 
-## it is computationally expensive !!! try with a fixed t before.
+## It is computationally expensive !!! try with a fixed t before.
 
 for (t in (iT - iF):(iT - 1)) {
   #Estimate models and make prediction for time t + 1
