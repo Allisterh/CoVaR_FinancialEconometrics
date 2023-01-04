@@ -14,7 +14,6 @@ MinimumVariancePortfolio <- function(mSigma) {
   return(vOmega)
 }
 
-
 # This function computes the vector of weights
 # that minimize the porfolio variance subject to
 # a fixed return. (It is slide 4 of lecture 15).
@@ -41,12 +40,11 @@ EfficientSet <- function(mSigma, vMu, dK) {
               "mean" = dK))
 }
 
-###
-
 # Example: Draws the efficient frontier
 # Assume these mean and variance
 mSigma = matrix(c(5, -4,
                   -4, 15),2, byrow = TRUE)
+
 vMu = c(2, 5)
 
 # different levels of expected returns
@@ -258,7 +256,7 @@ dK = 7/225
 #length of the out of sample period
 # if IF = 1000 you get the answer of the Exercise set.
 # here we use IF = 100 because it is faster to run.
-iF = 100
+iF = 500
 
 aWeights = array(NA, dim = c(iF, 2, 2, 2),
                  dimnames = list(NULL, c("CCC", "DCC"), c("MVP", "FixMean"), c("omega1", "omega2")))
@@ -277,7 +275,7 @@ for (t in (iT - iF):(iT - 1)) {
   #Compute MVP
   aWeights[t - iT + iF + 1, "CCC", "MVP", ] = MinimumVariancePortfolio(mSigma = Fit_CCC$mSigma_tp1)
   aWeights[t - iT + iF + 1, "DCC", "MVP", ] = MinimumVariancePortfolio(mSigma = Fit_DCC$mSigma_tp1)
-
+  # Print the progress in the console
   cat(paste(t, "\n"))
 
 }
