@@ -140,6 +140,7 @@ EstimateCCC <- function(vY1, vY2) {
 setwd("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Problem Sets/Problem Set 8")
 
 source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/DCC.r")
+
 source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/ReplaceOutlierMean.r")
 
 ################################################################################
@@ -181,7 +182,7 @@ dK = 7/225
 #length of the out of sample period
 # if IF = 1000 you get the answer of the Exercise set.
 # here we use IF = 100 because it is faster to run.
-iF = 100
+iF = 500
 
 aWeights = array(NA, dim = c(iF, 2, 2, 2),
                  dimnames = list(NULL, c("CCC", "DCC"), c("MVP", "FixMean"), c("omega1", "omega2")))
@@ -243,8 +244,7 @@ dfW <- data.frame(
 )
 
 # Replace outliers in dfW with mean
-dfW$y[dfW$y > 1.5] = mean(dfW$y[dfW$y < 1.5])
-dfW$y[dfW$y < -1.5] = mean(dfW$y[dfW$y > -1.5])
+dfW[] <- lapply(dfW,replace_outlier_with_mean)
  
 ggplot(dfW, aes(x, y, color = col)) + 
         geom_line() + 
@@ -267,8 +267,6 @@ dfR <- data.frame(
 # Replace outliers in dfW with mean
 dfR[] <- lapply(dfR, replace_outlier_with_mean)
 
-dfR$y[dfR$y > 1.5] = mean(dfR$y[dfR$y < 1.5])
-dfR$y[dfR$y < -1.5] = mean(dfR$y[dfR$y > -1.5])
 
 ggplot(dfR, aes(x, y, color = col)) + 
         geom_line() + 
@@ -281,14 +279,4 @@ ggsave("./img/PortfolioReturns.pdf")
 
 vDCCMVP <- c(aWeights[, "CCC", "MVP", "omega1"])
 
-
-mW <- matrix(data = c(aWeights[, "CCC", "MVP", "omega1"],
-                      aWeights[, "CCC", "FixMean", "omega1"],
-                      aWeights[, "DCC", "MVP", "omega1"],
-                      aWeights[, "DCC", "FixMean", "omega1"]),
-           nrow = iF, ncol = 4, byrow = FALSE)
-
-
-
-vW <- append(mW[,1], mW[,2])
 

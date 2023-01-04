@@ -166,7 +166,6 @@ EstimateDCC <- function(vY1, vY2) {
 
 }
 
-
 # CCC estimation
 EstimateCCC <- function(vY1, vY2) {
   require(rugarch)
