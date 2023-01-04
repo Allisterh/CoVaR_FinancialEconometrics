@@ -1,8 +1,6 @@
 
 source("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Functions/GARCH.r")
 
-# Estimate the DCC model of Engle (2002) and the Patton's (2006) model
-
 # Filter for the dynamic correlation of the DCC model of Engle (2002)
 # mEta is a iN x iT matrix of standardized residuals
 # dA and dB are the two parameters of the DCC model
@@ -48,14 +46,13 @@ DCCFilter <- function(mEta, dA, dB, mQ) {
   return(lOut)
 }
 
-
-# Function to estimate the DCC model
+# Function to estimate the CCC model
 # y_t = Sigma_t^{1/2}z_t
-# Sigma_t = D_t^{1/2} R_t D_t^{1/2}
+# Sigma_t = D_t^{1/2} R D_t^{1/2}
 # where D_t is a diagonal matrix with
 # typical element D_iit = sigma_it^2.
 # we define with eta_t = D_t^{-1/2} y_t
-Estimate_DCC <- function(mY) {
+Estimate_CCC <- function(mY) {
 
   ## estimate the marginal GARCH models
   require(Rsolnp)
@@ -73,37 +70,12 @@ Estimate_DCC <- function(mY) {
     Fit$vZ
   }))
 
-  #####################################################
-
-  ## maximization of the DCC likelihood
-
-  #initial parameters
-  vPar = c(0.04, 0.9)
-
-  #unconditional correlation
-  mQ = cor(mEta)
-
-  #maximize the DCC likelihood
-  optimizer = solnp(vPar, fun = function(vPar, mEta, mQ) {
-
-    Filter = DCCFilter(mEta, vPar[1], vPar[2], mQ)
-    dNLLK = -as.numeric(Filter$dLLK)
-    return(dNLLK)
-
-  }, ineqfun = function(vPar, ...) {
-    sum(vPar)
-  }, ineqLB = 1e-4, ineqUB = 0.999,
-  LB = c(1e-4, 1e-4), UB = c(0.999, 0.999),
-  mEta = mEta, mQ = mQ)
-
-  #Extract the estimated parameters
-  vPar = optimizer$pars
-
-  #Extract the likelihood of the correlation part
-  dLLK_C = -tail(optimizer$values, 1)
+  mR = cor(mEta)
 
   #Filter the dynamic correlation using the estimated parameters
-  Filter = DCCFilter(mEta, vPar[1], vPar[2], mQ)
+  Filter = DCCFilter(mEta, 0, 0, mR)
+
+  dLLK_C = Filter$dLLK
 
   #extract univariate volatilities
   mSigma = do.call(cbind, lapply(lFit_univariate, function(Fit) {
@@ -124,13 +96,12 @@ Estimate_DCC <- function(mY) {
   dLLK = dLLK_V + dLLK_C
 
   ## Compute z_t
-  aCor = Filter[["aCor"]]
   iT = nrow(mY)
 
   mZ = matrix(0, iT, ncol(mY))
 
   for (t in 1:iT) {
-    mZ[t, ] = diag(1/mSigma[t, ]) %*% solve(chol(aCor[,,t])) %*% as.numeric(mY[t, ])
+    mZ[t, ] = diag(1/mSigma[t, ]) %*% solve(chol(mR)) %*% as.numeric(mY[t, ])
   }
 
   BIC = log(iT) * 8 - 2 * dLLK
@@ -140,9 +111,9 @@ Estimate_DCC <- function(mY) {
   #output the results
   lOut[["dLLK"]] = dLLK
   lOut[["mCoef"]] = mCoef
-  lOut[["vPar"]] = vPar
+  # lOut[["vPar"]] = vPar
   lOut[["mSigma"]] = mSigma
-  lOut[["aCor"]] = aCor
+  lOut[["mR"]] = mR
   lOut[["mEta"]] = mEta
   lOut[["mZ"]] = mZ
   lOut[["BIC"]] = BIC
