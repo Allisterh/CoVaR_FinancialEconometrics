@@ -9,22 +9,22 @@ DCCFilter <- function(mEta, dA, dB, mQ) {
   iN = ncol(mEta)
   iT = nrow(mEta)
 
-  # initialize the array for the correlations
+  # Initialize the array for the correlations
   aCor = array(0, dim = c(iN, iN, iT))
-  # initialize the array for the Q matrices
+  # Initialize the array for the Q matrices
   aQ = array(0, dim = c(iN, iN, iT))
 
-  ## initialization at the unconditional cor
+  ## Initialization at the unconditional cor
   aCor[,, 1] = mQ
   aQ[,,1] = mQ
 
-  #Compute the first likelihood contribution
+  # Compute the first likelihood contribution
   dLLK = mEta[1, , drop = FALSE] %*% solve(aCor[,, 1]) %*% t(mEta[1, , drop = FALSE]) -
     mEta[1, , drop = FALSE]%*% t(mEta[1, , drop = FALSE]) + log(det(aCor[,, 1]))
 
-  #main loop
+  # Initiate the main loop
   for (t in 2:iT) {
-    #update the Q matrix
+    # update the Q matrix
     aQ[,, t] = mQ * (1 - dA - dB) + dA * t(mEta[t - 1, , drop = FALSE]) %*% mEta[t - 1, , drop = FALSE] +
       dB * aQ[,,t - 1]
 
@@ -87,33 +87,33 @@ Estimate_DCC_t <- function(mY) {
 
 
 
-#DCC estimation
+### DCC estimation ###
 # StartingDCCPar is a vector of starting parameters for the DCC estimation
 # we will use previous estimates of the DCC parameters as starting value during
 # the for loop in the empirical part. This will speed up the estimation.
 EstimateDCC <- function(vY1, vY2) {
   require(rugarch)
 
-  #Model Specification
+  # Model Specification
   ModelSpec = ugarchspec(mean.model = list(armaOrder = c(1, 0)))
 
-  #Model estimation -- univariate
+  # Model estimation -- univariate
   Fit_1 = ugarchfit(ModelSpec, vY1)
   Fit_2 = ugarchfit(ModelSpec, vY2)
 
-  #standardized residuas
+  # Standardized residuas
   vZ_1 = residuals(Fit_1, standardize = TRUE)
   vZ_2 = residuals(Fit_2, standardize = TRUE)
 
-  #unconditional correlation
+  # Unconditional correlation
   mR = cor(cbind(vZ_1, vZ_2))
 
   #Model estimation -- multivariate
 
-  ## maximization of the DCC likelihood
+  ## Maximization of the DCC likelihood
   vPar = c(0.04, 0.9)
 
-  #maximize the DCC likelihood
+  # Maximize the DCC likelihood
   optimizer = solnp(vPar, fun = function(vPar, mEta, mQ) {
 
     Filter = DCCFilter(mEta, vPar[1], vPar[2], mQ)
@@ -128,18 +128,18 @@ EstimateDCC <- function(vY1, vY2) {
 
   vPar = optimizer$pars
 
-  ##prediction
+  ### Prediction steps
   Forc_1 = ugarchforecast(Fit_1, n.ahead = 1)
   Forc_2 = ugarchforecast(Fit_2, n.ahead = 1)
 
-  #one step ahead standard deviations
+  # One step ahead standard deviations
   vSigma1_tp1 = as.numeric(sigma(Forc_1))
   vSigma2_tp1 = as.numeric(sigma(Forc_2))
-  #one step ahead mean
+  # One step ahead mean
   vMu1_tp1 = as.numeric(fitted(Forc_1))
   vMu2_tp1 = as.numeric(fitted(Forc_2))
 
-  #Filter DCC
+  ## Filter DCC
   Filter_DCC = DCCFilter(mEta = cbind(vZ_1, vZ_2), vPar[1], vPar[2], mR)
 
   #prediction DCC
