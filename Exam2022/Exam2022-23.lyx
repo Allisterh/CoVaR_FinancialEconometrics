@@ -345,16 +345,6 @@ To ensure that the expression
 \end_layout
 
 \begin_layout Standard
-
-\series bold
-KIG GRUNDIGT PÅ DET HER!!!
-\begin_inset Newline newline
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 \begin_inset Formula 
 \begin{align*}
 _{u}\sigma_{t}^{2} & >0\\
@@ -885,7 +875,7 @@ Therefore, the NIC for the NAGARCH model is given by the following expression:
 
 \begin_layout Standard
 where 
-\begin_inset Formula $A\equiv\omega+\alpha\gamma^{2}+\beta\sigma_{t-1}^{2}$
+\begin_inset Formula $A\equiv\omega+\alpha\gamma^{2}+\beta\sigma^{2}$
 \end_inset
 
 .
@@ -918,7 +908,7 @@ status open
 \align center
 \begin_inset Graphics
 	filename /Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Exam2022/img/NIC.png
-	lyxscale 20
+	lyxscale 10
 	width 60page%
 
 \end_inset
@@ -1027,6 +1017,20 @@ i) Derive
 \end_layout
 
 \begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\sigma_{t+h}^{2} & =\omega+\alpha\left(\varepsilon_{t+h-1}+\gamma\right)^{2}+\beta\sigma_{t+h-1}^{2}\\
+E\left[\sigma_{t+h}^{2}\mid\mathcal{F}_{t}\right] & =E\left[\omega+\alpha\left(\varepsilon_{t+h-1}+\gamma\right)^{2}+\beta\sigma_{t+h-1}^{2}\mid\mathcal{F}_{t}\right]\\
+ & =\omega+\alpha E\left[\left(\varepsilon_{t+h-1}+\gamma\right)^{2}\mid\mathcal{F}_{t}\right]+\beta E\left[\sigma_{t+h-1}^{2}\mid\mathcal{F}_{t}\right]\\
+ & =\omega+\alpha E\left[\left(\varepsilon_{t+h-1}+\gamma\right)^{2}\mid\mathcal{F}_{t}\right]+\beta E\left[\omega+\alpha\left(\varepsilon_{t+h-2}+\gamma\right)^{2}+\beta\sigma_{t+h-2}^{2}\mid\mathcal{F}_{t}\right]\\
+ & \;\vdots\\
+ & =\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\left(1+\beta+\beta^{2}\right)+\beta^{3}E\left[\sigma_{t+h-3}^{2}\mid\mathcal{F}_{t}\right]\\
+ & =\beta^{h-1}\sigma_{t+1}^{2}+\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\sum_{i=0}^{h-2}\beta^{i}\\
+ & =\omega+\alpha\left(\varepsilon_{t}+\gamma\right)^{2}+\beta\sigma_{t}^{2}+\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\left(h-1\right)
+\end{align*}
+
+\end_inset
+
 
 \end_layout
 
@@ -1036,6 +1040,54 @@ ii) Compute
 \end_inset
 
 .
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\lim_{h\rightarrow\infty}E\left[\sigma_{t+h}^{2}\mid\mathcal{F}_{t}\right] & =\lim_{h\rightarrow\infty}\left(\omega+\alpha\left(\varepsilon_{t}+\gamma\right)^{2}+\beta\sigma_{t}^{2}+\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\left(h-1\right)\right)\\
+ & =\omega+\alpha\left(\varepsilon_{t}+\gamma\right)^{2}+\beta\sigma_{t}^{2}+\lim_{h\rightarrow\infty}\left(\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\left(h-1\right)\right)\\
+ & =\infty
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename img/Forecast and filtered volatility.pdf
+	lyxscale 10
+	width 60page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
 \end_layout
 
 \end_body

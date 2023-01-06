@@ -378,6 +378,9 @@ f_Estimate_NAGARCH_in_mean <- function(vY) {
     return(lOut)
 }
 
+
+f_NAGARCH_in_mean_LLK(vY,c(rep(0.5,5)))
+
 # Test the function:
 f_Estimate_NAGARCH_in_mean(vY)
 
@@ -486,16 +489,12 @@ mSpec <- matrix(NA, iN, 3)
 colnames(mSpec) <- c("GARCH", "NAGARCH", "NAGARCH_in_mean")
 rownames(mSpec) <- vTickers
 
-# Get returns of MRK ticker (for testing)
-vTest <- mY[,which(vTickers == "MRK")]
-infocriteria(ugarchfit(garch_spec, vTest, solver = 'hybrid',solver.control=list(trace=1)))[2]
-
 # Loop over the stocks
 for (i in 1:iN) {
   # Get the returns
   vY <- mY[,i]
   # Store the results of GARCH
-  mSpec[i,1] <- infocriteria(ugarchfit(garch_spec, vY, solver = 'hybrid', solver.control=list(trace=1)))[2]
+  mSpec[i,1] <- infocriteria(ugarchfit(garch_spec, vY, solver = 'hybrid'))[2]
   # Store the results of NAGARCH
   mSpec[i,2] <- f_Estimate_NAGARCH(vY)$BIC
   # Store the results of NAGARCH-in-mean
