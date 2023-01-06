@@ -17,10 +17,6 @@ setwd(paste0("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/
 # Load packages
 library(rugarch)
 library(rmgarch)
-library(xts)
-library(Rsolnp)
-library(moments)
-library(quantmod)
 library(ggplot2)
 library(ggthemes)
 
@@ -161,8 +157,9 @@ dfResults1 = data.frame(vSigma2)
 ggplot(dfResults1, aes(x = 1:length(vSigma2), y = vSigma2)) +
     geom_line() +
     labs(x = "Time", y = "Volatility", title = "NAGARCH Volatility Process") +
+    scale_color_manual(values="darkred") + 
     theme_economist()
-
+ggsave("./img/NAGARCH_Volatility_Process.pdf")
 # b) Write a function that computes $E\left[\sigma_{T+h}^2 \mid \mathcal{F}_T\right]$,
 # where $T$ is the length of the estimation period, according to the NAGARCH model.
 # The function should accept two arguments:
@@ -425,7 +422,7 @@ for (i in 1:iN) {
 }
 
 
-## For some reason, I get a beta of 0 for ticker 'BB', so I replace it with the mean
+## For some reason, I get a beta of 0 for ticker 'DD', so I replace it with the mean
 # Replace low outliers with mean
 dfResultsBeta[dfResultsBeta$beta < 0.1, 2] <- mean(dfResultsBeta$beta)
 
@@ -488,14 +485,20 @@ rownames(mSpec) <- vTickers
 
 # Get returns of MRK ticker (for testing)
 vTest <- mY[,which(vTickers == "MRK")]
-infocriteria(ugarchfit(garch_spec, vTest, solver = 'hybrid',solver.control=list(trace=1)))[2]
+infocriteria(ugarchfit(garch_spec, vTest, solver = 'hybrid',
+                                          solver.control = list(tol=1e-8,
+                                                      delta=1e-6)))[2]
 
 # Loop over the stocks
 for (i in 1:iN) {
   # Get the returns
   vY <- mY[,i]
   # Store the results of GARCH
-  mSpec[i,1] <- infocriteria(ugarchfit(garch_spec, vY, solver = 'hybrid', solver.control=list(trace=1)))[2]
+  mSpec[i,1] <- infocriteria(ugarchfit(garch_spec, vY, 
+  # Aid in convergence of the optimization
+                                solver = 'hybrid',
+                                solver.control = list(tol=1e-8,
+                                                      delta=1e-6)))[2]
   # Store the results of NAGARCH
   mSpec[i,2] <- f_Estimate_NAGARCH(vY)$BIC
   # Store the results of NAGARCH-in-mean
@@ -511,23 +514,31 @@ vModelCount <- table(vBestModel)
 # Print the results
 print(vModelCount)
 
+# The GARCH model is chosen all 30 times.
+# The NAGARCH model is chosen 0 times.
+# The NAGARCH-in-mean model is chosen 0 times.
+# This is consistent with the results in the paper. ??????
+
+
 # e) Consider the series of JP Morgan Chase & Co. (ticker JPM).
 #    Compute E[σ2_T+h |F_T] for h = 1, . . . , 50 according to the NAGARCH
 #    and GARCH models, where T is the length of the estimation period. Compare the
 #    predictions of NAGARCH and GARCH in a picture.
 
 # Get the returns
-vY <- mY[,which(vTickers == "JPM")]
+vJPM <- mY[,which(vTickers == "JPM")]
 
-# Forecast NAGARCH model for 50 periods
-vNAGARCH_forecast <- f_NAGARCH_Forecast(f_Estimate_NAGARCH(vY), 50)
+dH = 50
+
+# Forecast NAGARCH model for dH periods
+vNAGARCH_forecast <- f_NAGARCH_Forecast(f_Estimate_NAGARCH(vJPM), dH)
 
 # Forecast GARCH(1,1) model for 50 periods using ugarchforecast
-vGARCH_forecast <- sigma(ugarchforecast(ugarchfit(garch_spec, vY), n.ahead = 50))
+vGARCH_forecast <- sigma(ugarchforecast(ugarchfit(garch_spec, vJPM), n.ahead = dH))
 
 # Store the results in a data frame
-dfForecast <- data.frame(h = 1:50, vol = c(vNAGARCH_forecast, vGARCH_forecast),
-                        Model = rep(c("NAGARCH", "GARCH"), each = 50))
+dfForecast <- data.frame(h = 1:dH, vol = c(vNAGARCH_forecast, vGARCH_forecast),
+                        Model = rep(c("NAGARCH", "GARCH"), each = dH))
 
 # Plot the results using ggplot
 ggplot(dfForecast, aes(x = h, y = vol, color = Model)) +
@@ -540,3 +551,37 @@ ggsave("./img/dji30ret_JPM_forecast.pdf")
 
 # The NAGARCH model seems to be a better fit for the data, as it is able to capture
 # the volatility clustering in the data better than the GARCH model.
+
+
+
+
+
+
+
+### EXTRA ### 
+sigGARCH <- numeric()
+sigNAGARCH <- numeric()
+sigNAGARCH_in_mean <- numeric()
+
+sigGARCH <- as.numeric(sigma(ugarchfit(garch_spec, vTest, solver = 'hybrid',
+                                          solver.control = list(tol=1e-8,
+                                                      delta=1e-6))))
+                                  
+sigNAGARCH <- f_Estimate_NAGARCH(vTest)$vSigma2
+# Drop the last observation of sigNAGARCH
+sigNAGARCH <- sigNAGARCH[-length(sigNAGARCH)]
+
+sigNAGARCH_in_mean <- f_Estimate_NAGARCH_in_mean(vTest)$vSigma2
+# Drop the last observation of sigNAGARCH_in_mean
+sigNAGARCH_in_mean <- sigNAGARCH_in_mean[-length(sigNAGARCH_in_mean)]
+
+dfSig <- data.frame(h = 1:length(sigGARCH), vol = c(sigGARCH, sigNAGARCH, sigNAGARCH_in_mean),
+                        Model = rep(c("GARCH", "NAGARCH", "NAGARCH_in_mean"), each = length(sigGARCH)))
+## Plot the results using ggplot
+ggplot(dfSig, aes(x = h, y = vol, color = Model)) +
+    geom_line() +
+    labs(x = "h", y = expression(sigma^2)) +
+    ggtitle("Forecast of the variance of MRK") +
+    theme(legend.title=element_blank()) +
+    theme_economist()
+ggsave("./img/dji30ret_MRK_variance.pdf")
