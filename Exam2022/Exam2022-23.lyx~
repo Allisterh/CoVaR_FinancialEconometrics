@@ -120,7 +120,18 @@ Flow-id: 70
 Exam 2022
 \end_layout
 
-\begin_layout Section*
+\begin_layout Author
+Flow-id: 70
+\end_layout
+
+\begin_layout Standard
+\begin_inset Newpage pagebreak
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
 Theoretical part
 \end_layout
 
@@ -311,52 +322,105 @@ _{u}\sigma_{t}^{2} & =\sum_{j=0}^{\infty}\beta^{j}\left(\omega+\phi_{t-j-1}\righ
 \end_layout
 
 \begin_layout Standard
-To ensure that the expression 
-\family roman
-\series medium
-\shape up
-\size normal
-\emph off
-\bar no
-\strikeout off
-\xout off
-\uuline off
-\uwave off
-\noun off
-\color none
-
-\begin_inset Formula $_{u}\sigma_{t}^{2}$
+Since 
+\begin_inset Formula $\beta^{j}$
 \end_inset
 
+ is always positive, in order for the sum to be positive, it is necessary
+ for the term 
+\begin_inset Formula $\omega+\alpha\left(\varepsilon_{t-j-1}+\gamma\right)^{2}$
+\end_inset
 
-\family default
-\series default
-\shape default
-\size default
-\emph default
-\bar default
-\strikeout default
-\xout default
-\uuline default
-\uwave default
-\noun default
-\color inherit
- is always positive, we must have
+ to be positive for all
+\begin_inset Formula $j$
+\end_inset
+
+.
 \end_layout
 
 \begin_layout Standard
-\begin_inset Formula 
-\begin{align*}
-_{u}\sigma_{t}^{2} & >0\\
-\sum_{j=0}^{\infty}\beta^{j}\left(\omega+\alpha\left(\varepsilon_{t-j-1}^{2}+2\gamma\varepsilon_{t-j-1}+\gamma^{2}\right)\right) & >0\\
-\sum_{j=0}^{\infty}\beta^{j}\left(\omega+\alpha\varepsilon_{t-j-1}^{2}+2\alpha\gamma\varepsilon_{t-j-1}+\alpha\gamma^{2}\right) & >0\\
-\omega\sum_{j=0}^{\infty}\beta^{j}+\alpha\gamma^{2}\sum_{j=0}^{\infty}\beta^{j}+\sum_{j=0}^{\infty}\beta^{j}2\alpha\gamma\varepsilon_{t-j-1}+\sum_{j=0}^{\infty}\beta^{j}\alpha\varepsilon_{t-j-1}^{2} & >0\\
-\omega\frac{1}{1-\beta}+\alpha\gamma^{2}\frac{1}{1-\beta}+\sum_{j=0}^{\infty}\beta^{j}2\alpha\gamma\varepsilon_{t-j-1}+\sum_{j=0}^{\infty}\beta^{j}\alpha\varepsilon_{t-j-1}^{2} & >0
-\end{align*}
-
+To ensure that 
+\begin_inset Formula $\omega+\alpha\left(\varepsilon_{t-j-1}+\gamma\right)^{2}>0$
 \end_inset
 
+ for all 
+\begin_inset Formula $j$
+\end_inset
 
+, it is necessary for 
+\begin_inset Formula $\omega>0$
+\end_inset
+
+ and 
+\begin_inset Formula $\alpha>0$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Since 
+\begin_inset Formula $\varepsilon_{t-j-1}+\gamma$
+\end_inset
+
+ can take on any value, it is not possible to derive further conditions
+ on 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ that would guarantee that 
+\begin_inset Formula $\omega+\alpha\left(\varepsilon_{t-j-1}+\gamma\right)^{2}>0$
+\end_inset
+
+ for all 
+\begin_inset Formula $j$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+Therefore, the necessary conditions on 
+\begin_inset Formula $\omega$
+\end_inset
+
+, 
+\begin_inset Formula $\alpha$
+\end_inset
+
+, 
+\begin_inset Formula $\gamma$
+\end_inset
+
+, and 
+\begin_inset Formula $\beta$
+\end_inset
+
+ such that 
+\begin_inset Formula $_{u}\sigma_{t}^{2}>0$
+\end_inset
+
+ for all 
+\begin_inset Formula $t$
+\end_inset
+
+ are 
+\begin_inset Formula $\omega>0$
+\end_inset
+
+, 
+\begin_inset Formula $\alpha>0$
+\end_inset
+
+, 
+\begin_inset Formula $\gamma\in\mathbb{R}$
+\end_inset
+
+ and 
+\begin_inset Formula $\beta>0$
+\end_inset
+
+ .
 \end_layout
 
 \begin_layout Subsubsection*
@@ -446,7 +510,7 @@ Furthermore, for the series
 \end_inset
 
 .
- Thu, it must be ensured that 
+ Thus, it must be ensured that 
 \begin_inset Formula $\gamma\in\mathbb{R}^{+}$
 \end_inset
 
@@ -572,12 +636,6 @@ Having
 \end_inset
 
 , thus this does not cause additional problems.
-\end_layout
-
-\begin_layout Standard
-
-\series bold
-!!!MERE TEKST!!!
 \end_layout
 
 \begin_layout Subsection*
@@ -882,7 +940,17 @@ where
 \end_layout
 
 \begin_layout Standard
-The NAGARCH model extends the standard GARCH model by allowing for asymmetry
+In the NAGARCH model, the 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ determines the magnitude of shocks on the volatility.
+ A larger 
+\begin_inset Formula $\alpha$
+\end_inset
+
+ will result in a larger impact of news on the volatility.
+ The NAGARCH model extends the standard GARCH model by allowing for asymmetry
  in the response of the conditional variance to positive and negative shocks.
  This is achieved through the parameter 
 \begin_inset Formula $\gamma$
@@ -894,7 +962,23 @@ The NAGARCH model extends the standard GARCH model by allowing for asymmetry
 \begin_inset Formula $\gamma$
 \end_inset
 
- allows us the model differences between positive and negative news.
+ allows us the model differences between positive and negative news, as
+ evident from figure 1.1.
+ This figure shows a News Impact Curve for different parameters of 
+\begin_inset Formula $\gamma$
+\end_inset
+
+, where we see the values of 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ determines the shifts of the curve.
+ A high positive 
+\begin_inset Formula $\gamma$
+\end_inset
+
+ will, ceteris paribus, result in higher volatility for no shocks, and the
+ volatility will even decrease with negative shocks.
  
 \end_layout
 
@@ -907,9 +991,9 @@ status open
 \begin_layout Plain Layout
 \align center
 \begin_inset Graphics
-	filename /Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Exam2022/img/NIC.png
-	lyxscale 10
-	width 60page%
+	filename /Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Exam2022/img/NIC.pdf
+	lyxscale 40
+	width 50page%
 
 \end_inset
 
@@ -920,16 +1004,25 @@ status open
 \begin_inset Caption Standard
 
 \begin_layout Plain Layout
-NIC: 
-\begin_inset Formula $A=2.5$
+NIC with 
+\begin_inset Formula $\omega=0.0001$
 \end_inset
 
 , 
-\begin_inset Formula $\gamma=4$
+\begin_inset Formula $\alpha=0.05$
 \end_inset
 
 , 
-\begin_inset Formula $\alpha=0.2$
+\begin_inset Formula $\beta=0.7$
+\end_inset
+
+, and 
+\begin_inset Formula $\sigma=1$
+\end_inset
+
+, and 
+\begin_inset Formula $\gamma=\left[\begin{array}{cccc}
+-7 & -\frac{10}{3} & \frac{10}{3} & 7\end{array}\right]$
 \end_inset
 
 
@@ -985,6 +1078,22 @@ E\left[\sigma_{t+h}^{2}\mid\mathcal{F}_{t}\right] & =E\left[\omega+\alpha\left(\
  & =\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\left(1+\beta+\beta^{2}\right)+\beta^{3}E\left[\sigma_{t+h-3}^{2}\mid\mathcal{F}_{t}\right]\\
  & =\beta^{h-1}\sigma_{t+1}^{2}+\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\sum_{i=0}^{h-2}\beta^{i}\\
  & =\beta^{h-1}\left(\omega+\alpha\left(\varepsilon_{t}+\gamma\right)^{2}+\beta\sigma_{t}^{2}\right)+\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\sum_{i=0}^{h-2}\beta^{i}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Note that 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\lim_{h\rightarrow\infty}E\left[\sigma_{t+h}^{2}\mid\mathcal{F}_{t}\right] & =\lim_{h\rightarrow\infty}\beta^{h-1}\sigma_{t+1}^{2}+\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\lim_{h\rightarrow\infty}\sum_{i=0}^{h-2}\beta^{i}\\
+ & =\frac{\omega+\alpha\left(1+\gamma^{2}\right)}{1-\beta}
 \end{align*}
 
 \end_inset
@@ -1055,8 +1164,753 @@ ii) Compute
 
 \end_layout
 
-\begin_layout Standard
+\begin_layout Section
+Computational Part
+\end_layout
 
+\begin_layout Subsubsection*
+a) Write a function that estimates the NAGARCH model.
+ Constrain the parameters # such that 
+\begin_inset Formula $\sigma_{t}^{2}>0$
+\end_inset
+
+ for all 
+\begin_inset Formula $t$
+\end_inset
+
+ and 
+\begin_inset Formula $E\left[\sigma_{t}^{2}\right]<\infty$
+\end_inset
+
+.
+ The function should accept a vector of returns and output: i ) the filtered
+ volatility, ii) the estimated parameters, iii) the log likelihood evaluated
+ at its optimum, and iv) the bayesian information criterion (BIC).
+ Set 
+\begin_inset Formula $\sigma_{1}^{2}$
+\end_inset
+
+ equal to the empirical variance of the data.
+ Note that in the recursion for 
+\begin_inset Formula $\sigma_{t}^{2}$
+\end_inset
+
+ you can recover 
+\begin_inset Formula $\varepsilon_{t}$
+\end_inset
+
+ as 
+\begin_inset Formula $y_{t}/\sigma_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+See the attached code.
+\end_layout
+
+\begin_layout Subsubsection*
+b) Write a function that computes 
+\begin_inset Formula $E\left[\sigma_{T+h}^{2}\mid\mathcal{F}_{T}\right]$
+\end_inset
+
+, where 
+\begin_inset Formula $T$
+\end_inset
+
+ is the length of the estimation period, according to the NAGARCH model.
+ The function should accept two arguments: i) the output of the function
+ you wrote at point a), and ii) an integer 
+\begin_inset Formula $h>0$
+\end_inset
+
+ indicating the forecast horizon.
+ The function should return the vector of predicted variances up to time
+ 
+\begin_inset Formula $T+h$
+\end_inset
+
+, i.e.
+ 
+\begin_inset Formula $E\left[\sigma_{T+1}^{2}\mid\mathcal{F}_{T}\right],\ldots,E\left[\sigma_{T+h}^{2}\mid\mathcal{F}_{T}\right]$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+See the attached code.
+ 
+\end_layout
+
+\begin_layout Standard
+Testing the function on the first ticker in DJI results in the process presented
+ in figure 
+\shape italic
+2.1
+\shape default
+.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Exam2022/img/Forecast and filtered volatility.pdf
+	lyxscale 50
+	width 50page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $\text{NAGARCH}$
+\end_inset
+
+ Volatility Process and Forecast
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+It is evident that the forecasted volatility initially is high, due to the
+ fact that the last periods in the dataset shows high volatility, and the
+ forecast consequently approaches the limit found in 
+\shape italic
+1.d)
+\shape default
+ quickly, as represented by the dashed line at 
+\begin_inset Formula $\sigma=\sqrt{\frac{\omega+\alpha\left(1+\gamma^{2}\right)}{1-\beta}}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Subsubsection*
+c) Write a function that estimates the NAGARCH-in-mean specification defined
+ by 
+\begin_inset Formula 
+\[
+\begin{aligned}y_{t} & =\delta\log\sigma_{t}+\sigma_{t}\varepsilon_{t},\\
+\sigma_{t}^{2} & =\omega+\alpha\left(\varepsilon_{t-1}+\gamma\right)^{2}+\beta\sigma_{t-1}^{2},
+\end{aligned}
+\]
+
+\end_inset
+
+ Do not impose any constraint on the parameter 
+\begin_inset Formula $\delta$
+\end_inset
+
+.
+ As before, set the initial value of the process to the empirical variance
+ of the data.
+ Note that here 
+\begin_inset Formula $\varepsilon_{t}=\left(y_{t}-\delta\log\sigma_{t}\right)/\sigma_{t}$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+The mean of the model is then 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\mathbb{E}\left[y_{t}\right] & =\mathbb{E}\left[\delta\log\sigma_{t}+\sigma_{t}\varepsilon_{t}\right]\\
+ & =\mathbb{E}\left[\delta\log\sigma_{t}\right]+\mathbb{E}\left[\sigma_{t}\varepsilon_{t}\right]\\
+ & =\delta\log\sigma_{t}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+with a corresponding variance of
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\text{Var}\left(y_{t}\right) & =\mathbb{E}\left[y_{t}^{2}\right]-\mathbb{E}\left[y_{t}\right]^{2}\\
+ & =\mathbb{E}\left[\left(\delta\log\sigma_{t}+\sigma_{t}\varepsilon_{t}\right)^{2}\right]-\left(\delta\log\sigma_{t}\right)^{2}\\
+ & =\sigma_{t}^{2}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+See the attached code.
+ 
+\end_layout
+
+\begin_layout Section
+Empirical Part
+\end_layout
+
+\begin_layout Subsubsection*
+a) Estimate the NAGARCH model on each series.
+ Show in a plot the empirical distribution of the estimated 
+\begin_inset Formula $β$
+\end_inset
+
+ parameter across all series.
+ What can you conclude about the persistence of the variance process for
+ the components of the Dow Jones index?
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Exam2022/img/dji30ret_beta.pdf
+	lyxscale 50
+	width 50page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Distribution of the estimated 
+\begin_inset Formula $\beta$
+\end_inset
+
+ parameter
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+The parameter 
+\begin_inset Formula $\beta$
+\end_inset
+
+ represents the degree of persistence in the variance process.
+ A value of 
+\begin_inset Formula $\beta$
+\end_inset
+
+ close to 1 indicates that the variance process is highly persistent, meaning
+ that the volatility at time 
+\begin_inset Formula $t$
+\end_inset
+
+ is strongly influenced by the volatility at time 
+\begin_inset Formula $t-1$
+\end_inset
+
+.
+ On the other hand, a value of 
+\begin_inset Formula $\beta$
+\end_inset
+
+ close to 0 indicates that the variance process is less persistent, meaning
+ that the volatility at time t is less influenced by the volatility at time
+ 
+\begin_inset Formula $t-1$
+\end_inset
+
+.
+\end_layout
+
+\begin_layout Standard
+If the empirical distribution of 
+\begin_inset Formula $\beta$
+\end_inset
+
+ for the components of the Dow Jones index has a median of 0.938, this suggests
+ that the variance process for these components is highly persistent.
+ In other words, the volatility of these components is likely to be strongly
+ influenced by the volatility in the previous time period.
+\end_layout
+
+\begin_layout Standard
+This high degree of persistence in the variance process may indicate that
+ the variance process for these components is relatively stable over time,
+ and that the components are relatively resistant to changes in the underlying
+ market conditions.
+\end_layout
+
+\begin_layout Subsubsection*
+c) Estimate the NAGARCH-in-mean model on each series.
+ Show in a plot the empirical distribution of the estimated 
+\begin_inset Formula $δ$
+\end_inset
+
+ parameter across all series.
+ What can you conclude about the so-called “volatility premium” in this
+ dataset?
+\end_layout
+
+\begin_layout Standard
+The parameter 
+\begin_inset Formula $\delta$
+\end_inset
+
+ in the 
+\series bold
+
+\begin_inset Formula $\text{NAGARCH-in-mean}$
+\end_inset
+
+
+\series default
+ model represents the the volatility premium of assets, which refers to
+ the relationship between the volatility of a time series and the expected
+ returns of the underlying asset.
+\end_layout
+
+\begin_layout Standard
+A positive value of delta indicates that there is a positive relationship
+ between volatility and expected returns, i.e.
+ and increased volatility results in increased returns.
+\end_layout
+
+\begin_layout Standard
+On the other hand, a negative value of delta indicates that there is a negative
+ relationship between volatility and expected returns, which is referred
+ to as a volatility discount.
+\end_layout
+
+\begin_layout Standard
+When the empirical estimations of 
+\begin_inset Formula $δ$
+\end_inset
+
+ for the data shows a median value of 0.08, we could draw conclusions that
+ there is generally little or no relationship between volatility and expected
+ returns in the data.
+ We would, however, need to test the statistical significance to draw a
+ formal conclusion.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Exam2022/img/dji30ret_delta.pdf
+	lyxscale 50
+	width 50page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Distribution of the estimated 
+\begin_inset Formula $\delta$
+\end_inset
+
+ parameter
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsubsection*
+d) Estimate the GARCH(1,1) model of Bollerslev (1986) on each series.
+ For each series, choose the best model among: i) GARCH, ii) NAGARCH, iii)
+ NAGARCH-in-mean using the BIC.
+ Report the number of times each specification is selected in this dataset.
+\end_layout
+
+\begin_layout Standard
+The BIC is calculated as the negative log-likelihood of the model, plus
+ a penalty term that increases with the number of parameters in the model.
+ The model with the lowest BIC is generally considered to be the best fitting
+ model for the data.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float table
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Tabular
+<lyxtabular version="3" rows="2" columns="4">
+<features tabularvalignment="middle">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<column alignment="center" valignment="top">
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $\text{GARCH}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $\text{NAGARCH}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+
+\series bold
+\begin_inset Formula $\text{NAGARCH-in-mean}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+# of times each model is chosen
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+30
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="center" valignment="top" topline="true" bottomline="true" leftline="true" rightline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Plain Layout
+0
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+\begin_inset Formula $\text{vModelCount}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From Table 1 we see that the 
+\begin_inset Formula $\mathbf{\text{\textbf{GARCH}}\left(1,1\right)}$
+\end_inset
+
+ model has the lowest 
+\begin_inset Formula $BIC$
+\end_inset
+
+ for each of the series, thus we would consider 
+\begin_inset Formula $\mathbf{\text{\textbf{GARCH}}\left(1,1\right)}$
+\end_inset
+
+ to be best fitting for the data, and thus the most appropriate model for
+ the series.
+ From this we can infer that the 
+\begin_inset Formula $\mathbf{\text{\textbf{GARCH}}\left(1,1\right)}$
+\end_inset
+
+ is better in terms of its ability to capture the patterns and trends in
+ the volatility of the returns.
+\end_layout
+
+\begin_layout Standard
+The BIC is calculated as the negative log-likelihood of the model, plus
+ a penalty term that increases with the number of parameters in the model,
+ so it may be the case that the 
+\begin_inset Formula $\mathbf{\text{\textbf{GARCH}}\left(1,1\right)}$
+\end_inset
+
+ model provides a good balance between fit and complexity, making it the
+ most suitable model for these time series, since the BIC are close for
+ each series.
+\end_layout
+
+\begin_layout Standard
+If the purpose of research is to look at asymmetries in the volatility,
+ it would be appropriate to still consider the 
+\series bold
+
+\begin_inset Formula $\text{NAGARCH}$
+\end_inset
+
+ 
+\series default
+model.
+\end_layout
+
+\begin_layout Subsubsection*
+e) Consider the series of JP Morgan Chase & Co.
+ (ticker JPM).
+ Compute 
+\begin_inset Formula $E[σ2_{T}+h|F_{T}]\text{ for }h=1,...,50$
+\end_inset
+
+ according to the NAGARCH and GARCH models, where 
+\begin_inset Formula $T$
+\end_inset
+
+ is the length of the estimation period.
+ Compare the predictions of NAGARCH and GARCH in a picture.
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\align center
+\begin_inset Graphics
+	filename /Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/Documents/Aarhus Uni/7. semester/FinancialEconometrics/Exam2022/img/dji30ret_JPM_forecast.pdf
+	lyxscale 50
+	width 50page%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Volatility forecast for 
+\begin_inset Formula $\text{JPM}$
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Recall from lecture 4 slide 24:
+\end_layout
+
+\begin_layout Standard
+The variance of a 
+\begin_inset Formula $\mathbf{\text{\textbf{GARCH}}\left(1,1\right)}$
+\end_inset
+
+-model can be represented as:
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+\sigma_{t}^{2}=\omega+\alpha r_{t-1}^{2}+\beta\sigma_{t-1}^{2}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+and thus
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\lim_{h\rightarrow\infty}E\left[\sigma_{t+h}^{2}\mid\mathcal{F}_{t}\right] & =\frac{\omega}{1-\alpha-\beta}+\lim_{h\rightarrow\infty}\left(\alpha+\beta\right)^{h-1}\left[\sigma_{t+1}^{2}-\sigma^{2}\right]\\
+ & =\frac{\omega}{1-\alpha-\beta}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+From point 
+\shape italic
+1.d) 
+\shape default
+the 
+\series bold
+
+\begin_inset Formula $\text{NAGARCH}$
+\end_inset
+
+
+\series default
+ follows 
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\begin{align*}
+\lim_{h\rightarrow\infty}E\left[\sigma_{t+h}^{2}\mid\mathcal{F}_{t}\right] & =\lim_{h\rightarrow\infty}\beta^{h-1}\sigma_{t+1}^{2}+\left(\omega+\alpha\left(1+\gamma^{2}\right)\right)\lim_{h\rightarrow\infty}\sum_{i=0}^{h-2}\beta^{i}\\
+ & =\frac{\omega+\alpha\left(1+\gamma^{2}\right)}{1-\beta}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+We see that the forecast of the 
+\series bold
+
+\begin_inset Formula $\text{NAGARCH}$
+\end_inset
+
+ 
+\series default
+converges to the mean-variance faster than the 
+\begin_inset Formula $\mathbf{\text{\textbf{GARCH}}\left(1,1\right)}$
+\end_inset
+
+-model, due to the fact that 
+\begin_inset Formula $\left(\alpha+\beta\right)>\beta$
+\end_inset
+
+ and consequently 
+\begin_inset Formula $\beta^{h-1}<\left(\alpha+\beta\right)^{h-1}$
+\end_inset
+
+, which then implies a lower persistence of 
+\begin_inset Formula $\sigma_{t+1}^{2}$
+\end_inset
+
+ for each 
+\begin_inset Formula $h$
+\end_inset
+
+.
+ 
 \end_layout
 
 \end_body

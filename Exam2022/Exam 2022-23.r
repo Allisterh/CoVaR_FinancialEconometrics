@@ -11,8 +11,9 @@
 
 rm(list=ls())
 if(!is.null(dev.list())) dev.off()
-setwd(paste0("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/",
-"Documents/Aarhus Uni/7. semester/FinancialEconometrics/Exam2022"))
+# Set working directory
+# setwd(paste0("/Users/tobiasbrammer/Library/Mobile Documents/com~apple~CloudDocs/",
+# "Documents/Aarhus Uni/7. semester/FinancialEconometrics/Exam2022"))
 
 # Load packages
 library(rugarch)
@@ -43,51 +44,54 @@ f_NAGARCH_LLK <- function(vY, vPar){
 # 2. Initializes vSigma2[1] to the empirical variance of vY
 # 3. Calculates the log-likelihood contribution for t = 1
 # 4. Recursively calculates vSigma2[t] and vLLK[t] for t = 2, ..., iT
-# 5. Appends vSigma2[iT] to the list of vSigma2 values
+# 5. Appends vSigma2[iT+1] to the list of vSigma2 values
 # 6. Returns a list containing the sum of the log-likelihood contributions and the list of vSigma2 values #
 
-    # Unpack the parameters
-    dOmega = vPar[1]
-    dAlpha = vPar[2]
-    dGamma = vPar[3] 
-    dBeta = vPar[4]
+# Unpack the parameters
+dOmega = vPar[1]
+dAlpha = vPar[2]
+dGamma = vPar[3] 
+dBeta = vPar[4]
 
-    # Get the length of the time series
-    iT = length(vY)
-    vSigma2 = numeric(iT)
-    vLLK = numeric(iT)
+# Get the length of the time series
+iT = length(vY)
 
-    # Intializing sigma2_1 at the empirical variance
-    vSigma2[1] = var(vY)
-    # Calculating the log likelihood at time t
-    vLLK = dnorm(vY[1], 0, sqrt(vSigma2[1]), log = TRUE)
+# Create vectors to store the volatility and log-likelihood
+vSigma2 = numeric(iT)
+vLLK = numeric(iT)
 
-    # Recursion for sigma2_t and log likelihood over time
-    for (t in 2:iT) {
-        
-        # Specifying epsilon
-        dEpsilon = vY[t-1] / sqrt(vSigma2[t-1])
-        
-        # Update the volatility
-        vSigma2[t] = dOmega + dAlpha * (dEpsilon + dGamma)^2 + dBeta * vSigma2[t-1]
-        
-        # Add the log-likelihood contribution at time t
-        vLLK[t] = dnorm(vY[t], 0, sqrt(vSigma2[t]), log = TRUE)
-    }
+# Intializing sigma2_1 at the empirical variance
+vSigma2[1] = var(vY)
 
-    # Appending sigma2_t+1 to the list of sigma2's
-    vSigma2 = c(vSigma2, (dOmega + dAlpha * (vY[iT] / sqrt(vSigma2[iT]) + dGamma)^2 + dBeta * vSigma2[iT]))
+# Intialize the log likelihood at time t
+vLLK = dnorm(vY[1], 0, sqrt(vSigma2[1]), log = TRUE)
 
-    # Summing the log-likelihood contributions
-    dLLK = sum(vLLK)
-
-    # Return the results in a list
-    lOut = list()
+# Recursion for sigma2_t and log likelihood over time
+for (t in 2:iT) {
     
-    lOut$vSigma2 = vSigma2
-    lOut$dLLK = dLLK
+    # Specifying epsilon
+    dEpsilon = vY[t-1] / sqrt(vSigma2[t-1])
     
-    return(lOut)
+    # Update the volatility
+    vSigma2[t] = dOmega + dAlpha * (dEpsilon + dGamma)^2 + dBeta * vSigma2[t-1]
+    
+    # Add the log-likelihood contribution at time t
+    vLLK[t] = dnorm(vY[t], 0, sqrt(vSigma2[t]), log = TRUE)
+}
+
+# Appending sigma2_t+1 to the list of sigma2's
+vSigma2 = c(vSigma2, (dOmega + dAlpha * (vY[iT] / sqrt(vSigma2[iT]) + dGamma)^2 + dBeta * vSigma2[iT]))
+
+# Summing the log-likelihood contributions
+dLLK = sum(vLLK)
+
+# Return the results in a list
+lOut = list()
+
+lOut$vSigma2 = vSigma2
+lOut$dLLK = dLLK
+
+return(lOut)
 }
 
 
@@ -144,22 +148,11 @@ f_Estimate_NAGARCH <- function(vY) {
     return(lOut)
 }
 
+# Test the function
 data("dji30ret")
 vY = dji30ret[, 1]*100
+vSigma = sqrt(f_Estimate_NAGARCH(vY)$vSigma2)
 
-f_Estimate_NAGARCH(vY)
-
-vSigma2 = f_Estimate_NAGARCH(vY)$vSigma2
-
-# Create a dataframe with the results
-dfResults1 = data.frame(vSigma2)
-# Plot the estimated volatility process in ggplot
-ggplot(dfResults1, aes(x = 1:length(vSigma2), y = vSigma2)) +
-    geom_line() +
-    labs(x = "Time", y = "Volatility", title = "NAGARCH Volatility Process") +
-    scale_color_manual(values="darkred") + 
-    theme_economist()
-ggsave("./img/NAGARCH_Volatility_Process.pdf")
 # b) Write a function that computes $E\left[\sigma_{T+h}^2 \mid \mathcal{F}_T\right]$,
 # where $T$ is the length of the estimation period, according to the NAGARCH model.
 # The function should accept two arguments:
@@ -215,33 +208,43 @@ f_NAGARCH_Forecast <- function(f_Estimate_NAGARCH, h) {
 
         vSigma2_Forecast[t] = dBeta^(t-1) * vSigma2_Forecast[1] + (dOmega + dAlpha * (1 + dGamma^2)) * sumBeta
     }
-
     # Return the forecasted variances
     return(vSigma2_Forecast)
 }
 
-# Test the function with h forecast periods
+### Test the function with h forecast periods###
 h = 1000
-vSigma2_Forecast = f_NAGARCH_Forecast(f_Estimate_NAGARCH(vY), h)
+vSigma_Forecast = sqrt(f_NAGARCH_Forecast(f_Estimate_NAGARCH(vY), h))
 
 # Append the forecasted variances to the dataframe with the results
-dfResults2 = c(vSigma2, vSigma2_Forecast)
+dfResults2 = c(vSigma, vSigma_Forecast)
 
 # Create a dataframe with the results and the forecasted variances
-dfResults2 = data.frame(dfResults2, "Type" = c(rep("Observed", length(vSigma2)), rep("Forecast", h)))
+dfResults2 = data.frame(dfResults2, "Type" = c(rep("Observed", length(vSigma)), rep("Forecast", h)))
 
+# Calculate the unconditional volatility of the NAGARCH model as h -> infinity
+# See the pdf for the derivation.
+lNAGARCH <- f_Estimate_NAGARCH(vY)
+dNAGARCH_omega <- lNAGARCH$vPar[1]
+dNAGARCH_alpha <- lNAGARCH$vPar[2]
+dNAGARCH_gamma <- lNAGARCH$vPar[3]
+dNAGARCH_beta <- lNAGARCH$vPar[4]
+
+dNAGARCH_u <- sqrt((dNAGARCH_omega + dNAGARCH_alpha * (1 + dNAGARCH_gamma^2))/(1 - dNAGARCH_beta))
 
 # Plot dfResults2 in ggplot. Forecast red and observed blue line
 ggplot(dfResults2, aes(x=1:length(dfResults2))) + 
     geom_line(aes(y=dfResults2, color=Type)) +
     scale_color_manual(values=c("darkgreen", "darkred")) + 
+    geom_hline(yintercept=dNAGARCH_u, linetype="dashed", color="darkgreen") +
+    annotate("text", x = nrow(dfResults2)-50, y = dNAGARCH_u-0.1, 
+            label = expression(paste("unconditional ", sigma)), color="darkgreen") +
     theme_economist() +
     theme(legend.title=element_blank()) +
-    labs(x = "Time", y = "Volatility", title = "NAGARCH Volatility Process and Forecast")
-ggsave("./img/Forecast and filtered volatility.pdf")
+    labs(x = "Time", y = expression(sigma))
+ ggsave("./img/Forecast and filtered volatility.pdf")
 
-# It is evident that as h approaches a large number,
-# the forecasted volatility converges to the unconditional variance of the process.
+# See pdf for comments on the plot.
 
 
 
@@ -390,16 +393,17 @@ f_Estimate_NAGARCH_in_mean(vY)
 # a) Estimate the NAGARCH model on each series.
 #    Show in a plot the empirical distribution of the estimated β parameter
 #    across all series (you can use either the hist(vX) function or
-#    plot(dentity(vX)) function, where vX is a vector). What can you conclude
+#    plot(density(vX)) function, where vX is a vector). What can you conclude
 #    about the persistence of the variance process for the components of
 #    the Dow Jones index?
 
-# Load the data
+# Load the data from the rugarch package
 data("dji30ret")
+
 # Obtain the percentage returns
 mY <- dji30ret*100
 
-# Set the number of stocks
+# Set the number of tickers
 iN <- ncol(mY)
 
 # Set the number of time periods
@@ -421,24 +425,21 @@ for (i in 1:iN) {
   dfResultsBeta[i,2] <- lOut$vPar[4]
 }
 
-
-## For some reason, I get a beta of 0 for ticker 'DD', so I replace it with the mean
-# Replace low outliers with mean
-dfResultsBeta[dfResultsBeta$beta < 0.1, 2] <- mean(dfResultsBeta$beta)
+## For some reason, I get a beta of 0 for ticker 'DD', so I replace it with the mean of the other betas
+dfResultsBeta[dfResultsBeta$beta < 0.1, 2] <- mean(dfResultsBeta$beta[dfResultsBeta$beta > 0.1])
 
 # Plot the results in density plot
 ggplot(dfResultsBeta, aes(x = beta)) +
     geom_density(fill = "darkgreen", alpha = 0.4) +
     labs(x = expression(beta), y = "Density") +
     theme(legend.title=element_blank()) +
-    ggtitle("Distribution of the estimated beta parameter") +
-    geom_vline(xintercept = mean(dfResultsBeta$beta), color = "red", linetype = "dashed") +
-    annotate("text", x = mean(dfResultsBeta$beta), y = 0.5, label = "Mean", color = "red") +
+    geom_vline(xintercept = median(dfResultsBeta$beta), color = "red", linetype = "dashed") +
+    annotate("text", x = median(dfResultsBeta$beta), y = 0.5, label = "Median", color = "red") +
     theme_economist()
-ggsave("./img/dji30ret_beta.pdf")
+ ggsave("./img/dji30ret_beta.pdf")
 
 
-# c) Estimate the NAGARCH-in-mean model on each series.
+# c=b) Estimate the NAGARCH-in-mean model on each series.
 #    Show in a plot the empirical distribution of the estimated δ
 #    parameter across all series. What can you conclude about 
 #    the so-called “volatility premium” in this dataset?
@@ -461,13 +462,15 @@ ggplot(dfResultsDelta, aes(x = delta)) +
     geom_density(fill = "darkgreen", alpha = 0.4) +
     labs(x = expression(delta), y = "Density") +
     theme(legend.title=element_blank()) +
-    ggtitle("Distribution of the estimated delta parameter") +
-    geom_vline(xintercept = mean(dfResultsDelta$delta), color = "red", linetype = "dashed") +
-    annotate("text", x = mean(dfResultsDelta$delta), y = 0.5, label = "Mean", color = "red") +
+    #ggtitle("Distribution of the estimated delta parameter") +
+    geom_vline(xintercept = median(dfResultsDelta$delta), color = "red", linetype = "dashed") +
+    annotate("text", x = median(dfResultsDelta$delta), y = 0.5, label = "Median", color = "red") +
     theme_economist()
 ggsave("./img/dji30ret_delta.pdf")
 
-
+min(dfResultsDelta$delta)
+max(dfResultsDelta$delta)
+median(dfResultsDelta$delta)
 # d) Estimate the GARCH(1,1) model of Bollerslev (1986) on each series.
 #    For each series, choose the best model among: i) GARCH, ii) NAGARCH,
 #    iii) NAGARCH-in-mean using the BIC. Report the number of times each 
@@ -476,7 +479,7 @@ ggsave("./img/dji30ret_delta.pdf")
 ## Fit GARCH(1,1) using the rugarch package
 # initialize model
 garch_spec <- ugarchspec(variance.model = list(model = "sGARCH"), 
-                       mean.model = list(armaOrder = c(0, 0), include.mean = TRUE))
+                       mean.model = list(armaOrder = c(0, 0), include.mean = FALSE))
 
 # Specify each model using rugarch
 mSpec <- matrix(NA, iN, 3)
@@ -486,10 +489,12 @@ rownames(mSpec) <- vTickers
 # Get returns of MRK ticker (for testing)
 vTest <- mY[,which(vTickers == "MRK")]
 infocriteria(ugarchfit(garch_spec, vTest, solver = 'hybrid',
+                                          n.start = 1000,
                                           solver.control = list(tol=1e-8,
                                                       delta=1e-6)))[2]
 
-# Loop over the stocks
+# Loop over the stocks. Note that this takes a while to run, 
+# and the solver is not very stable, so you might have to run it a few times.
 for (i in 1:iN) {
   # Get the returns
   vY <- mY[,i]
@@ -497,6 +502,7 @@ for (i in 1:iN) {
   mSpec[i,1] <- infocriteria(ugarchfit(garch_spec, vY, 
   # Aid in convergence of the optimization
                                 solver = 'hybrid',
+                                n.start = 1000,
                                 solver.control = list(tol=1e-8,
                                                       delta=1e-6)))[2]
   # Store the results of NAGARCH
@@ -511,17 +517,9 @@ vBestModel <- apply(mSpec, 1, which.min)
 # Get the number of times each model is chosen
 vModelCount <- table(vBestModel)
 
-# Print the results
-print(vModelCount)
-
-# The GARCH model is chosen all 30 times.
-# The NAGARCH model is chosen 0 times.
-# The NAGARCH-in-mean model is chosen 0 times.
-# This is consistent with the results in the paper. ??????
-
 
 # e) Consider the series of JP Morgan Chase & Co. (ticker JPM).
-#    Compute E[σ2_T+h |F_T] for h = 1, . . . , 50 according to the NAGARCH
+#    Compute E[σ2_T+h |F_T] for h = 1, ... , 50 according to the NAGARCH
 #    and GARCH models, where T is the length of the estimation period. Compare the
 #    predictions of NAGARCH and GARCH in a picture.
 
@@ -531,57 +529,93 @@ vJPM <- mY[,which(vTickers == "JPM")]
 dH = 50
 
 # Forecast NAGARCH model for dH periods
-vNAGARCH_forecast <- f_NAGARCH_Forecast(f_Estimate_NAGARCH(vJPM), dH)
+vNAGARCH_forecast <- sqrt(f_NAGARCH_Forecast(f_Estimate_NAGARCH(vJPM), dH))
 
 # Forecast GARCH(1,1) model for 50 periods using ugarchforecast
+garch_spec <- ugarchspec(variance.model = list(model = "sGARCH"), 
+                       mean.model = list(armaOrder = c(0, 0), include.mean = FALSE))
 vGARCH_forecast <- sigma(ugarchforecast(ugarchfit(garch_spec, vJPM), n.ahead = dH))
+
+# Calculate the unconditional volatility of the GARCH(1,1) model as h -> infinity
+# From lecture 4 slide 24
+lGARCH <- ugarchfit(garch_spec, vJPM)
+dGARCH_omega <- coef(lGARCH)[1]
+dGARCH_alpha <- coef(lGARCH)[2]
+dGARCH_beta <- coef(lGARCH)[3]
+dGARCH_u <- sqrt(dGARCH_omega/(1-dGARCH_alpha-dGARCH_beta))
+
+# Calculate the unconditional volatility of the NAGARCH model as h -> infinity
+# See the pdf for the derivation.
+lNAGARCH <- f_Estimate_NAGARCH(vJPM)
+dNAGARCH_omega <- lNAGARCH$vPar[1]
+dNAGARCH_alpha <- lNAGARCH$vPar[2]
+dNAGARCH_gamma <- lNAGARCH$vPar[3]
+dNAGARCH_beta <- lNAGARCH$vPar[4]
+
+dNAGARCH_u <- sqrt((dNAGARCH_omega + dNAGARCH_alpha * (1 + dNAGARCH_gamma^2))/(1 - dNAGARCH_beta))
 
 # Store the results in a data frame
 dfForecast <- data.frame(h = 1:dH, vol = c(vNAGARCH_forecast, vGARCH_forecast),
                         Model = rep(c("NAGARCH", "GARCH"), each = dH))
 
-# Plot the results using ggplot
+# Plot the forecasts using ggplot
 ggplot(dfForecast, aes(x = h, y = vol, color = Model)) +
     geom_line() +
-    labs(x = "h", y = expression(sigma^2)) +
-    ggtitle("Forecast of the variance of JPM") +
+    geom_hline(yintercept = dGARCH_u, linetype = "dashed", color = "#F8766D") +
+    annotate("text", x = 5, y = dGARCH_u-0.1, label = expression(paste("unconditional ", sigma)),
+            color = "#F8766D") +
+    geom_hline(yintercept = dNAGARCH_u, linetype = "dashed", color = "#00BFC4") +
+    annotate("text", x = 5, y = dNAGARCH_u-0.1, label = expression(paste("unconditional ", sigma)),
+                color = "#00BFC4") +
+    labs(x = "h", y = expression(sigma)) +
     theme(legend.title=element_blank()) +
     theme_economist()
-ggsave("./img/dji30ret_JPM_forecast.pdf")
-
-# The NAGARCH model seems to be a better fit for the data, as it is able to capture
-# the volatility clustering in the data better than the GARCH model.
+ ggsave("./img/dji30ret_JPM_forecast.pdf")
 
 
 
 
 
 
+#################### ADDITIONAL CODE ####################
+################# NOT PART OF THE EXAM ##################
+### Plot of the News Impact Curve ###
+# Recall the news impact curve from 1.c)
+# \sigma_{t}^{2}\left(\varepsilon_{t-1}^{2}\right) = 
+# \omega+\alpha\gamma^{2}+\beta\sigma_{t-1}^{2} + 
+# \alpha\left(\varepsilon_{t-1}^{2}+2\varepsilon_{t-1}\gamma\right)
 
-### EXTRA ### 
-sigGARCH <- numeric()
-sigNAGARCH <- numeric()
-sigNAGARCH_in_mean <- numeric()
+library(ggplot2)
+library(ggthemes)
 
-sigGARCH <- as.numeric(sigma(ugarchfit(garch_spec, vTest, solver = 'hybrid',
-                                          solver.control = list(tol=1e-8,
-                                                      delta=1e-6))))
-                                  
-sigNAGARCH <- f_Estimate_NAGARCH(vTest)$vSigma2
-# Drop the last observation of sigNAGARCH
-sigNAGARCH <- sigNAGARCH[-length(sigNAGARCH)]
+# Get a sequence of epsilon values
+vEpsilon <- seq(-15, 15, length.out = 1e4)
+# Set gamma to a vector of 1, 4, and 8
+dNAGARCH_gamma <- seq(-7,7, length.out = 4)
+dNAGARCH_omega <- 0.0001
+dNAGARCH_alpha <- 0.05
+dNAGARCH_beta <- 0.7
+dNAGARCH_sigma <- 1
 
-sigNAGARCH_in_mean <- f_Estimate_NAGARCH_in_mean(vTest)$vSigma2
-# Drop the last observation of sigNAGARCH_in_mean
-sigNAGARCH_in_mean <- sigNAGARCH_in_mean[-length(sigNAGARCH_in_mean)]
+# Matrix to store the variance for each epsilon and gamma
+mVariance <- matrix(0, nrow = length(dNAGARCH_gamma), ncol = length(vEpsilon))
 
-dfSig <- data.frame(h = 1:length(sigGARCH), vol = c(sigGARCH, sigNAGARCH, sigNAGARCH_in_mean),
-                        Model = rep(c("GARCH", "NAGARCH", "NAGARCH_in_mean"), each = length(sigGARCH)))
-## Plot the results using ggplot
-ggplot(dfSig, aes(x = h, y = vol, color = Model)) +
+# Calculate the variance for each epsilon and gamma
+for (i in 1:length(dNAGARCH_gamma)) {
+    mVariance[i,] = sqrt(dNAGARCH_omega + dNAGARCH_alpha * dNAGARCH_gamma[i]^2 + dNAGARCH_beta * dNAGARCH_sigma^2 + 
+    dNAGARCH_alpha * (vEpsilon^2 + 2 * vEpsilon * dNAGARCH_gamma[i]))
+}
+
+# Plot the variance for each epsilon and gamma in separate lines in the same plot
+ggplot(data.frame(epsilon = vEpsilon, variance = mVariance[1,], gamma = rep(dNAGARCH_gamma[1], length(vEpsilon))), aes(x = epsilon, y = variance, color = gamma)) +
     geom_line() +
-    labs(x = "h", y = expression(sigma^2)) +
-    ggtitle("Forecast of the variance of MRK") +
-    theme(legend.title=element_blank()) +
-    theme_economist()
-ggsave("./img/dji30ret_MRK_variance.pdf")
+    labs(x = expression(epsilon), y = expression(sigma)) +
+    geom_hline(yintercept = min(mVariance[1,]), linetype = "dashed") +
+    geom_vline(xintercept = 0) +
+    # Legend with different colors for each gamma
+    scale_color_gradient(low = "red", high = "darkgreen") +
+    theme_economist() +
+    geom_line(data = data.frame(epsilon = vEpsilon, variance = mVariance[2,], gamma = rep(dNAGARCH_gamma[2], length(vEpsilon))), aes(x = epsilon, y = variance, color = gamma)) +
+    geom_line(data = data.frame(epsilon = vEpsilon, variance = mVariance[3,], gamma = rep(dNAGARCH_gamma[3], length(vEpsilon))), aes(x = epsilon, y = variance, color = gamma)) + 
+    geom_line(data = data.frame(epsilon = vEpsilon, variance = mVariance[4,], gamma = rep(dNAGARCH_gamma[4], length(vEpsilon))), aes(x = epsilon, y = variance, color = gamma))
+# ggsave("./img/NIC.pdf")
